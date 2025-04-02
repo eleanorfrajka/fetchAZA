@@ -1,0 +1,16 @@
+netcdf4
+xarray
+numpy
+matplotlib
+scipy 
+pandas
+tqdm
+jupyterlab
+pytest
+pytest-cov
+nbsphinx
+nbconvert
+sphinx
+sphinx-rtd-theme
+pypandoc
+myst-nb

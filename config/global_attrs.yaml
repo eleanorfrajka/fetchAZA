@@ -1,0 +1,5 @@
+UID:
+  long_name: unit hardware identifier
+  units: string
+CALIBRATION_STATE:
+  sensor: MOD

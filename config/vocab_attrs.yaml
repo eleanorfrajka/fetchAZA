@@ -1,0 +1,195 @@
+RECORD_TIME:
+  standard_name: time
+TIME:
+  long_name: time of measurement
+  observation_type: measured
+  standard_name: time
+  uri: https://vocab.nerc.ac.uk/collection/P02/current/AYMD/
+RETRIEVAL_TIME:
+  standard_name: time
+  long_name: time of retrieval
+NODE_REF:
+  long_name: node location reference
+SERIAL_NUMBER:
+  long_name: platform serial number
+MODULE_NUMBER:
+  long_name: sensor index (module) number to identify multiple sensors of same type
+  comment: 'Each sensor record shall contain an index value following the UID field. The index value is used to identify the sensor to which each record belongs. This can be useful when there are multiple sensors of the same type. The index typically refers to which module slot the sensor is fitted to on the DAS PCB and the possible values are 1-7.'
+FIRMWARE_VERSION:
+  long_name: platform firmware version
+  fill_value: '0'
+
+EVENT_MASK: 
+  units: hex
+INDEX:
+  units: integer
+AGE:
+  units: seconds
+REPORT:
+  long_name: report of status
+PERCENT_USED:
+  long_name: Battery used percentage
+  units: percent
+VOLTS:
+  long_name: voltage
+  units: Volt
+  resolution: 0.1
+STATUS:
+  long_name: status of instrument
+  units: hex
+
+AMBIENT_SN:
+  long_name: serial number of ambient pressure sensor
+
+TRANSFER_PRESSURE:
+  long_name: Transfer pressure (DQZ)
+  standard_name: Pressure
+  units: dbar
+AMBIENT_PRESSURE:
+  long_name: Ambient pressure (KLR)
+  standard_name: Pressure
+  units: dbar
+LOW_PRESSURE:
+  standard_name: Pressure
+  long_name: Low pressure
+  units: dbar
+PRESSURE:
+  units: dbar
+  resolution: 0.0001
+  long_name: Pressure (spatial coordinate) exerted by the water body by pressure sensor 
+  observation_type: measured
+  reference_datum: sea-surface
+  standard_name: pressure
+RATE_OF_CHANGE_FROM_SETTLING:
+  units: dbar s-1
+MEAN_SQUARE_ERROR:
+  units: dbar
+
+TRANSFER_TEMPERATURE:
+  long_name: Transfer Temperature
+  standard_name: Temperature
+  observation_type: measured
+  units: Celsius
+AMBIENT_TEMPERATURE:
+  long_name: Ambient Temperature
+  standard_name: Temperature
+  observation_type: measured
+  units: Celsius
+  resolution: 0.001
+LOW_TEMPERATURE:
+  long_name: Low Temperature
+  standard_name: Temperature
+  observation_type: measured
+  units: Celsius
+  resolution: 0.001
+TEMPERATURE:
+  observation_type: measured
+  standard_name: temperature
+  units: Celsius
+  resolution: 0.001
+  valid_max: 42
+  valid_min: -5
+  uri: https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/
+
+PITCH:
+  observation_type: measured
+  units: degrees
+  convention: forward positive
+  resolution: 0.0001
+  long_name: Orientation (pitch) of measurement platform by inclinometer
+  uri: https://vocab.nerc.ac.uk/collection/P02/current/PITCH/
+
+ROLL:
+  observation_type: measured
+  units: degrees
+  convention: port positive
+  resolution: 0.0001
+  long_name: Orientation (roll angle) of measurement platform by inclinometer
+  uri: https://vocab.nerc.ac.uk/collection/P02/current/ROLL/
+
+LATITUDE:
+  coordinate_reference_frame: urn:ogc:crs:EPSG::4326
+  long_name: Latitude north
+  observation_type: calculated
+  platform: platform
+  reference: WGS84
+  standard_name: latitude
+  units: degrees_north
+  valid_max: 90
+  valid_min: -90
+  axis: Y
+  uri: https://vocab.nerc.ac.uk/collection/OG1/current/LAT/
+LONGITUDE:
+  coordinate_reference_frame: urn:ogc:crs:EPSG::4326
+  long_name: Longitude east
+  observation_type: calculated
+  platform: platform
+  reference: WGS84
+  standard_name: longitude
+  units: degrees_east
+  valid_max: 180
+  valid_min: -180
+  axis: X
+  uri: https://vocab.nerc.ac.uk/collection/OG1/current/LON/
+
+DEPTH:
+  source: pressure
+  long_name: platform depth
+  standard_name: depth
+  units: m
+  comment: from science pressure and interpolated
+  observation_type: calculated
+  accuracy: 1
+  precision: 2
+  resolution: 0.02
+  platform: platform
+  valid_min: 0
+  valid_max: 6000
+  reference_datum: surface
+  positive: down
+DEPTH_Z:
+  source: pressure
+  long_name: platform depth
+  standard_name: depth
+  units: m
+  comment: Defined with positive up
+  observation_type: calculated
+  platform: platform
+  valid_min: -6000
+  valid_max: 0
+  reference_datum: surface
+  positive: up
+
+
+PHASE:
+  long_name: behavior of the AZA at sea
+  comment: This is a stub to represent where the transfer temperature is pointing
+
+
+REPEAT_PERIOD:
+  units: seconds
+JITTER:
+  units: seconds
+REPEAT_TIME:
+  units: seconds
+REPEAT_VALUE:
+  units: seconds
+SAMPLES_REMAINING:
+  long_name: samples remaining
+SENSOR_SERIAL:
+  long_name: sensor serial number
+START_TIME:
+  calendar: gregorian
+TIME_OF_FLIGHT_RMLE:
+  units: seconds
+TIME_OF_FLIGHT_XCORR:
+  units: seconds
+
+WARMUP:
+  units: seconds
+TYPE:
+  fill_value: '0'
+
+SEQUENCE_TIME:
+  units: seconds
+
