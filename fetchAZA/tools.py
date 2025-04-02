@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-import gsw
 from datetime import datetime
 from collections import Counter
-from AZApressure import readers, writers, plotters, utilities, timetools
+from fetchAZA import readers, writers, plotters, utilities, timetools
 import logging
 import re
 _log = logging.getLogger(__name__)

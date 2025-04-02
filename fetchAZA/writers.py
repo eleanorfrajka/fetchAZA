@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 from numbers import Number
 import os
-from AZApressure import utilities
+from fetchAZA import utilities
 import logging
 _log = logging.getLogger(__name__)
 
