@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transferring to an Organisation &mdash; fetchAZA v0.0.0 documentation</title>
+  <title>About Fetch AZA &mdash; fetchAZA v0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -18,6 +18,7 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="#" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -71,9 +72,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Transferring to an Organisation</li>
+      <li class="breadcrumb-item active">About Fetch AZA</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/gitorg.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/about.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -81,23 +82,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="transferring-to-an-organisation">
-<h1>Transferring to an Organisation<a class="headerlink" href="#transferring-to-an-organisation" title="Link to this heading"></a></h1>
-<p>At some point, you may find it useful to transfer a repository from a personal Github account to an “organisation”.  There isn’t strictly a need to do this, but for a repository where you want wider community participation, it may reduce the barrier to someone suggesting edits.</p>
-<p>Steps to transfer:</p>
-<ol class="arabic simple">
-<li><p>Set up a team in an Organisation that you’re admin in (e.g., https://github.com/orgs/ifmeo-hamburg/teams/seagliderOG1-maintainers)</p></li>
-<li><p>Go to settings on the repo, scroll down to “Danger Zone” and select “Transfer ownership”, and transfer it to that organisation under the control of that team.</p></li>
-<li><p>Head over to the new home of the repo (in the organisation) and check that everything moved properly (Issues, open pull requests, etc).</p></li>
-<li><p>Go to settings: collaborators and check that everyone has the correct roles (e.g., “write” for team members)</p></li>
-<li><p>Notify collaborators of the move</p></li>
-<li><p>Go to Settings:github pages and check that the docs site is setup correctly</p></li>
-<li><p>Go to the README and docs, and update links to the repo and docs site</p></li>
-<li><p>Go to the package settings in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and update the URLs fo the repo and documentation that will display on PyPI</p></li>
-<li><p>On PyPI: trusted publisher, update the repo address to where it is now for package publication</p></li>
-<li><p>Do a new release to push all of these changes to PyPI and conda-forge</p></li>
-<li><p>Special case for the original owner: Now fork the new repository since https://github.com/eleanorfrajka/seagliderOG1 won’t exist.</p></li>
-</ol>
+  <section id="about-fetch-aza">
+<h1>About Fetch AZA<a class="headerlink" href="#about-fetch-aza" title="Link to this heading"></a></h1>
+<p>Two Sonardyne Fetch AZA instruments were deployed at the western boundary of the <a class="reference external" href="http://rapid.ac.uk">RAPID 26°N array</a>, as a collaboration between the University of Hamburg in the <a class="reference external" href="http://epoc-eu.org">EPOC</a> project, geophysicists <a class="reference external" href="https://www.whoi.edu/profile/catherine.rychert/">Kate Rychert</a> and <a class="reference external" href="https://directory.whoi.edu/profile/nicholas-harmon/">Nick Harmon</a> at WHOI, <a class="reference external" href="https://selipot.github.io">Shane Elipot</a> at University of Miami and the RAPID array with the <a class="reference external" href="https://noc.ac.uk/projects/rapid-evolution">RAPID evolution project</a>.</p>
+<p>These sensors have the possibility to self-correct the pressure drift, a common and known problem that occurs with sensing pressure in the ocean.  It does this by using 3 separate pressure sensors, and an internal volume within the sensor which is kept at a controlled pressure (near atmospheric pressure).  Of these three sensors, 1 sensor is rated to near-atmospheric pressure (the “Low” pressure sensor), and two are rated to deep pressures (the Digiquartz or “transfer” pressure, and the Keller or “ambient” pressure).  The Keller sensor reads seawater pressure, the low pressure reads in the controlled pressure volume, and the digiquartz sensor “transfers” between seawater pressure and the controlled pressure volume.</p>
+<p>At a set interval (starting frequent and with sample intervals increasing with time), the sensor runs through an AZA sequence.  During this sequence, it makes an instantaneous pressure measurement (sequence 1) with the Keller/Ambient and Transfer/Digiquartz measuring seawater pressure, and the low pressure sensor measuring in the controlled volume.  It then makes an AZA measurement which is provided as an average over 30 sections with the same quantities.  The transfer/Digiquartz sensor then switches to measure the pressure in the controlled pressure volume and the Fetch instrument makes a 30 second average of data in this configuration.  Finally, the transfer/Digiquartz sensor returns to measuring seawater pressure and another 30 second average is made.  At the end of the sequence, an instantaneous measurement is made by the three sensors.</p>
+<p>See figure:
+<img width="912" alt="image" src="https://github.com/user-attachments/assets/8be3df28-4b33-43bb-8d03-5fe1d9cb5aac" /></p>
+<p>The idea is that the AZA sequence 3 will provide the offset or drift on the digiquartz sensor at increasing intervals:</p>
+<p>$$dP_{offset,1}(t_i) = P_{low}(t_i)-P_{DQZ}(t_i)$$</p>
+<p>where $i$ indicates that these are measured at AZA sampling intervals (roughly 150 samples over a 2 year deployment).  However, the Transfer/Digiquartz sensor and Ambient/Keller sensor also measure pressure at hourly intervals.  We will call this $j$.</p>
+<p>A fit can be calculated against $dP_{offset,1}(t_i)$ and then linearly interpolated onto the hourly time vector $t_j$.  This can be used to correct the Transfer/Digiquartz sensor as</p>
+<p>$$P_{DQZ,corr}(t_j) = P_{DQZ}(t_j) + dP_{offset,1}(t_j)$$</p>
+<p>and to determine an offset between the Ambient/Keller and Transfer/Digiquartz as</p>
+<p>$$dP_{offset,2}(t_j) = P_{DQZ}(t_j) - D_{KLR}(t_j)$$</p>
+<p>This can then further be used to correct the Ambient/Keller pressure sensor as</p>
+<p>$$P_{KLR,corr}(t_j) = P_{KLR}(t_j) + dP_{offset,1}(t_j) + dP_{offset,2}(t_j)\qquad .$$</p>
+<p>Note that offset $dP_{offset,1}$ is available at AZA sampling intervals (roughly 150 over a 2 year deployment), whereas the other samples are hourly (15000 over a 2-year deployment).</p>
 </section>
 
 
