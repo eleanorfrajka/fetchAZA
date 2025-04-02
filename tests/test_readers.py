@@ -10,7 +10,7 @@ script_dir = pathlib.Path(__file__).parent.absolute()
 parent_dir = script_dir.parents[0]
 sys.path.append(str(parent_dir))
 
-from AZApressure import readers
+from fetchAZA import readers
 
 def test_parse_column_name():
     assert readers.parse_column_name("Pressure (kPa)") == ("Pressure", "kPa")

@@ -9,7 +9,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import xarray as xr
-from AZApressure import tools, timetools
+from fetchAZA import tools, timetools
 
 
 
