@@ -1,38 +1,38 @@
-:mod:`AZApressure API`
+:mod:`fetchAZA API`
 -----------------------
 
 
 readers
 =======
 
-.. automodule:: AZApressure.readers
+.. automodule:: fetchAZA.readers
    :members:
    :undoc-members:
 
 tools
 =======
-.. automodule:: AZApressure.tools
+.. automodule:: fetchAZA.tools
    :members:
    :undoc-members:
 
 
 plotters
 ========
-.. automodule:: AZApressure.plotters
+.. automodule:: fetchAZA.plotters
    :members:
    :undoc-members:
 
 
 writers
 =======
-.. automodule:: AZApressure.writers
+.. automodule:: fetchAZA.writers
    :members:
    :undoc-members:
 
 
 utilities
 =======
-.. automodule:: AZApressure.utilities
+.. automodule:: fetchAZA.utilities
    :members:
    :undoc-members:
 
