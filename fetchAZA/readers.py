@@ -2,7 +2,7 @@ import pandas as pd
 import xarray as xr
 import re
 from collections import defaultdict
-from AZApressure import tools, utilities
+from fetchAZA import tools, utilities
 import numpy as np
 
 import glob

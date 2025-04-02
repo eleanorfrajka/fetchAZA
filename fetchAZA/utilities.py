@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import datetime
 import xarray as xr
-from AZApressure import readers, writers, plotters, tools
+from fetchAZA import readers, writers, plotters, tools
 
 import logging
 
