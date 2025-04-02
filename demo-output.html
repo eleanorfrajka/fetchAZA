@@ -1,0 +1,1169 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parsing data from the Sonardyne FETCH AZA &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8b92e751"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="fetchAZA API" href="fetchAZA.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            fetchAZA
+              <img src="_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parsing data from the Sonardyne FETCH AZA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Step-1:-Read-the-*csv-file-for-Logging-Events.">Step 1: Read the *csv file for Logging Events.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Step-2:-Write-the-data-to-netCDF">Step 2: Write the data to netCDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Step-3:-Further-processing-of-pressure-records-and-AZA-sequence-records">Step 3: Further processing of pressure records and AZA sequence records</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Save-the-data">Save the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-variables-in-ds_pressure">Plot variables in ds_pressure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Plot-variables-which-are-against-time">1. Plot variables which are against time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Histograms">2. Histograms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Compare-pressure">3. Compare pressure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-the-pressure-from-the-ambient-(KLR)-and-transfer-(DQZ)">Plot the pressure from the ambient (KLR) and transfer (DQZ)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-the-pressure-during-an-AZA-sequence-(transfer,-ambient-and-low)">Plot the pressure during an AZA sequence (transfer, ambient and low)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fetchAZA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ / Troubleshooting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Parsing data from the Sonardyne FETCH AZA</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/demo-output.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Parsing-data-from-the-Sonardyne-FETCH-AZA">
+<h1>Parsing data from the Sonardyne FETCH AZA<a class="headerlink" href="#Parsing-data-from-the-Sonardyne-FETCH-AZA" title="Link to this heading"></a></h1>
+<p>The purpose of this notebook is to demonstrate the functionality of <code class="docutils literal notranslate"><span class="pre">fetchAZA</span></code> python package.</p>
+<p>The demo is organised to show</p>
+<ul class="simple">
+<li><p>Step 1: Reading the *.csv files into xarray datasets</p></li>
+<li><p>Step 2: Writing the xarray datasets into individual netCDF files</p></li>
+<li><p>Step 3: Various plots</p></li>
+</ul>
+<p>Note that when you submit a pull request, you should <code class="docutils literal notranslate"><span class="pre">clear</span> <span class="pre">all</span> <span class="pre">outputs</span></code> from your python notebook for a cleaner merge.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="n">script_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="n">parent_dir</span> <span class="o">=</span> <span class="n">script_dir</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">))</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fetchAZA</span><span class="w"> </span><span class="kn">import</span> <span class="n">readers</span><span class="p">,</span> <span class="n">writers</span><span class="p">,</span> <span class="n">plotters</span><span class="p">,</span> <span class="n">tools</span><span class="p">,</span> <span class="n">timetools</span><span class="p">,</span> <span class="n">utilities</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Specify the path for writing datafiles</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">fig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">)</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;In a future version of xarray decode_timedelta will default to False rather than None. To silence this warning, set decode_timedelta to True, False, or a &#39;CFTimedeltaCoder&#39; instance.&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">SerializationWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;SerializationWarning: Can&#39;t decode floating point timedelta to &#39;s&#39; without precision loss, decoding to &#39;ns&#39; instead. To silence this warning use time_unit=&#39;ns&#39; in call to decoding function.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/fetchAZA/fetchAZA/fetchAZA/utilities.py:183: SyntaxWarning: invalid escape sequence &#39;\d&#39;
+  fill_val = 2 ** (int(re.findall(&#34;\d+&#34;, str(new_dtype))[0]) - 1) - 1
+/home/runner/work/fetchAZA/fetchAZA/fetchAZA/plotters.py:958: SyntaxWarning: invalid escape sequence &#39;\D&#39;
+  axs[2].set_ylabel(f&#39;$\Delta${standard_name} ({units})&#39;)
+</pre></div></div>
+</div>
+<section id="Step-1:-Read-the-*csv-file-for-Logging-Events.">
+<h2>Step 1: Read the *csv file for Logging Events.<a class="headerlink" href="#Step-1:-Read-the-*csv-file-for-Logging-Events." title="Link to this heading"></a></h2>
+<p>This is done with readers.process_csv_to_xarray(). All logging events are read into individual xarray datasets, stored as a dictionary of datasets where the key. In addition, the AZA sequence (events following the pattern AZS-AZA-AZA-AZA-AZS) are read into an additional dataset with key ‘AZAseq’. Since this dataset does not contain every individual AZA or AZS event, it does not replace the individual datasets.</p>
+<p>A log of the processing is also generated.</p>
+<p>Optionally, the deployment and recovery dates can be passed. If they are, then the datasets will be sliced to these dates.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">readers</span><span class="p">)</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="s1">&#39;sample_data.csv&#39;</span>
+<span class="n">STN</span> <span class="o">=</span> <span class="s1">&#39;sample&#39;</span>
+<span class="n">deploy_date</span> <span class="o">=</span> <span class="s1">&#39;2023-02-27&#39;</span>
+<span class="n">recovery_date</span> <span class="o">=</span> <span class="s1">&#39;2023-03-08T08:00:00&#39;</span>
+
+<span class="c1"># Process filename</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+<span class="n">file_root</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">platform_id</span> <span class="o">=</span> <span class="n">file_root</span>
+<span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create a log file</span>
+<span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">platform_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2">_read.log&quot;</span><span class="p">)</span>
+<span class="n">logf_with_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="n">logf_with_path</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)-8s</span><span class="s2"> </span><span class="si">%(funcName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="c1"># &#39;w&#39; to overwrite, &#39;a&#39; to append</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+    <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H%M%S&quot;</span><span class="p">,</span>
+    <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading AZA from CSV to netCDF&#39;</span><span class="p">)</span>
+<span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing data from: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+
+<span class="c1"># Process the CSV file and create xarray datasets containing the data</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">read_csv_to_xarray</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Step-2:-Write-the-data-to-netCDF">
+<h2>Step 2: Write the data to netCDF<a class="headerlink" href="#Step-2:-Write-the-data-to-netCDF" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">writers</span><span class="o">.</span><span class="n">save_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Step-3:-Further-processing-of-pressure-records-and-AZA-sequence-records">
+<h2>Step 3: Further processing of pressure records and AZA sequence records<a class="headerlink" href="#Step-3:-Further-processing-of-pressure-records-and-AZA-sequence-records" title="Link to this heading"></a></h2>
+<p>Note that in the steps above, the original data were not changed, with the exception of changes noted in the log file.</p>
+<p>This means that each of the newly created *.nc mirrors–almost exactly–the original data.</p>
+<p>Here we carry out additional steps including:</p>
+<ol class="arabic simple">
+<li><p>Load netCDF datasets based on provided keys. (<code class="docutils literal notranslate"><span class="pre">readers.load_netcdf_datasets(data_path,</span> <span class="pre">file_root,</span> <span class="pre">keys)</span></code>)</p></li>
+<li><p>Convert units and adjust time formats. (<code class="docutils literal notranslate"><span class="pre">timetools.convert_seconds_to_float(ds)</span></code>)</p></li>
+<li><p>Assign sampling time for the AZA sequence dataset. (<code class="docutils literal notranslate"><span class="pre">timetools.assign_sample_time()</span></code>)</p></li>
+<li><p>Filter datasets to the deployment period. (<code class="docutils literal notranslate"><span class="pre">timetools.cut_to_deployment(datasets,</span> <span class="pre">deploy_date,</span> <span class="pre">recovery_date)</span></code>)</p></li>
+<li><p>Reindex datasets on time. (<code class="docutils literal notranslate"><span class="pre">timetools.reindex_on_time(ds)</span></code>)</p></li>
+<li><p>Rename variables in datasets using predefined mappings. (using <code class="docutils literal notranslate"><span class="pre">vars_to_rename</span></code>, a dict)</p></li>
+<li><p>Add dataset-specific attributes to variables.</p></li>
+<li><p>Combine selected datasets into a single dataset. (using <code class="docutils literal notranslate"><span class="pre">xr.merge()</span></code>)</p></li>
+<li><p>Interpolate the combined dataset to an evenly spaced time grid. (after determining median interval of hourly with <code class="docutils literal notranslate"><span class="pre">timetools.calculate_sample_rate(ds)</span></code>)</p></li>
+<li><p>Clean and organize dataset attributes and variables.</p></li>
+<li><p>Process the AZA sequence dataset, including renaming attributes and cleaning variables.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">ds_AZA</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">process_datasets</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">file_root</span><span class="p">,</span> <span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">)</span>
+<span class="n">ds_pressure</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data*.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_PIES.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_TMP.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_DQZ.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_AZAseq.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_KLR.nc
+/home/runner/work/fetchAZA/fetchAZA/data/sample_data_INC.nc
+Dataset AZAseq not included in combined datasets
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: rgba(255, 255, 255, 1);
+  --xr-font-color2: rgba(255, 255, 255, 0.54);
+  --xr-font-color3: rgba(255, 255, 255, 0.38);
+  --xr-border-color: #1f1f1f;
+  --xr-disabled-color: #515151;
+  --xr-background-color: #111111;
+  --xr-background-color-row-even: #111111;
+  --xr-background-color-row-odd: #313131;
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: inline-block;
+  opacity: 0;
+  height: 0;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 7kB
+Dimensions:               (TIME: 103)
+Coordinates:
+  * TIME                  (TIME) datetime64[ns] 824B 2023-03-03T23:00:00 ... ...
+Data variables: (12/14)
+    TIME_OF_FLIGHT_RMLE   (TIME) float64 824B 5.11 5.11 5.11 ... 5.148 5.146
+    TIME_OF_FLIGHT_XCORR  (TIME) float64 824B 5.11 5.11 5.109 ... 5.109 5.109
+    HALFLIFE              (TIME) float32 412B 251.4 230.3 229.1 ... 345.3 335.9
+    MAGNITUDE             (TIME) float32 412B 6.903e+03 9.485e+03 ... 1.506e+03
+    PEAK_POSITION         (TIME) float32 412B 0.008512 0.008704 ... 0.007808
+    PITCH                 (TIME) float32 412B -1.875 -1.862 ... -1.853 -1.847
+    ...                    ...
+    PRETRIGGER_NOISE      (TIME) float32 412B 82.88 82.62 86.51 ... 64.36 65.5
+    RDIFF                 (TIME) float32 412B 178.6 183.0 169.2 ... 86.83 89.4
+    ROLL                  (TIME) float32 412B -0.1813 -0.1906 ... -0.1844
+    TEMPERATURE           (TIME) float32 412B 3.073 2.9 2.756 ... 2.372 2.378
+    TEMPERATURE_DQZ       (TIME) float32 412B 5.63 4.87 4.27 ... 2.43 2.43 2.43
+    TEMPERATURE_KLR       (TIME) float32 412B 7.012 5.885 4.936 ... 2.215 2.214
+Attributes:
+    Calculation_Version_PIES:  3
+    Index_DQZ:                 3
+    Index_INC:                 1
+    Index_KLR:                 5
+    Index_PIES:                3
+    Index_TMP:                 4
+    Serial_Number_DQZ:         155399
+    Serial_Number_INC:         0
+    Serial_Number_KLR:         1262636
+    Serial_Number_TMP:         0
+    UID:                       007217</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-1d576b1e-6f38-436d-93cd-74ac908fab8e' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-1d576b1e-6f38-436d-93cd-74ac908fab8e' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>TIME</span>: 103</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-a76efa07-c6dd-4092-a753-68862c29158a' class='xr-section-summary-in' type='checkbox'  checked><label for='section-a76efa07-c6dd-4092-a753-68862c29158a' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>TIME</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-03-03T23:00:00 ... 2023-03-...</div><input id='attrs-b9246aea-5202-4908-9d71-28d824461ca6' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-b9246aea-5202-4908-9d71-28d824461ca6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4fabc275-7c8c-4832-ac8d-d2f3a0b6ecd5' class='xr-var-data-in' type='checkbox'><label for='data-4fabc275-7c8c-4832-ac8d-d2f3a0b6ecd5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-03-03T23:00:00.000000000&#x27;, &#x27;2023-03-04T00:00:00.000000000&#x27;,
+       &#x27;2023-03-04T01:00:00.000000000&#x27;, &#x27;2023-03-04T02:00:00.000000000&#x27;,
+       &#x27;2023-03-04T03:00:00.000000000&#x27;, &#x27;2023-03-04T04:00:00.000000000&#x27;,
+       &#x27;2023-03-04T05:00:00.000000000&#x27;, &#x27;2023-03-04T06:00:00.000000000&#x27;,
+       &#x27;2023-03-04T07:00:00.000000000&#x27;, &#x27;2023-03-04T08:00:00.000000000&#x27;,
+       &#x27;2023-03-04T09:00:00.000000000&#x27;, &#x27;2023-03-04T10:00:00.000000000&#x27;,
+       &#x27;2023-03-04T11:00:00.000000000&#x27;, &#x27;2023-03-04T12:00:00.000000000&#x27;,
+       &#x27;2023-03-04T13:00:00.000000000&#x27;, &#x27;2023-03-04T14:00:00.000000000&#x27;,
+       &#x27;2023-03-04T15:00:00.000000000&#x27;, &#x27;2023-03-04T16:00:00.000000000&#x27;,
+       &#x27;2023-03-04T17:00:00.000000000&#x27;, &#x27;2023-03-04T18:00:00.000000000&#x27;,
+       &#x27;2023-03-04T19:00:00.000000000&#x27;, &#x27;2023-03-04T20:00:00.000000000&#x27;,
+       &#x27;2023-03-04T21:00:00.000000000&#x27;, &#x27;2023-03-04T22:00:00.000000000&#x27;,
+       &#x27;2023-03-04T23:00:00.000000000&#x27;, &#x27;2023-03-05T00:00:00.000000000&#x27;,
+       &#x27;2023-03-05T01:00:00.000000000&#x27;, &#x27;2023-03-05T02:00:00.000000000&#x27;,
+       &#x27;2023-03-05T03:00:00.000000000&#x27;, &#x27;2023-03-05T04:00:00.000000000&#x27;,
+       &#x27;2023-03-05T05:00:00.000000000&#x27;, &#x27;2023-03-05T06:00:00.000000000&#x27;,
+       &#x27;2023-03-05T07:00:00.000000000&#x27;, &#x27;2023-03-05T08:00:00.000000000&#x27;,
+       &#x27;2023-03-05T09:00:00.000000000&#x27;, &#x27;2023-03-05T10:00:00.000000000&#x27;,
+       &#x27;2023-03-05T11:00:00.000000000&#x27;, &#x27;2023-03-05T12:00:00.000000000&#x27;,
+       &#x27;2023-03-05T13:00:00.000000000&#x27;, &#x27;2023-03-05T14:00:00.000000000&#x27;,
+       &#x27;2023-03-05T15:00:00.000000000&#x27;, &#x27;2023-03-05T16:00:00.000000000&#x27;,
+       &#x27;2023-03-05T17:00:00.000000000&#x27;, &#x27;2023-03-05T18:00:00.000000000&#x27;,
+       &#x27;2023-03-05T19:00:00.000000000&#x27;, &#x27;2023-03-05T20:00:00.000000000&#x27;,
+       &#x27;2023-03-05T21:00:00.000000000&#x27;, &#x27;2023-03-05T22:00:00.000000000&#x27;,
+       &#x27;2023-03-05T23:00:00.000000000&#x27;, &#x27;2023-03-06T00:00:00.000000000&#x27;,
+       &#x27;2023-03-06T01:00:00.000000000&#x27;, &#x27;2023-03-06T02:00:00.000000000&#x27;,
+       &#x27;2023-03-06T03:00:00.000000000&#x27;, &#x27;2023-03-06T04:00:00.000000000&#x27;,
+       &#x27;2023-03-06T05:00:00.000000000&#x27;, &#x27;2023-03-06T06:00:00.000000000&#x27;,
+       &#x27;2023-03-06T07:00:00.000000000&#x27;, &#x27;2023-03-06T08:00:00.000000000&#x27;,
+       &#x27;2023-03-06T09:00:00.000000000&#x27;, &#x27;2023-03-06T10:00:00.000000000&#x27;,
+       &#x27;2023-03-06T11:00:00.000000000&#x27;, &#x27;2023-03-06T12:00:00.000000000&#x27;,
+       &#x27;2023-03-06T13:00:00.000000000&#x27;, &#x27;2023-03-06T14:00:00.000000000&#x27;,
+       &#x27;2023-03-06T15:00:00.000000000&#x27;, &#x27;2023-03-06T16:00:00.000000000&#x27;,
+       &#x27;2023-03-06T17:00:00.000000000&#x27;, &#x27;2023-03-06T18:00:00.000000000&#x27;,
+       &#x27;2023-03-06T19:00:00.000000000&#x27;, &#x27;2023-03-06T20:00:00.000000000&#x27;,
+       &#x27;2023-03-06T21:00:00.000000000&#x27;, &#x27;2023-03-06T22:00:00.000000000&#x27;,
+       &#x27;2023-03-06T23:00:00.000000000&#x27;, &#x27;2023-03-07T00:00:00.000000000&#x27;,
+       &#x27;2023-03-07T01:00:00.000000000&#x27;, &#x27;2023-03-07T02:00:00.000000000&#x27;,
+       &#x27;2023-03-07T03:00:00.000000000&#x27;, &#x27;2023-03-07T04:00:00.000000000&#x27;,
+       &#x27;2023-03-07T05:00:00.000000000&#x27;, &#x27;2023-03-07T06:00:00.000000000&#x27;,
+       &#x27;2023-03-07T07:00:00.000000000&#x27;, &#x27;2023-03-07T08:00:00.000000000&#x27;,
+       &#x27;2023-03-07T09:00:00.000000000&#x27;, &#x27;2023-03-07T10:00:00.000000000&#x27;,
+       &#x27;2023-03-07T11:00:00.000000000&#x27;, &#x27;2023-03-07T12:00:00.000000000&#x27;,
+       &#x27;2023-03-07T13:00:00.000000000&#x27;, &#x27;2023-03-07T14:00:00.000000000&#x27;,
+       &#x27;2023-03-07T15:00:00.000000000&#x27;, &#x27;2023-03-07T16:00:00.000000000&#x27;,
+       &#x27;2023-03-07T17:00:00.000000000&#x27;, &#x27;2023-03-07T18:00:00.000000000&#x27;,
+       &#x27;2023-03-07T19:00:00.000000000&#x27;, &#x27;2023-03-07T20:00:00.000000000&#x27;,
+       &#x27;2023-03-07T21:00:00.000000000&#x27;, &#x27;2023-03-07T22:00:00.000000000&#x27;,
+       &#x27;2023-03-07T23:00:00.000000000&#x27;, &#x27;2023-03-08T00:00:00.000000000&#x27;,
+       &#x27;2023-03-08T01:00:00.000000000&#x27;, &#x27;2023-03-08T02:00:00.000000000&#x27;,
+       &#x27;2023-03-08T03:00:00.000000000&#x27;, &#x27;2023-03-08T04:00:00.000000000&#x27;,
+       &#x27;2023-03-08T05:00:00.000000000&#x27;], dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-f83e8c4c-6293-4f74-a610-6ae4c0cb5cf0' class='xr-section-summary-in' type='checkbox'  checked><label for='section-f83e8c4c-6293-4f74-a610-6ae4c0cb5cf0' class='xr-section-summary' >Data variables: <span>(14)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_RMLE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.11 ... 5.148 5.146</div><input id='attrs-fae73a8e-04a8-4a23-b01f-f75e238fd0bd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fae73a8e-04a8-4a23-b01f-f75e238fd0bd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-595d496f-8720-4095-bcb6-8db801256a73' class='xr-var-data-in' type='checkbox'><label for='data-595d496f-8720-4095-bcb6-8db801256a73' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.110247, 5.109858, 5.110258, 5.110012, 5.110123, 5.110325,
+       5.109411, 5.110261, 5.111422, 5.110181, 5.111349, 5.112188,
+       5.110297, 5.110992, 5.112417, 5.109969, 5.108989, 5.110755,
+       5.109984, 5.109122, 5.111227, 5.109663, 5.111249, 5.112476,
+       5.111055, 5.111772, 5.155913, 5.160521, 5.148868, 5.144632,
+       5.13858 , 5.147809, 5.13775 , 5.152843, 5.132422, 5.143715,
+       5.13986 , 5.161743, 5.144659, 5.130815, 5.133262, 5.133424,
+       5.13718 , 5.123191, 5.120764, 5.119447, 5.1192  , 5.119008,
+       5.117986, 5.126578, 5.146705, 5.152339, 5.11192 , 5.140642,
+       5.138413, 5.142701, 5.144412, 5.134315, 5.141353, 5.145822,
+       5.11119 , 5.139293, 5.147685, 5.14918 , 5.108171, 5.145741,
+       5.143932, 5.110996, 5.110052, 5.150368, 5.110949, 5.157961,
+       5.141894, 5.110121, 5.112396, 5.11008 , 5.160424, 5.142199,
+       5.110136, 5.109221, 5.108356, 5.138449, 5.138167, 5.137346,
+       5.113582, 5.156992, 5.144918, 5.154339, 5.139468, 5.151501,
+       5.111321, 5.166002, 5.110594, 5.158479, 5.166721, 5.111527,
+       5.15003 , 5.145074, 5.190253, 5.14652 , 5.148196, 5.148328,
+       5.145778])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_XCORR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.109 ... 5.109 5.109</div><input id='attrs-ba9c169a-0c1f-4f03-9bb4-fb2d150794c4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ba9c169a-0c1f-4f03-9bb4-fb2d150794c4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-991f7795-371f-412d-ad37-581fd41d9f44' class='xr-var-data-in' type='checkbox'><label for='data-991f7795-371f-412d-ad37-581fd41d9f44' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.109885, 5.109944, 5.108936, 5.108754, 5.108865, 5.108939,
+       5.109433, 5.108491, 5.109588, 5.109755, 5.111883, 5.110482,
+       5.109871, 5.110054, 5.110455, 5.109351, 5.108947, 5.108921,
+       5.109302, 5.108888, 5.109393, 5.109749, 5.109927, 5.11077 ,
+       5.111397, 5.110002, 5.108767, 5.109535, 5.101658, 5.108622,
+       5.108522, 5.109239, 5.109804, 5.109729, 5.109724, 5.110585,
+       5.11025 , 5.107045, 5.110313, 5.109653, 5.109668, 5.108934,
+       5.108466, 5.108557, 5.108754, 5.109293, 5.109558, 5.109686,
+       5.109944, 5.110216, 5.109991, 5.109481, 5.109382, 5.108344,
+       5.106499, 5.108035, 5.108146, 5.108545, 5.108799, 5.109236,
+       5.109292, 5.108851, 5.102267, 5.109522, 5.104161, 5.108195,
+       5.108178, 5.10545 , 5.107642, 5.10847 , 5.109435, 5.108639,
+       5.108572, 5.109311, 5.109026, 5.108886, 5.108606, 5.105357,
+       5.107534, 5.107835, 5.10761 , 5.109031, 5.107149, 5.110872,
+       5.110916, 5.110358, 5.110188, 5.109433, 5.10909 , 5.108515,
+       5.108463, 5.108104, 5.107672, 5.107557, 5.108567, 5.106045,
+       5.109284, 5.109896, 5.103683, 5.108526, 5.108858, 5.109438,
+       5.108744])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>HALFLIFE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>251.4 230.3 229.1 ... 345.3 335.9</div><input id='attrs-0869b693-458b-4d7a-bbe8-d9328f00234f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0869b693-458b-4d7a-bbe8-d9328f00234f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-647980d1-d8f0-4f87-a824-2389743ada0a' class='xr-var-data-in' type='checkbox'><label for='data-647980d1-d8f0-4f87-a824-2389743ada0a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([251.39337, 230.27922, 229.05432, 248.44684, 234.31633, 223.24167,
+       265.86505, 225.23824, 241.59631, 269.30753, 246.37376, 217.66837,
+       201.66423, 242.16425, 241.72632, 200.69757, 220.8017 , 227.6382 ,
+       201.65556, 207.28368, 211.43442, 190.46619, 213.33742, 211.62201,
+       197.87833, 282.35852, 340.50632, 297.9106 ,       nan, 286.41885,
+       304.20697, 253.5122 , 274.21133, 330.5854 , 301.5062 , 301.9266 ,
+       364.73248, 295.71115, 279.38947, 289.75317, 275.951  , 322.69086,
+       344.62943, 423.42874, 343.5263 , 585.1111 , 563.58124, 631.6579 ,
+       764.4682 , 300.8514 , 338.49588, 349.19354, 310.83228, 277.50452,
+       309.44293, 333.3152 , 325.51666, 312.68167, 316.3071 , 363.61905,
+       393.8044 , 296.82358, 419.58353, 299.7992 , 389.6566 , 309.14133,
+       292.95822, 356.35468, 310.84232, 387.91125, 334.09326, 305.6543 ,
+       366.67804, 344.1589 , 316.1633 , 340.2852 , 360.43393, 410.54865,
+       354.9099 , 374.13107, 363.07483, 304.57217, 346.44482, 325.46753,
+       318.55197, 480.2876 , 368.67484, 367.19043, 355.31134, 348.7923 ,
+       385.09866, 415.4711 , 309.2839 , 542.4069 , 317.23337, 348.1767 ,
+       285.0195 , 316.94257, 291.65097, 329.4741 , 368.7936 , 345.25894,
+       335.86673], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>MAGNITUDE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>6.903e+03 9.485e+03 ... 1.506e+03</div><input id='attrs-87533246-814a-4c72-a973-4beb6a2b9255' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-87533246-814a-4c72-a973-4beb6a2b9255' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a53ffcd1-fbc6-4f01-bceb-b5df61bf5cc5' class='xr-var-data-in' type='checkbox'><label for='data-a53ffcd1-fbc6-4f01-bceb-b5df61bf5cc5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 6903.,  9485.,  5926.,  7720.,  7467.,  5859.,  8928.,  6605.,
+        8302.,  7399.,  9180., 11413.,  8459.,  7785.,  8392.,  8810.,
+       10151.,  8812.,  6849.,  8794.,  7831., 12961.,  8641.,  8516.,
+       14634.,  1709.,  1985.,  2300.,    nan,  2726.,  2315.,  3157.,
+        2074.,  2000.,  1489.,  2543.,  2590.,  1255.,  2002.,  2644.,
+        3835.,  4564.,  4474.,  7082.,  7565.,  8153., 10801.,  5641.,
+       12190.,  4316.,  2463.,  2489.,  1690.,  3348.,  1365.,  1561.,
+        2331.,  2970.,  1925.,  1957.,  1337.,  2014.,  1289.,  2838.,
+        1165.,  2434.,  2236.,  1373.,  1633.,  3044.,  1613.,  1693.,
+        1424.,  2268.,  1308.,  1419.,  1553.,  1130.,  1729.,  1775.,
+        2137.,  2129.,  1345.,  2955.,  1550.,  1860.,  2438.,  1661.,
+        1812.,  2269.,  1841.,  1826.,  1855.,  1861.,  1930.,  1124.,
+        1831.,  2984.,  1537.,  1761.,  2249.,  1965.,  1506.],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PEAK_POSITION</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.008512 0.008704 ... 0.007808</div><input id='attrs-a7b7a11f-34a7-4579-9a94-ed2a43139718' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a7b7a11f-34a7-4579-9a94-ed2a43139718' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2aedf423-2c0a-42f7-bd2b-cfd34168e275' class='xr-var-data-in' type='checkbox'><label for='data-2aedf423-2c0a-42f7-bd2b-cfd34168e275' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([0.008512, 0.008704, 0.007872, 0.007872, 0.008128, 0.008256,
+       0.008704, 0.007616, 0.008512, 0.008448, 0.010368, 0.008832,
+       0.008192, 0.008448, 0.009024, 0.008128, 0.007936, 0.008064,
+       0.008512, 0.008064, 0.008448, 0.00864 , 0.00864 , 0.009344,
+       0.00992 , 0.008576, 0.007488, 0.008448,      nan, 0.007872,
+       0.007808, 0.008448, 0.008832, 0.008512, 0.008256, 0.008896,
+       0.008448, 0.005248, 0.00864 , 0.008192, 0.008448, 0.007936,
+       0.007616, 0.007744, 0.007872, 0.008256, 0.00832 , 0.008256,
+       0.008384, 0.00864 , 0.008512, 0.008192, 0.00832 , 0.007488,
+       0.00576 , 0.007296, 0.007296, 0.007488, 0.007488, 0.00768 ,
+       0.007552, 0.00704 , 0.000512, 0.007936, 0.002816, 0.007104,
+       0.007296, 0.004672, 0.006848, 0.007552, 0.00832 , 0.007296,
+       0.00704 , 0.00768 , 0.007424, 0.007424, 0.00736 , 0.004352,
+       0.00672 , 0.007104, 0.006848, 0.008128, 0.006016, 0.009472,
+       0.00928 , 0.008576, 0.008384, 0.007744, 0.007616, 0.007296,
+       0.007488, 0.007296, 0.006912, 0.00672 , 0.007552, 0.0048  ,
+       0.007808, 0.008256, 0.001984, 0.006912, 0.007424, 0.008256,
+       0.007808], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PITCH</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-1.875 -1.862 ... -1.853 -1.847</div><input id='attrs-de397779-6589-4ad3-9eda-0ff4dedc002f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-de397779-6589-4ad3-9eda-0ff4dedc002f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d75adf96-976e-4f79-8394-6260989b7f02' class='xr-var-data-in' type='checkbox'><label for='data-d75adf96-976e-4f79-8394-6260989b7f02' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>forward positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (pitch) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/PITCH/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-1.875 , -1.8625, -1.8875, -1.8719, -1.8688, -1.8625, -1.8563,
+       -1.8594, -1.85  , -1.8469, -1.8563, -1.8594, -1.8531, -1.8469,
+       -1.85  , -1.85  , -1.8469, -1.85  , -1.85  , -1.8563, -1.8406,
+       -1.8438, -1.85  , -1.8469, -1.85  , -1.8469, -1.8563, -1.8469,
+           nan, -1.85  , -1.8531, -1.8438, -1.85  , -1.8531, -1.8563,
+       -1.8406, -1.8563, -1.8656, -1.85  , -1.85  , -1.85  , -1.85  ,
+       -1.85  , -1.8469, -1.8594, -1.8469, -1.8438, -1.85  , -1.8531,
+       -1.8531, -1.8563, -1.8563, -1.8469, -1.8531, -1.875 , -1.85  ,
+       -1.8563, -1.85  , -1.85  , -1.85  , -1.8563, -1.8469, -1.8563,
+       -1.8531, -1.8531, -1.85  , -1.85  , -1.8469, -1.8625, -1.8563,
+       -1.85  , -1.8531, -1.8531, -1.8531, -1.8531, -1.8563, -1.8469,
+       -1.8469, -1.8563, -1.8531, -1.8406, -1.85  , -1.8625, -1.85  ,
+       -1.8531, -1.85  , -1.8438, -1.8406, -1.8531, -1.8531, -1.8531,
+       -1.8375, -1.8438, -1.8594, -1.8594, -1.8531, -1.85  , -1.8531,
+       -1.8563, -1.8469, -1.85  , -1.8531, -1.8469], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.919e+03</div><input id='attrs-cb325d1f-3e01-4954-bdaf-57df7af2e42e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-cb325d1f-3e01-4954-bdaf-57df7af2e42e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-145f439c-d53d-4349-83bf-01ad297448e3' class='xr-var-data-in' type='checkbox'><label for='data-145f439c-d53d-4349-83bf-01ad297448e3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd><dt><span>comment :</span></dt><dd>Interpolated pressure from DQZ, identical to pressure in PIES logging events</dd></dl></div><div class='xr-var-data'><pre>array([3919.2722, 3919.1716, 3919.037 , 3918.8992, 3918.789 , 3918.7485,
+       3918.7837, 3918.8938, 3919.0469, 3919.222 , 3919.3796, 3919.4824,
+       3919.5044, 3919.449 , 3919.3164, 3919.1582, 3918.9968, 3918.8801,
+       3918.8298, 3918.8552, 3918.947 , 3919.072 , 3919.207 , 3919.3123,
+       3919.3508, 3919.3123, 3919.201 , 3919.0552,       nan, 3918.7988,
+       3918.7715, 3918.8306, 3918.968 , 3919.154 , 3919.3445, 3919.5117,
+       3919.5974, 3919.5938, 3919.5   , 3919.3386, 3919.156 , 3918.9875,
+       3918.875 , 3918.847 , 3918.899 , 3919.0173, 3919.1692, 3919.3152,
+       3919.4138, 3919.4263, 3919.3523, 3919.2087, 3919.036 , 3918.8796,
+       3918.791 , 3918.7908, 3918.8748, 3919.032 , 3919.2246, 3919.4114,
+       3919.5508, 3919.6047, 3919.5623, 3919.434 , 3919.2512, 3919.0579,
+       3918.899 , 3918.82  , 3918.8325, 3918.9265, 3919.0762, 3919.2488,
+       3919.393 , 3919.468 , 3919.4458, 3919.3398, 3919.1755, 3918.9922,
+       3918.8477, 3918.7844, 3918.8083, 3918.9148, 3919.0896, 3919.2917,
+       3919.472 , 3919.5828, 3919.5994, 3919.5122, 3919.3484, 3919.1555,
+       3918.9705, 3918.843 , 3918.8064, 3918.865 , 3919.0005, 3919.175 ,
+       3919.3503, 3919.4746, 3919.52  , 3919.4556, 3919.3184, 3919.1274,
+       3918.9402], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.918e+03</div><input id='attrs-69649649-1ae6-4104-b111-44b0c3494f37' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-69649649-1ae6-4104-b111-44b0c3494f37' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cc82cc36-a7d0-4cd2-94f6-84c072c524fc' class='xr-var-data-in' type='checkbox'><label for='data-cc82cc36-a7d0-4cd2-94f6-84c072c524fc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([3918.6445, 3918.615 , 3918.4082, 3918.242 , 3918.1172, 3918.0564,
+       3918.082 , 3918.193 , 3918.345 , 3918.5037, 3918.6523, 3918.7363,
+       3918.7563, 3918.696 , 3918.576 , 3918.403 , 3918.218 , 3918.106 ,
+       3918.054 , 3918.068 , 3918.154 , 3918.274 , 3918.3992, 3918.4863,
+       3918.5305, 3918.4978, 3918.4556, 3918.2317,       nan, 3917.9646,
+       3917.9324, 3917.9724, 3918.1152, 3918.2969, 3918.4849, 3918.6404,
+       3918.7297, 3918.7244, 3918.6216, 3918.4617, 3918.295 , 3918.0962,
+       3917.9783, 3917.9343, 3917.994 , 3918.1082, 3918.268 , 3918.397 ,
+       3918.5032, 3918.5125, 3918.4304, 3918.282 , 3918.1091, 3917.9453,
+       3917.8618, 3917.8481, 3917.929 , 3918.0981, 3918.2732, 3918.4648,
+       3918.604 , 3918.647 , 3918.602 , 3918.49  , 3918.2917, 3918.0955,
+       3917.9348, 3917.8406, 3917.865 , 3917.949 , 3918.1   , 3918.2708,
+       3918.4119, 3918.485 , 3918.5378, 3918.3652, 3918.1914, 3918.007 ,
+       3917.8494, 3917.7917, 3917.8093, 3917.9204, 3918.0898, 3918.2898,
+       3918.4778, 3918.5837, 3918.5994, 3918.5085, 3918.3352, 3918.153 ,
+       3917.9536, 3917.8325, 3917.7927, 3917.8542, 3917.9817, 3918.1606,
+       3918.3286, 3918.4426, 3918.4856, 3918.4197, 3918.287 , 3918.0867,
+       3917.8962], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRETRIGGER_NOISE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>82.88 82.62 86.51 ... 64.36 65.5</div><input id='attrs-a457c2e3-e36d-4b6a-b55d-b5a014992109' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a457c2e3-e36d-4b6a-b55d-b5a014992109' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f0d06cda-e0cc-4e23-856a-e1778a41f383' class='xr-var-data-in' type='checkbox'><label for='data-f0d06cda-e0cc-4e23-856a-e1778a41f383' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 82.88018 ,  82.621605,  86.50508 ,  94.26092 ,  83.696724,
+        77.835236,  89.09337 ,  95.13427 , 105.12323 ,  92.6603  ,
+       100.88058 ,  92.77622 ,  87.56836 ,  92.46656 ,  84.74118 ,
+        90.01213 ,  86.11518 ,  79.99684 ,  82.304085,  93.171036,
+        88.30831 ,  78.20332 ,  76.161674,  80.762535,  76.51092 ,
+        31.675522,  62.49573 ,  64.79453 ,        nan,  72.95018 ,
+        65.42326 ,  62.82204 ,  70.279854,  64.48062 ,  66.95363 ,
+        67.388885,  65.44143 ,  63.94122 ,  67.34427 ,  75.192924,
+        72.81584 ,  73.88142 ,  77.813675,  91.12039 , 106.8119  ,
+       100.52448 , 121.00624 ,  87.02094 , 128.16753 ,  82.348404,
+        66.7866  ,  64.50473 ,  40.102627,  62.338825,  72.32161 ,
+        64.579636,  66.95504 ,  60.788113,  64.60195 ,  61.17328 ,
+        42.26049 ,  65.87446 ,  61.65703 ,  64.421974,  39.409218,
+        65.35631 ,  58.99447 ,  43.88175 ,  41.959133,  63.117252,
+        35.321575,  59.47024 ,  63.710354,  36.933136,  37.655994,
+        36.954323,  60.311077,  64.35583 ,  44.654537,  41.738434,
+        39.867058,  59.4815  ,  62.781498,  65.67463 ,  42.594505,
+        55.929558,  67.21253 ,  61.824776,  67.618546,  62.65341 ,
+        42.359272,  59.612343,  41.825146,  62.51128 ,  54.832718,
+        41.704918,  68.94338 ,  69.66822 ,  55.290012,  66.84985 ,
+        61.284344,  64.36308 ,  65.495255], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>RDIFF</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>178.6 183.0 169.2 ... 86.83 89.4</div><input id='attrs-2f344182-42a0-49c0-8dd2-0131bb5267cd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2f344182-42a0-49c0-8dd2-0131bb5267cd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1ce82f0c-c47d-4a1b-8ca3-f23b6cdf6d57' class='xr-var-data-in' type='checkbox'><label for='data-1ce82f0c-c47d-4a1b-8ca3-f23b6cdf6d57' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 178.59473 ,  182.98535 ,  169.1748  ,  150.05371 ,  173.15137 ,
+        220.28906 ,  140.60547 ,  167.81445 ,  135.52148 ,  143.47852 ,
+        131.85938 ,  177.20508 ,  180.58496 ,  173.81543 ,  201.67773 ,
+        172.16406 ,  173.69336 ,  200.98828 ,  208.23438 ,  160.7793  ,
+        199.78711 ,  204.82031 ,  209.4961  ,  236.28809 ,  249.30176 ,
+         94.43945 ,   82.32129 ,   90.59473 ,         nan,  141.44336 ,
+         89.87891 ,  139.25293 ,  118.6084  ,  111.33789 ,   86.33594 ,
+         98.08887 ,   90.2334  ,   83.59375 ,  107.171875,  147.4668  ,
+        246.4834  ,  156.16602 ,  314.6211  ,  410.5879  ,  863.584   ,
+        615.5869  , 1026.7119  ,  408.22168 , 1031.9463  ,  242.2168  ,
+        119.28711 ,  100.55371 ,   83.42969 ,  136.03809 ,  104.58203 ,
+         78.97461 ,   95.134766,   93.75586 ,   68.42578 ,   66.87109 ,
+         62.916992,   75.85742 ,   78.86719 ,   61.251953,   61.90918 ,
+         86.55859 ,   90.98242 ,   65.16699 ,   69.55664 ,   69.694336,
+         81.15723 ,   73.87891 ,   93.80176 ,   73.822266,   78.228516,
+         78.08301 ,   92.47656 ,   74.45215 ,   57.0791  ,   58.148438,
+         71.06641 ,   84.29785 ,   70.45117 ,   75.18848 ,   76.146484,
+         99.34082 ,   76.24805 ,   63.52539 ,   70.62891 ,   70.69531 ,
+         70.83008 ,   70.143555,   72.47949 ,   75.75781 ,   90.87109 ,
+         69.00879 ,  115.49902 ,  125.97949 ,  187.64844 ,   84.58789 ,
+         66.583984,   86.8291  ,   89.39844 ], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ROLL</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.1813 -0.1906 ... -0.1969 -0.1844</div><input id='attrs-972f5058-4f2a-4359-b248-1258efb2be12' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-972f5058-4f2a-4359-b248-1258efb2be12' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1eb0e166-b16d-44c0-b055-38f97d5dcb0f' class='xr-var-data-in' type='checkbox'><label for='data-1eb0e166-b16d-44c0-b055-38f97d5dcb0f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>port positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (roll angle) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/ROLL/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-0.1813, -0.1906, -0.1781, -0.1781, -0.1906, -0.1687, -0.1719,
+       -0.2   , -0.1937, -0.1906, -0.1969, -0.1938, -0.1813, -0.1938,
+       -0.1875, -0.1875, -0.1906, -0.1969, -0.2   , -0.1875, -0.1875,
+       -0.1906, -0.2156, -0.1875, -0.2   , -0.1906, -0.2   , -0.2   ,
+           nan, -0.1969, -0.1844, -0.1875, -0.2031, -0.1969, -0.1938,
+       -0.1875, -0.1938, -0.2031, -0.1844, -0.1813, -0.1969, -0.1813,
+       -0.1844, -0.1938, -0.1813, -0.1906, -0.1844, -0.1719, -0.1938,
+       -0.1875, -0.1906, -0.1969, -0.1906, -0.1906, -0.1938, -0.1969,
+       -0.1969, -0.1969, -0.1844, -0.1938, -0.1875, -0.1813, -0.1813,
+       -0.1906, -0.1938, -0.1781, -0.1844, -0.1875, -0.1813, -0.1938,
+       -0.1875, -0.1844, -0.1906, -0.1906, -0.1781, -0.1844, -0.1906,
+       -0.1969, -0.1813, -0.1938, -0.1844, -0.1844, -0.1813, -0.1906,
+       -0.2   , -0.1813, -0.1938, -0.1813, -0.1938, -0.1969, -0.1781,
+       -0.1938, -0.2   , -0.1969, -0.1812, -0.1906, -0.1875, -0.1875,
+       -0.1844, -0.1969, -0.1906, -0.1969, -0.1844], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.073 2.9 2.756 ... 2.372 2.378</div><input id='attrs-1a50aea4-a30b-43f5-ab2b-7da4853def1d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1a50aea4-a30b-43f5-ab2b-7da4853def1d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c79dabfe-ab33-4e8f-b3a7-3a82295b2bc9' class='xr-var-data-in' type='checkbox'><label for='data-c79dabfe-ab33-4e8f-b3a7-3a82295b2bc9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>TMP</dd></dl></div><div class='xr-var-data'><pre>array([3.0726, 2.8997, 2.7557, 2.6579, 2.54  , 2.4765, 2.4282, 2.3975,
+       2.3836, 2.372 , 2.3609, 2.3495, 2.3162, 2.2902, 2.2814, 2.2806,
+       2.2897, 2.2951, 2.2868, 2.2847, 2.2847, 2.2884, 2.2878, 2.2897,
+       2.2902, 2.2881, 2.2958,    nan, 2.293 , 2.293 , 2.2948, 2.2984,
+       2.301 , 2.3067, 2.3118, 2.3131, 2.3129, 2.308 , 2.3067, 2.3064,
+       2.3095, 2.3144, 2.3147, 2.3142, 2.3167, 2.3162, 2.3108, 2.3103,
+       2.3134, 2.3118, 2.3147, 2.3165, 2.3271, 2.3219, 2.3173, 2.3214,
+       2.3294, 2.3405, 2.3433, 2.3462, 2.35  , 2.3526, 2.3521, 2.3467,
+       2.3482, 2.3462, 2.3384, 2.3389, 2.34  , 2.3387, 2.3384, 2.3397,
+       2.3423, 2.3431, 2.3531, 2.3462, 2.3467, 2.3464, 2.3487, 2.349 ,
+       2.3503, 2.3493, 2.349 , 2.3493, 2.35  , 2.356 , 2.3591, 2.3645,
+       2.3681, 2.3663, 2.3699, 2.3815, 2.3722, 2.3696, 2.3758, 2.3782,
+       2.381 , 2.3833, 2.3818, 2.3764, 2.3862, 2.372 , 2.3782],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>5.63 4.87 4.27 ... 2.43 2.43 2.43</div><input id='attrs-5d2d3c11-8e10-43e2-8094-d533b713943a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5d2d3c11-8e10-43e2-8094-d533b713943a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-abe6a6ed-4070-48cd-a654-7cf3651a6799' class='xr-var-data-in' type='checkbox'><label for='data-abe6a6ed-4070-48cd-a654-7cf3651a6799' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd></dl></div><div class='xr-var-data'><pre>array([5.63, 4.87, 4.27, 3.84, 3.5 , 3.23, 3.03, 2.88, 2.77, 2.68, 2.62,
+       2.57, 2.52, 2.47, 2.44, 2.41, 2.39, 2.39, 2.37, 2.37, 2.36, 2.35,
+       2.35, 2.35, 2.35, 2.35, 2.39, 2.38,  nan, 2.36, 2.35, 2.35, 2.35,
+       2.35, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36,
+       2.37, 2.37, 2.37, 2.36, 2.36, 2.36, 2.36, 2.37, 2.37, 2.37, 2.37,
+       2.37, 2.37, 2.38, 2.39, 2.39, 2.39, 2.4 , 2.4 , 2.4 , 2.4 , 2.4 ,
+       2.4 , 2.39, 2.39, 2.39, 2.39, 2.39, 2.39, 2.39, 2.43, 2.43, 2.42,
+       2.41, 2.41, 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.41, 2.41,
+       2.41, 2.42, 2.42, 2.42, 2.42, 2.42, 2.42, 2.43, 2.43, 2.43, 2.43,
+       2.43, 2.43, 2.43, 2.43], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>7.012 5.885 4.936 ... 2.215 2.214</div><input id='attrs-f086b446-fddd-45df-b723-cf679cb8ab2a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f086b446-fddd-45df-b723-cf679cb8ab2a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9ae97c2e-9a08-4c71-88de-32ed19ba3a4e' class='xr-var-data-in' type='checkbox'><label for='data-9ae97c2e-9a08-4c71-88de-32ed19ba3a4e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([7.012, 5.885, 4.936, 4.279, 3.786, 3.407, 3.123, 2.903, 2.741,
+       2.613, 2.517, 2.441, 2.381, 2.32 , 2.272, 2.235, 2.208, 2.192,
+       2.177, 2.166, 2.156, 2.149, 2.145, 2.141, 2.138, 2.134, 2.251,
+       2.184,   nan, 2.155, 2.145, 2.142, 2.141, 2.14 , 2.143, 2.145,
+       2.147, 2.146, 2.147, 2.146, 2.145, 2.149, 2.148, 2.149, 2.15 ,
+       2.15 , 2.149, 2.149, 2.148, 2.148, 2.148, 2.149, 2.152, 2.155,
+       2.155, 2.154, 2.157, 2.161, 2.165, 2.171, 2.176, 2.179, 2.182,
+       2.184, 2.183, 2.184, 2.181, 2.177, 2.178, 2.179, 2.176, 2.175,
+       2.177, 2.177, 2.286, 2.225, 2.207, 2.198, 2.192, 2.19 , 2.188,
+       2.187, 2.185, 2.185, 2.184, 2.186, 2.188, 2.192, 2.196, 2.199,
+       2.199, 2.204, 2.206, 2.204, 2.205, 2.208, 2.211, 2.213, 2.214,
+       2.214, 2.215, 2.215, 2.214], dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-316f5f18-71ad-4acb-9b64-2fb90794e5d9' class='xr-section-summary-in' type='checkbox'  ><label for='section-316f5f18-71ad-4acb-9b64-2fb90794e5d9' class='xr-section-summary' >Indexes: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>TIME</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-11bb7930-a2c1-469b-bc0c-159bb8ffbeef' class='xr-index-data-in' type='checkbox'/><label for='index-11bb7930-a2c1-469b-bc0c-159bb8ffbeef' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2023-03-03 23:00:00&#x27;, &#x27;2023-03-04 00:00:00&#x27;,
+               &#x27;2023-03-04 01:00:00&#x27;, &#x27;2023-03-04 02:00:00&#x27;,
+               &#x27;2023-03-04 03:00:00&#x27;, &#x27;2023-03-04 04:00:00&#x27;,
+               &#x27;2023-03-04 05:00:00&#x27;, &#x27;2023-03-04 06:00:00&#x27;,
+               &#x27;2023-03-04 07:00:00&#x27;, &#x27;2023-03-04 08:00:00&#x27;,
+               ...
+               &#x27;2023-03-07 20:00:00&#x27;, &#x27;2023-03-07 21:00:00&#x27;,
+               &#x27;2023-03-07 22:00:00&#x27;, &#x27;2023-03-07 23:00:00&#x27;,
+               &#x27;2023-03-08 00:00:00&#x27;, &#x27;2023-03-08 01:00:00&#x27;,
+               &#x27;2023-03-08 02:00:00&#x27;, &#x27;2023-03-08 03:00:00&#x27;,
+               &#x27;2023-03-08 04:00:00&#x27;, &#x27;2023-03-08 05:00:00&#x27;],
+              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;TIME&#x27;, length=103, freq=None))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-5d843f81-0833-4652-a1a9-2ab1639b145e' class='xr-section-summary-in' type='checkbox'  ><label for='section-5d843f81-0833-4652-a1a9-2ab1639b145e' class='xr-section-summary' >Attributes: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>Calculation_Version_PIES :</span></dt><dd>3</dd><dt><span>Index_DQZ :</span></dt><dd>3</dd><dt><span>Index_INC :</span></dt><dd>1</dd><dt><span>Index_KLR :</span></dt><dd>5</dd><dt><span>Index_PIES :</span></dt><dd>3</dd><dt><span>Index_TMP :</span></dt><dd>4</dd><dt><span>Serial_Number_DQZ :</span></dt><dd>155399</dd><dt><span>Serial_Number_INC :</span></dt><dd>0</dd><dt><span>Serial_Number_KLR :</span></dt><dd>1262636</dd><dt><span>Serial_Number_TMP :</span></dt><dd>0</dd><dt><span>UID :</span></dt><dd>007217</dd></dl></div></li></ul></div></div></div>
+</div>
+<section id="Save-the-data">
+<h3>Save the data<a class="headerlink" href="#Save-the-data" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the datasets</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">_use.nc&quot;</span><span class="p">)</span>
+<span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+
+<span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_AZA.nc&quot;</span><span class="p">)</span>
+<span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/fetchAZA/fetchAZA/fetchAZA/writers.py:46: UserWarning: Times can&#39;t be serialized faithfully to int64 with requested units &#39;seconds since 1970-01-01&#39;. Resolution of &#39;milliseconds&#39; needed. Serializing times to floating point instead. Set encoding[&#39;dtype&#39;] to integer dtype to serialize to int64. Set encoding[&#39;dtype&#39;] to floating point dtype to silence this warning.
+  ds.to_netcdf(output_file)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+</section>
+<section id="Plot-variables-in-ds_pressure">
+<h3>Plot variables in ds_pressure<a class="headerlink" href="#Plot-variables-in-ds_pressure" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
+<span class="n">plotters</span><span class="o">.</span><span class="n">plot_temperature_variables</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;TEMPERATURE&#39;</span><span class="p">,</span> <span class="s1">&#39;PRESSURE&#39;</span><span class="p">],</span><span class="s2">&quot;sample&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;From the analysis, we determine that PRESSURE_DQZ and PRESSURE_PIES are identical.&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+From the analysis, we determine that PRESSURE_DQZ and PRESSURE_PIES are identical.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_11_1.png" src="_images/demo-output_11_1.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="Diagnostics-&amp;-basic-statistics">
+<h1>Diagnostics &amp; basic statistics<a class="headerlink" href="#Diagnostics-&-basic-statistics" title="Link to this heading"></a></h1>
+<section id="1.-Plot-variables-which-are-against-time">
+<h2>1. Plot variables which are against time<a class="headerlink" href="#1.-Plot-variables-which-are-against-time" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Call the function to plot all variables against RECORD_TIME</span>
+<span class="c1">#fig, axs = plotters.plot_all_variables_against_time(ds_pressure, time_var=&#39;RECORD_TIME&#39;)</span>
+<span class="n">fig</span><span class="p">,</span><span class="n">axs</span> <span class="o">=</span> <span class="n">plotters</span><span class="o">.</span><span class="n">plot_all_variables</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_14_0.png" src="_images/demo-output_14_0.png" />
+</div>
+</div>
+</section>
+<section id="2.-Histograms">
+<h2>2. Histograms<a class="headerlink" href="#2.-Histograms" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
+<span class="n">plotters</span><span class="o">.</span><span class="n">plot_histograms</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="s2">&quot;sample&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_16_0.png" src="_images/demo-output_16_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-Compare-pressure">
+<h2>3. Compare pressure<a class="headerlink" href="#3.-Compare-pressure" title="Link to this heading"></a></h2>
+<section id="Plot-the-pressure-from-the-ambient-(KLR)-and-transfer-(DQZ)">
+<h3>Plot the pressure from the ambient (KLR) and transfer (DQZ)<a class="headerlink" href="#Plot-the-pressure-from-the-ambient-(KLR)-and-transfer-(DQZ)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example usage</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plotters</span><span class="o">.</span><span class="n">compare_pressure</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;PRESSURE_DQZ&#39;</span><span class="p">,</span> <span class="s1">&#39;PRESSURE_KLR&#39;</span><span class="p">],</span> <span class="s2">&quot;sample&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_18_0.png" src="_images/demo-output_18_0.png" />
+</div>
+</div>
+</section>
+<section id="Plot-the-pressure-during-an-AZA-sequence-(transfer,-ambient-and-low)">
+<h3>Plot the pressure during an AZA sequence (transfer, ambient and low)<a class="headerlink" href="#Plot-the-pressure-during-an-AZA-sequence-(transfer,-ambient-and-low)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">variables_to_compare</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TRANSFER_PRESSURE&#39;</span><span class="p">,</span><span class="s1">&#39;AMBIENT_PRESSURE&#39;</span><span class="p">,</span><span class="s1">&#39;LOW_PRESSURE&#39;</span><span class="p">]</span>
+
+<span class="c1"># Example usage</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plotters</span><span class="o">.</span><span class="n">plot_AZA_pressure</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">variables_to_compare</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_20_0.png" src="_images/demo-output_20_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot all pressure variables in ds_AZA on the same axes with symbols and lines</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">pressure_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TRANSFER_PRESSURE&#39;</span><span class="p">,</span> <span class="s1">&#39;AMBIENT_PRESSURE&#39;</span><span class="p">,</span> <span class="s1">&#39;LOW_PRESSURE&#39;</span><span class="p">]</span>
+<span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span>
+<span class="c1"># Define marker styles to cycle through</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;^&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pressure_vars</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">ds_AZA</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span>
+        <span class="n">ds_AZA</span><span class="p">[</span><span class="n">var</span><span class="p">],</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="p">)],</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span>
+        <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span>
+    <span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Pressure Variables in AZA&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pressure (kPa)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>  <span class="c1"># Invert the y-axis</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/demo-output_21_0.png" src="_images/demo-output_21_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fetchAZA.html" class="btn btn-neutral float-right" title="fetchAZA API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

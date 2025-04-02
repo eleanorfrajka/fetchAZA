@@ -1,0 +1,1191 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fetchAZA API &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8b92e751"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FAQ / Troubleshooting" href="faq.html" />
+    <link rel="prev" title="Parsing data from the Sonardyne FETCH AZA" href="demo-output.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            fetchAZA
+              <img src="_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.readers">readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.combine_pattern"><code class="docutils literal notranslate"><span class="pre">combine_pattern()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.csv_to_xarray"><code class="docutils literal notranslate"><span class="pre">csv_to_xarray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.csv_to_xarray_pattern"><code class="docutils literal notranslate"><span class="pre">csv_to_xarray_pattern()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.data_overview"><code class="docutils literal notranslate"><span class="pre">data_overview()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.load_netcdf_datasets"><code class="docutils literal notranslate"><span class="pre">load_netcdf_datasets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.parse_column_name"><code class="docutils literal notranslate"><span class="pre">parse_column_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.parse_header_data"><code class="docutils literal notranslate"><span class="pre">parse_header_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.process_header_lines"><code class="docutils literal notranslate"><span class="pre">process_header_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.read_csv_to_xarray"><code class="docutils literal notranslate"><span class="pre">read_csv_to_xarray()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.standardise_dataset"><code class="docutils literal notranslate"><span class="pre">standardise_dataset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.tools">tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.tools.convert_units"><code class="docutils literal notranslate"><span class="pre">convert_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.tools.convert_units_var"><code class="docutils literal notranslate"><span class="pre">convert_units_var()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.tools.process_datasets"><code class="docutils literal notranslate"><span class="pre">process_datasets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.tools.reformat_units_var"><code class="docutils literal notranslate"><span class="pre">reformat_units_var()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.plotters">plotters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.compare_pressure"><code class="docutils literal notranslate"><span class="pre">compare_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.get_record_type"><code class="docutils literal notranslate"><span class="pre">get_record_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_AZA_pressure"><code class="docutils literal notranslate"><span class="pre">plot_AZA_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_age_values"><code class="docutils literal notranslate"><span class="pre">plot_age_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_all_variables"><code class="docutils literal notranslate"><span class="pre">plot_all_variables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_data_type"><code class="docutils literal notranslate"><span class="pre">plot_data_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_hist_fig"><code class="docutils literal notranslate"><span class="pre">plot_hist_fig()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_histograms"><code class="docutils literal notranslate"><span class="pre">plot_histograms()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_pressure_diff_and_age"><code class="docutils literal notranslate"><span class="pre">plot_pressure_diff_and_age()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_pressure_sequence"><code class="docutils literal notranslate"><span class="pre">plot_pressure_sequence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_temperature_variables"><code class="docutils literal notranslate"><span class="pre">plot_temperature_variables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.plot_temperatures"><code class="docutils literal notranslate"><span class="pre">plot_temperatures()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_attributes"><code class="docutils literal notranslate"><span class="pre">show_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_contents"><code class="docutils literal notranslate"><span class="pre">show_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_variables"><code class="docutils literal notranslate"><span class="pre">show_variables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_variables_by_dimension"><code class="docutils literal notranslate"><span class="pre">show_variables_by_dimension()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.writers">writers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_dataset"><code class="docutils literal notranslate"><span class="pre">save_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_datasets"><code class="docutils literal notranslate"><span class="pre">save_datasets()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.convert_float_to_int"><code class="docutils literal notranslate"><span class="pre">convert_float_to_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.convert_type"><code class="docutils literal notranslate"><span class="pre">convert_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.find_best_dtype"><code class="docutils literal notranslate"><span class="pre">find_best_dtype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.netcdf_compliancer"><code class="docutils literal notranslate"><span class="pre">netcdf_compliancer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.reformat_object_vars"><code class="docutils literal notranslate"><span class="pre">reformat_object_vars()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.set_best_dtype"><code class="docutils literal notranslate"><span class="pre">set_best_dtype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.utilities.set_fill_value"><code class="docutils literal notranslate"><span class="pre">set_fill_value()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ / Troubleshooting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fetchAZA.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fetchaza-api">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code><a class="headerlink" href="#fetchaza-api" title="Link to this heading"></a></h1>
+<section id="module-fetchAZA.readers">
+<span id="readers"></span><h2>readers<a class="headerlink" href="#module-fetchAZA.readers" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.combine_pattern">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">combine_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_to_combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INDEX_NUM'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#combine_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.combine_pattern" title="Link to this definition"></a></dt>
+<dd><p>Combines multiple xarray datasets into a single dataset, adding relevant attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasets</strong> (<em>dict</em>) – A dictionary where keys are dataset names and values are xarray.Dataset objects.</p></li>
+<li><p><strong>pattern</strong> (<em>list</em>) – The pattern used for grouping events.</p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – The file path of the original CSV file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A combined xarray dataset with added attributes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.csv_to_xarray">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">csv_to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#csv_to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.csv_to_xarray" title="Link to this definition"></a></dt>
+<dd><p>Converts a CSV file into a dictionary of xarray Datasets, grouped by event type.
+The CSV file is expected to have a header section and a data section. The header section
+contains metadata about the columns, including event types, column names, and optional units.
+The data section contains the actual data values, with each row corresponding to an event type.
+The function processes the header to extract column names and units, and then groups the data
+by event type to create xarray Datasets. Units are assigned as attributes to the corresponding
+variables in the datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – The path to the CSV file to be processed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where keys are event types (str) and values are xarray.Dataset objects
+containing the data for each event type. Each dataset includes variables with units
+assigned as attributes (if available).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The header section should precede the data section in the CSV file.</p></li>
+<li><p>The data section should start with a line containing “# Data”.</p></li>
+<li><p>Each row in the data section should begin with the event type, followed by the data values.</p></li>
+<li><p>Column names in the header can include units in the format “Column Name (Unit)” or “Column Name %” or “Column Name V”.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.csv_to_xarray_pattern">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">csv_to_xarray_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['AZS',</span> <span class="pre">'AZA',</span> <span class="pre">'AZA',</span> <span class="pre">'AZA',</span> <span class="pre">'AZS']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#csv_to_xarray_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.csv_to_xarray_pattern" title="Link to this definition"></a></dt>
+<dd><p>Reads a CSV file with a header section and a data section (after a “# Data” line),
+then searches the data lines for contiguous groups of lines that match the given
+logging event pattern (by default: [‘AZS’, ‘AZA’, ‘AZA’, ‘AZA’, ‘AZS’]).</p>
+<dl class="simple">
+<dt>For each matched group, two new columns are appended:</dt><dd><ul class="simple">
+<li><p>“Sample Num”: increments for each matched group (starting at 1).</p></li>
+<li><p>“Sequence Num”: within the group, numbering from 1 to len(pattern).</p></li>
+</ul>
+</dd>
+</dl>
+<p>Only groups that match the pattern are processed; any data lines that do not belong
+to such a group are skipped.</p>
+<p>The function then groups rows by event type and creates an xarray.Dataset for each,
+using the header information (column names and units) for that event type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – Path to the CSV file.</p></li>
+<li><p><strong>pattern</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of event types defining a valid group (default: [‘AZS’,’AZA’,’AZA’,’AZA’,’AZS’]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with keys for each event type found in matched groups and values
+that are xarray.Datasets built from the corresponding rows.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.data_overview">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">data_overview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extracted_parts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#data_overview"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.data_overview" title="Link to this definition"></a></dt>
+<dd><p>Reads data details from a directory and prints or writes them to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – The path to the data directory.</p></li>
+<li><p><strong>base_filename</strong> (<em>str</em>) – The base filename for the data files.</p></li>
+<li><p><strong>extracted_parts</strong> (<em>list</em>) – A list of parts to be extracted from the base filename.</p></li>
+<li><p><strong>output_file_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the output file. If None, prints to standard output.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.load_netcdf_datasets">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">load_netcdf_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#load_netcdf_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.load_netcdf_datasets" title="Link to this definition"></a></dt>
+<dd><p>Load netCDF files matching the given file_root and optional keys from the specified data_path into a dictionary of xarray datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – The directory path where the netCDF files are located.</p></li>
+<li><p><strong>file_root</strong> (<em>str</em>) – The root name of the files to match.</p></li>
+<li><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of keys to filter the files. Only files containing these keys in their names will be loaded.
+If None, all matching files will be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where keys are dataset names and values are xarray datasets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.parse_column_name">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">parse_column_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#parse_column_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.parse_column_name" title="Link to this definition"></a></dt>
+<dd><p>Extracts the column name and unit from a given column string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>col</strong> (<em>str</em>) – The column string, which may include a unit in parentheses or specific suffixes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the column name (str) and the unit (str or None).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.parse_header_data">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">parse_header_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#parse_header_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.parse_header_data" title="Link to this definition"></a></dt>
+<dd><p>Reads a CSV file and separates it into header and data lines, optionally filtering
+by allowed event types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – Path to the CSV file.</p></li>
+<li><p><strong>allowed_events</strong> (<em>set</em><em>, </em><em>optional</em>) – A set of allowed event types. If provided, only lines with the first field
+matching an allowed event type will be included. If None, all lines are included.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing:
+- header_lines (list of str): The header lines from the file.
+- data_lines (list of str): The data lines from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.process_header_lines">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">process_header_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#process_header_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.process_header_lines" title="Link to this definition"></a></dt>
+<dd><p>Processes the header lines to extract event headers and units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>header_lines</strong> (<em>list</em><em> of </em><em>str</em>) – List of header lines from the CSV file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing:
+- event_headers (dict): A dictionary mapping event types to column headers.
+- event_units (dict): A dictionary mapping event types to column units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.read_csv_to_xarray">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">read_csv_to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deploy_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['AZS',</span> <span class="pre">'AZA',</span> <span class="pre">'AZA',</span> <span class="pre">'AZA',</span> <span class="pre">'AZS']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#read_csv_to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.read_csv_to_xarray" title="Link to this definition"></a></dt>
+<dd><p>Processes a CSV file and converts it into NetCDF-compatible datasets.
+This function reads data from the input CSV file, processes it into xarray datasets
+by separating the data into datasets corresponding to each logging event type,
+standardizes the datasets, and then processes datasets that match a specified
+sequence pattern. The matched datasets are further combined into an additional
+xarray dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_file</strong> (<em>str</em>) – The path to the input CSV file.</p></li>
+<li><p><strong>pattern</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of event types defining a valid group (default: [‘AZS’, ‘AZA’, ‘AZA’, ‘AZA’, ‘AZS’]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of standardized xarray datasets. The keys are event types, and the values
+are the corresponding datasets. An additional dataset with the key ‘AZAseq’ contains
+the combined dataset created from patterns in the input CSV file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function first processes the input file into individual datasets based on event types.</p></li>
+<li><p>It then standardizes each dataset by converting constant variables to attributes, handling
+fill values, and ensuring proper data types.</p></li>
+<li><p>The function identifies and processes groups of rows matching the specified pattern, adding
+sequence-related metadata.</p></li>
+<li><p>The combined dataset (‘AZAseq’) includes additional attributes describing the sequence pattern.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.readers.standardise_dataset">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.readers.</span></span><span class="sig-name descname"><span class="pre">standardise_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/readers.html#standardise_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.readers.standardise_dataset" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Standardizes the given dataset by:</dt><dd><ol class="arabic simple">
+<li><p>Converting constant variables to global attributes and removing them.</p></li>
+<li><p>Converting integer-like and float-like strings to numbers.</p></li>
+<li><p>Converting datetime strings to datetime64.</p></li>
+<li><p>Dropping variables marked for removal.</p></li>
+<li><p>Fixing object variables via utilities.reformat_object_vars.</p></li>
+</ol>
+</dd>
+</dl>
+<p>Additionally, for any variable of an integer type where the valid values should be &gt;= 1,
+any 0 encountered is assumed to be a fill value. If <cite>replace_fill</cite> is True, those 0’s are
+replaced with <cite>fill_value</cite> (default –9999) and the variable is given an attribute ‘_FillValue’.</p>
+<p>Finally, for variables with “Serial” in their name that are effectively constant
+(i.e. all non-fill values are the same), they are promoted to global attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The input dataset to be standardized.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The standardized dataset with updated variables and attributes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Variables with constant values are converted to global attributes and removed from the dataset.</p></li>
+<li><p>Integer-like and float-like strings are converted to their respective numeric types.</p></li>
+<li><p>Datetime strings are converted to pandas datetime64 format.</p></li>
+<li><p>The function assumes the presence of a <cite>utilities.reformat_object_vars</cite> utility for handling object variables.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="module-fetchAZA.tools">
+<span id="tools"></span><h2>tools<a class="headerlink" href="#module-fetchAZA.tools" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.tools.convert_units">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.tools.</span></span><span class="sig-name descname"><span class="pre">convert_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/tools.html#convert_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.tools.convert_units" title="Link to this definition"></a></dt>
+<dd><p>Convert the units of variables in an xarray Dataset to preferred units.  This is useful, for instance, to convert cm/s to m/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>xarray.Dataset</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The dataset with converted units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.tools.convert_units_var">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.tools.</span></span><span class="sig-name descname"><span class="pre">convert_units_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_conversion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'Celsius':</span> <span class="pre">{'factor':</span> <span class="pre">1,</span> <span class="pre">'units_name':</span> <span class="pre">'degrees_Celsius'},</span> <span class="pre">'Deg</span> <span class="pre">C':</span> <span class="pre">{'factor':</span> <span class="pre">1,</span> <span class="pre">'units_name':</span> <span class="pre">'Celcius'},</span> <span class="pre">'Pa':</span> <span class="pre">{'factor':</span> <span class="pre">0.0001,</span> <span class="pre">'units_name':</span> <span class="pre">'dbar'},</span> <span class="pre">'S</span> <span class="pre">m-1':</span> <span class="pre">{'factor':</span> <span class="pre">0.1,</span> <span class="pre">'units_name':</span> <span class="pre">'mS</span> <span class="pre">cm-1'},</span> <span class="pre">'S/m':</span> <span class="pre">{'factor':</span> <span class="pre">0.1,</span> <span class="pre">'units_name':</span> <span class="pre">'mS/cm'},</span> <span class="pre">'cm':</span> <span class="pre">{'factor':</span> <span class="pre">0.01,</span> <span class="pre">'units_name':</span> <span class="pre">'m'},</span> <span class="pre">'cm</span> <span class="pre">s-1':</span> <span class="pre">{'factor':</span> <span class="pre">0.01,</span> <span class="pre">'units_name':</span> <span class="pre">'m</span> <span class="pre">s-1'},</span> <span class="pre">'cm/s':</span> <span class="pre">{'factor':</span> <span class="pre">0.01,</span> <span class="pre">'units_name':</span> <span class="pre">'m/s'},</span> <span class="pre">'dbar':</span> <span class="pre">{'factor':</span> <span class="pre">10,</span> <span class="pre">'units_name':</span> <span class="pre">'kPa'},</span> <span class="pre">'deg':</span> <span class="pre">{'factor':</span> <span class="pre">1,</span> <span class="pre">'units_name':</span> <span class="pre">'degrees'},</span> <span class="pre">'degrees_Celcius':</span> <span class="pre">{'factor':</span> <span class="pre">1,</span> <span class="pre">'units_name':</span> <span class="pre">'Celsius'},</span> <span class="pre">'degrees_Celsius':</span> <span class="pre">{'factor':</span> <span class="pre">1,</span> <span class="pre">'units_name':</span> <span class="pre">'Celsius'},</span> <span class="pre">'g</span> <span class="pre">m-3':</span> <span class="pre">{'factor':</span> <span class="pre">0.001,</span> <span class="pre">'units_name':</span> <span class="pre">'kg</span> <span class="pre">m-3'},</span> <span class="pre">'kPa':</span> <span class="pre">{'factor':</span> <span class="pre">0.1,</span> <span class="pre">'units_name':</span> <span class="pre">'dbar'},</span> <span class="pre">'kPa</span> <span class="pre">s-1':</span> <span class="pre">{'factor':</span> <span class="pre">0.1,</span> <span class="pre">'units_name':</span> <span class="pre">'dbar</span> <span class="pre">s-1'},</span> <span class="pre">'kg</span> <span class="pre">m-3':</span> <span class="pre">{'factor':</span> <span class="pre">1000,</span> <span class="pre">'units_name':</span> <span class="pre">'g</span> <span class="pre">m-3'},</span> <span class="pre">'km':</span> <span class="pre">{'factor':</span> <span class="pre">1000,</span> <span class="pre">'units_name':</span> <span class="pre">'m'},</span> <span class="pre">'m':</span> <span class="pre">{'factor':</span> <span class="pre">0.001,</span> <span class="pre">'units_name':</span> <span class="pre">'km'},</span> <span class="pre">'m</span> <span class="pre">s-1':</span> <span class="pre">{'factor':</span> <span class="pre">100,</span> <span class="pre">'units_name':</span> <span class="pre">'cm</span> <span class="pre">s-1'},</span> <span class="pre">'m/s':</span> <span class="pre">{'factor':</span> <span class="pre">100,</span> <span class="pre">'units_name':</span> <span class="pre">'cm/s'},</span> <span class="pre">'mS</span> <span class="pre">cm-1':</span> <span class="pre">{'factor':</span> <span class="pre">10,</span> <span class="pre">'units_name':</span> <span class="pre">'S</span> <span class="pre">m-1'},</span> <span class="pre">'mS/cm':</span> <span class="pre">{'factor':</span> <span class="pre">10,</span> <span class="pre">'units_name':</span> <span class="pre">'S/m'}}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/tools.html#convert_units_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.tools.convert_units_var" title="Link to this definition"></a></dt>
+<dd><p>Convert the units of variables in an xarray Dataset to preferred units.  This is useful, for instance, to convert cm/s to m/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p></li>
+<li><p><strong>(</strong><strong>list</strong><strong>)</strong> (<em>preferred_units</em>)</p></li>
+<li><p><strong>(</strong><strong>dict</strong><strong>)</strong> (<em>unit_conversion</em>)</p></li>
+<li><p><strong>string</strong> (<em>Each key is a unit</em>) – <ul>
+<li><p>‘factor’: The factor to multiply the variable by to convert it.</p></li>
+<li><p>’units_name’: The new unit name after conversion.</p></li>
+</ul>
+</p></li>
+<li><p><strong>with</strong> (<em>and each value is a dictionary</em>) – <ul>
+<li><p>‘factor’: The factor to multiply the variable by to convert it.</p></li>
+<li><p>’units_name’: The new unit name after conversion.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>xarray.Dataset</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The dataset with converted units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.tools.process_datasets">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.tools.</span></span><span class="sig-name descname"><span class="pre">process_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deploy_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['KLR',</span> <span class="pre">'INC',</span> <span class="pre">'DQZ',</span> <span class="pre">'TMP',</span> <span class="pre">'PIES',</span> <span class="pre">'AZAseq']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/tools.html#process_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.tools.process_datasets" title="Link to this definition"></a></dt>
+<dd><p>Processes datasets by loading, transforming, and combining data from multiple sources.</p>
+<p>Steps performed:
+1. Load netCDF datasets based on provided keys.
+2. Convert units and adjust time formats.
+3. Assign sampling time for the AZA sequence dataset.
+4. Filter datasets to the deployment period.
+5. Reindex datasets on time.
+6. Rename variables in datasets using predefined mappings.
+7. Add dataset-specific attributes to variables.
+8. Combine selected datasets into a single dataset.
+9. Interpolate the combined dataset to an evenly spaced time grid.
+10. Clean and organize dataset attributes and variables.
+11. Process the AZA sequence dataset, including renaming attributes and cleaning variables.</p>
+<p>External utilities and tools such as <cite>readers</cite>, <cite>timetools</cite>, and <cite>utilities</cite> are used for specific operations.
+Attributes with certain prefixes or exact matches are removed from the combined dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to the directory containing the dataset files.</p></li>
+<li><p><strong>file_root</strong> (<em>str</em>) – Root name of the files to be processed.</p></li>
+<li><p><strong>deploy_date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Deployment start date for filtering the datasets.</p></li>
+<li><p><strong>recovery_date</strong> (<em>str</em><em> or </em><em>datetime</em>) – Recovery end date for filtering the datasets.</p></li>
+<li><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of dataset keys to process. Defaults to [‘KLR’, ‘INC’, ‘DQZ’, ‘TMP’, ‘PIES’, ‘AZAseq’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>ds_pressure (xarray.Dataset): Combined and interpolated dataset containing pressure-related data.</p></li>
+<li><p>ds_AZA (xarray.Dataset): Processed AZA sequence dataset with cleaned attributes.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.tools.reformat_units_var">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.tools.</span></span><span class="sig-name descname"><span class="pre">reformat_units_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'Deg</span> <span class="pre">C':</span> <span class="pre">'Celsius',</span> <span class="pre">'S/m':</span> <span class="pre">'S</span> <span class="pre">m-1',</span> <span class="pre">'cm/s':</span> <span class="pre">'cm</span> <span class="pre">s-1',</span> <span class="pre">'degrees_Celsius':</span> <span class="pre">'Celsius',</span> <span class="pre">'g/m^3':</span> <span class="pre">'g</span> <span class="pre">m-3',</span> <span class="pre">'hex':</span> <span class="pre">'hexadecimal',</span> <span class="pre">'kPa/Sec':</span> <span class="pre">'kPa</span> <span class="pre">s-1',</span> <span class="pre">'m/s':</span> <span class="pre">'m</span> <span class="pre">s-1',</span> <span class="pre">'meters':</span> <span class="pre">'m',</span> <span class="pre">'s':</span> <span class="pre">'seconds'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/tools.html#reformat_units_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.tools.reformat_units_var" title="Link to this definition"></a></dt>
+<dd><p>Renames units in the dataset based on the provided dictionary for OG1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p></li>
+<li><p><strong>(</strong><strong>dict</strong><strong>)</strong> (<em>unit_format</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>xarray.Dataset</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The dataset with renamed units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-fetchAZA.plotters">
+<span id="plotters"></span><h2>plotters<a class="headerlink" href="#module-fetchAZA.plotters" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.compare_pressure">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">compare_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#compare_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.compare_pressure" title="Link to this definition"></a></dt>
+<dd><p>Compare pressure data between multiple time series in a dataset over a specified time range.</p>
+<p>This function interpolates the pressure data from the specified time series onto a common time axis,
+calculates the differences between them, and plots the pressure data and their differences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_pressure</strong> (<em>xarray.Dataset</em>) – The dataset containing pressure data. It must have a time coordinate (‘TIME’, ‘SAMPLE_TIME’, or ‘RECORD_TIME’)
+and the specified variable for each key in <cite>keys</cite>.</p></li>
+<li><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em>) – A list of strings identifying the pressure time series to compare in the dataset.</p></li>
+<li><p><strong>variable</strong> (<em>str</em>) – The name of the variable in the dataset to compare (e.g., ‘PRESSURE’).</p></li>
+<li><p><strong>deploy_date</strong> (<em>str</em><em>, </em><em>optional</em>) – The deployment date in ‘YYYY-MM-DD’ format. Data before this date will be excluded.
+Default is ‘2000-01-01’.</p></li>
+<li><p><strong>recovery_date</strong> (<em>str</em><em>, </em><em>optional</em>) – The recovery date in ‘YYYY-MM-DD’ format. Data after this date will be excluded.
+Default is ‘2099-01-01’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray</em>) – An array of axes objects corresponding to the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.get_record_type">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">get_record_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#get_record_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.get_record_type" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the record type description for a given key or a list of keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em>) – The key or list of keys to look up in the <cite>record_types</cite> dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The record type description if the key is found, otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_AZA_pressure">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_AZA_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_AZA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_AZA_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_AZA_pressure" title="Link to this definition"></a></dt>
+<dd><p>Plot a comparison of pressure-related variables within a single dataset over a specified time range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_AZA</strong> (<em>xarray.Dataset</em>) – The dataset containing the variables to plot.</p></li>
+<li><p><strong>variables</strong> (<em>list</em>) – List of variable names (strings) to plot from the dataset.</p></li>
+<li><p><strong>start_date</strong> (<em>str</em><em>, </em><em>optional</em>) – Start date for the time range to filter the data (format: ‘YYYY-MM-DD’). Defaults to None.</p></li>
+<li><p><strong>end_date</strong> (<em>str</em><em>, </em><em>optional</em>) – End date for the time range to filter the data (format: ‘YYYY-MM-DD’). Defaults to None.</p></li>
+<li><p><strong>demean</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, demean the data by subtracting the mean of each variable before plotting. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – Figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray</em>) – Array of axes objects corresponding to the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If the number of data points in a variable is less than or equal to 20, the data points are plotted with symbols.</p></li>
+<li><p>The function automatically adjusts the number of columns in the subplot grid based on the number of variables.</p></li>
+<li><p>Unused subplot axes are removed for cleaner visualization.</p></li>
+<li><p>The y-axis is inverted for all plots.</p></li>
+<li><p>Units for each variable are extracted from the dataset attributes and displayed on the y-axis label.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_age_values">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_age_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_AZA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SAMPLE_TIME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_age_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_age_values" title="Link to this definition"></a></dt>
+<dd><p>Plots AGE values for AZA and AZS datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_AZA</strong> (<em>xarray.Dataset</em>) – The AZA dataset.</p></li>
+<li><p><strong>age_values_aza</strong> (<em>xarray.DataArray</em>) – AGE values for AZA.</p></li>
+<li><p><strong>age_values_azs</strong> (<em>xarray.DataArray</em>) – AGE values for AZS.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – Station identifier.</p></li>
+<li><p><strong>fig_path</strong> (<em>str</em>) – Path to save the figure.</p></li>
+<li><p><strong>time_var</strong> (<em>str</em>) – Time variable name. Default is ‘SAMPLE_TIME’.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes._axes.Axes</em><em>, </em><em>optional</em>) – Axes to plot into. If None, a new figure and axes are created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The axes containing the plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.axes._axes.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_all_variables">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_all_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_all_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_all_variables" title="Link to this definition"></a></dt>
+<dd><p>Plot and save figures for all variables in a given xarray dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_pressure</strong> (<em>xarray.Dataset</em>) – The dataset containing the variables to plot.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – The station identifier.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The directory path where the figures will be saved. If None, the figures will be displayed instead.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This function cycles through all numeric variables in the dataset and creates time series plots.</p></li>
+<li><p>Each figure contains up to 6 variables, and the figures are saved with filenames that
+include the station identifier and part number.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_data_type">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sets_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deploy_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_data_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_data_type" title="Link to this definition"></a></dt>
+<dd><p>Plot and save figures for a specified data type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<em>str</em>) – The type of data to plot.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – The station identifier.</p></li>
+<li><p><strong>last_4_digits</strong> (<em>str</em>) – The last four digits to include in the filename.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This function checks if the specified data type exists in the <cite>data_sets_new</cite> dictionary.</p></li>
+<li><p>If the data type exists, it selects the dataset for the given time range (<cite>deploy_date</cite> to <cite>recovery_date</cite>),
+identifies numeric variables, and creates figures to plot these variables over time.</p></li>
+<li><p>Each figure contains up to 4 variables, and the figures are saved with filenames that
+include the data type, station identifier, and part number.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_hist_fig">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_hist_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sets_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types_to_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deploy_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_hist_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_hist_fig" title="Link to this definition"></a></dt>
+<dd><p>Generate and save histogram plots for specified data types within a given time range.</p>
+<p>This function creates histograms for numeric variables in the provided datasets,
+filtered by the deployment and recovery dates. Each histogram is saved as an image
+file in the specified data path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_sets_new</strong> (<em>dict</em>) – A dictionary containing xarray datasets, where keys are data types and values
+are the corresponding datasets.</p></li>
+<li><p><strong>types_to_plot</strong> (<em>list</em>) – A list of data types to generate histograms for.</p></li>
+<li><p><strong>deploy_date</strong> (<em>str</em><em> or </em><em>datetime</em>) – The start date for filtering the datasets.</p></li>
+<li><p><strong>recovery_date</strong> (<em>str</em><em> or </em><em>datetime</em>) – The end date for filtering the datasets.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em>) – The directory path where the histogram images will be saved. If None, the images
+will not be saved.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – The station identifier to include in the plot titles and saved filenames.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function assumes that the datasets are xarray objects with a ‘TIME’ dimension.</p></li>
+<li><p>Only numeric variables in the datasets are considered for plotting.</p></li>
+<li><p>If a variable has a timedelta64 dtype, it is converted to seconds before plotting.</p></li>
+<li><p>The function creates subplots with up to 12 histograms per figure.</p></li>
+<li><p>If there are fewer variables than subplot slots, the extra slots are removed.</p></li>
+<li><p>The mean of each variable is marked on the histogram with a red dashed line.</p></li>
+<li><p>The saved filenames follow the format: ‘{STN}_{data_type}_histograms.png’.</p></li>
+</ul>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>plot_hist_fig(</dt><dd><p>data_sets_new=my_datasets,
+types_to_plot=[‘type1’, ‘type2’],
+deploy_date=’2023-01-01’,
+recovery_date=’2023-12-31’,
+data_path=’/path/to/save’,
+STN=’Station123’</p>
+</dd>
+</dl>
+<p>)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_histograms">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_histograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_histograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_histograms" title="Link to this definition"></a></dt>
+<dd><p>Plot histograms of all data variables in the dataset.</p>
+<p>Parameters:
+ds (xarray.Dataset): The dataset containing variables to plot.
+time_var (str): The name of the time variable in the dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_pressure_diff_and_age">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_pressure_diff_and_age</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqnum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_pressure_diff_and_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_pressure_diff_and_age" title="Link to this definition"></a></dt>
+<dd><p>Plots the pressure difference, AGE, and temperatures for specified sequences in a dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The dataset containing the data to be plotted. It should include variables such as
+‘SEQUENCE_NUM’, ‘SAMPLE_TIME’, ‘AGE’, ‘AMBIENT_TEMPERATURE’, and ‘TRANSFER_TEMPERATURE’.</p></li>
+<li><p><strong>key1</strong> (<em>str</em>) – The name of the first pressure variable in the dataset.</p></li>
+<li><p><strong>key2</strong> (<em>str</em>) – The name of the second pressure variable in the dataset.</p></li>
+<li><p><strong>seqnum</strong> (<em>list</em><em> of </em><em>int</em>) – A list of sequence numbers to filter and plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray of matplotlib.axes._subplots.AxesSubplot</em>) – The array of axes objects for the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function calculates the difference between the two pressure variables (<cite>key1</cite> and <cite>key2</cite>)
+and plots it against time for each sequence in <cite>seqnum</cite>.</p></li>
+<li><p>The AGE variable is converted to seconds and plotted against time.</p></li>
+<li><p>Ambient and transfer temperatures are plotted on the third subplot.</p></li>
+<li><p>The x-axis is formatted to display time in 2-month intervals.</p></li>
+<li><p>The temperature subplot’s y-axis limits are determined based on the median and standard
+deviation of the combined temperature data.</p></li>
+<li><p>The function assumes that the dataset variables have attributes <cite>standard_name</cite> and <cite>units</cite>
+for proper labeling.</p></li>
+<li><p>A station identifier (<cite>STN</cite>) is expected to be available in the global scope for annotation.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>KeyError:</strong> – If any of the required variables (<cite>key1</cite>, <cite>key2</cite>, ‘AGE’, ‘AMBIENT_TEMPERATURE’,
+    ‘TRANSFER_TEMPERATURE’, or ‘SEQUENCE_NUM’) are missing from the dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_pressure_sequence">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_pressure_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_pressure_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_pressure_sequence" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_temperature_variables">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_temperature_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_temperature_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_temperature_variables" title="Link to this definition"></a></dt>
+<dd><p>Plot temperature variables from ds_pressure against RECORD_TIME.</p>
+<p>Parameters:
+ds_pressure (xarray.Dataset): The dataset containing temperature variables.
+keys (str or list): A single key (str) or a list of keys (list of str) to match variable names.
+STN (str): Station identifier for annotation.
+fig (matplotlib.figure.Figure, optional): Existing figure to plot into. If None, a new figure is created.
+axs (numpy.ndarray or matplotlib.axes._axes.Axes, optional): Existing axes to plot into. If None, new axes are created.</p>
+<p>Returns:
+fig (matplotlib.figure.Figure): The figure object containing the plots.
+axs (numpy.ndarray or list): The array or list of axes objects corresponding to the subplots.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.plot_temperatures">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_temperatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_temperatures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_temperatures" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.show_attributes">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">show_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#show_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.show_attributes" title="Link to this definition"></a></dt>
+<dd><p>Extract and display attribute information from an xarray Dataset or a netCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em><em> or </em><em>xr.Dataset</em>) – The input data, either a file path to a netCDF file or an xarray Dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing the following columns:
+- Attribute: The name of the attribute.
+- Value: The value of the attribute.
+- DType: The data type of the attribute value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If the input is a file path, the function reads the attributes from the netCDF file.</p></li>
+<li><p>If the input is an xarray Dataset, the function reads the attributes directly from the Dataset.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.show_contents">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">show_contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'variables'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#show_contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.show_contents" title="Link to this definition"></a></dt>
+<dd><p>Display the contents of an xarray Dataset or a netCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>xr.Dataset</em>) – The input data, either a file path to a netCDF file or an xarray Dataset.</p></li>
+<li><p><strong>content_type</strong> (<em>str</em>) – The type of content to display. Options are:
+- ‘variables’ or ‘vars’: Show details about the variables.
+- ‘attributes’ or ‘attrs’: Show details about the attributes.
+Default is ‘variables’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A styled DataFrame with details about the variables or attributes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.io.formats.style.Styler or pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.show_variables">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">show_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#show_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.show_variables" title="Link to this definition"></a></dt>
+<dd><p>Extract variable information from an xarray Dataset or a netCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em><em> or </em><em>xr.Dataset</em>) – The input data, either a file path to a netCDF file or an xarray Dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A styled DataFrame containing the following columns:
+- dims : str</p>
+<blockquote>
+<div><p>The dimension of the variable (or “string” if it is a string type).</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>The name of the variable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>units<span class="classifier">str</span></dt><dd><p>The units of the variable (if available).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>comment<span class="classifier">str</span></dt><dd><p>Any additional comments about the variable (if available).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.io.formats.style.Styler</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.plotters.show_variables_by_dimension">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">show_variables_by_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'trajectory'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#show_variables_by_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.show_variables_by_dimension" title="Link to this definition"></a></dt>
+<dd><p>Extract variable information filtered by a specific dimension from an xarray Dataset or a netCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>xr.Dataset</em>) – The input data, either a file path to a netCDF file or an xarray Dataset.</p></li>
+<li><p><strong>dimension_name</strong> (<em>str</em>) – The name of the dimension to filter variables by.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A styled DataFrame containing the following columns:
+- dims : str</p>
+<blockquote>
+<div><p>The dimension of the variable (or “string” if it is a string type).</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>The name of the variable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>units<span class="classifier">str</span></dt><dd><p>The units of the variable (if available).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>comment<span class="classifier">str</span></dt><dd><p>Any additional comments about the variable (if available).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.io.formats.style.Styler</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-fetchAZA.writers">
+<span id="writers"></span><h2>writers<a class="headerlink" href="#module-fetchAZA.writers" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.writers.save_dataset">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../data/test.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_dataset" title="Link to this definition"></a></dt>
+<dd><p>Attempts to save the dataset to a NetCDF file. If a TypeError occurs due to invalid attribute values,
+it converts the invalid attributes to strings and retries the save operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_file</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bool</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the dataset was saved successfully, False otherwise.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Based on: <a class="reference external" href="https://github.com/pydata/xarray/issues/3743">https://github.com/pydata/xarray/issues/3743</a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.writers.save_datasets">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sets_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_datasets" title="Link to this definition"></a></dt>
+<dd><p>Save multiple datasets to NetCDF files with filenames derived from the input filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_sets_new</strong> (<em>dict</em>) – A dictionary where keys are dataset identifiers (e.g., strings) and values are the corresponding datasets to be saved.</p></li>
+<li><p><strong>input_fn</strong> (<em>str</em>) – The input filename used as a base to generate output filenames.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Iterates through the <cite>data_sets_new</cite> dictionary.</p></li>
+<li><p>For each dataset, constructs an output filename by appending the dataset key to the base name of <cite>input_fn</cite> and adding the <cite>.nc</cite> extension.</p></li>
+<li><p>Calls <cite>save_dataset</cite> to save each dataset to the corresponding output file.</p></li>
+<li><p>Prints the key of each dataset being processed.</p></li>
+<li><p>If saving a dataset fails, prints an error message indicating the failure.</p></li>
+</ul>
+<p>Assumes the existence of a <cite>save_dataset</cite> function that handles the actual saving of datasets to files.</p>
+</dd></dl>
+
+</section>
+<section id="utilities">
+<h2>utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
+<dl class="py function" id="module-fetchAZA.utilities">
+<dt class="sig sig-object py" id="fetchAZA.utilities.convert_float_to_int">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">convert_float_to_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#convert_float_to_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.convert_float_to_int" title="Link to this definition"></a></dt>
+<dd><p>Converts float variables in an xarray dataset to integer type if all values
+are sufficiently close to their integer representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>xarray.Dataset</em>) – An xarray dataset containing variables to be checked and potentially converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dataset is modified in place, with applicable variables converted to integer type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.convert_type">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">convert_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#convert_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.convert_type" title="Link to this definition"></a></dt>
+<dd><p>Convert a string value to an appropriate type.</p>
+<p>This function attempts to convert a string value to an integer or a float.
+If the value contains a leading zero and is entirely numeric, it is returned as a string to preserve the leading zero.
+If the value contains a decimal point, it is converted to a float.
+If the value is numeric without a decimal point, it is converted to an integer.
+If the conversion to an integer or float fails, the value is returned as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – The string value to be converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted value as an integer, float, or string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int, float, or str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.find_best_dtype">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">find_best_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#find_best_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.find_best_dtype" title="Link to this definition"></a></dt>
+<dd><p>Determines the most appropriate data type for a given variable based on its name and data array.</p>
+<section id="rules">
+<h3>Rules<a class="headerlink" href="#rules" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>If the variable name contains “latitude” or “longitude” (case-insensitive), return <cite>np.double</cite>.</p></li>
+<li><p>If the variable name ends with “qc” (case-insensitive), return <cite>np.int8</cite>.</p></li>
+<li><p>If the variable name contains “time” (case-insensitive), return the input data type.</p></li>
+<li><p>If the variable name ends with “raw” or the input data type is an integer:
+- If the maximum value in the data array is less than 2^15, return <cite>np.int16</cite>.
+- If the maximum value in the data array is less than 2^31, return <cite>np.int32</cite>.</p></li>
+<li><p>If the input data type is <cite>np.float64</cite>, return <cite>np.float32</cite>.</p></li>
+<li><p>Otherwise, return the input data type.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">param var_name<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the variable. This is used to infer the type based on naming conventions.</p>
+</dd>
+<dt class="field-even">type var_name<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param da<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data array containing the variable’s values and its current data type.</p>
+</dd>
+<dt class="field-even">type da<span class="colon">:</span></dt>
+<dd class="field-even"><p>xarray.DataArray</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The recommended data type for the variable.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.dtype</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.netcdf_compliancer">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">netcdf_compliancer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#netcdf_compliancer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.netcdf_compliancer" title="Link to this definition"></a></dt>
+<dd><p>Check for variables and attributes with empty string values in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The dataset to check.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.reformat_object_vars">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">reformat_object_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#reformat_object_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.reformat_object_vars" title="Link to this definition"></a></dt>
+<dd><p>Fix variables with mixed data types in xarray datasets or a single xarray dataset.</p>
+<p>This function processes variables with mixed data types (e.g., object type) by attempting to convert them
+to a single consistent type (e.g., float, int, or string). It removes common fill values (‘0’) and checks
+the remaining values to determine the appropriate type. If conversion to integer is not possible, the
+variable is converted to a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em><em> or </em><em>xarray.Dataset</em>) – A dictionary of xarray datasets or a single xarray dataset.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of modified xarray datasets or a single modified xarray dataset with variables of type
+object converted to numeric (if possible) or string (otherwise).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or xarray.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.set_best_dtype">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">set_best_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#set_best_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.set_best_dtype" title="Link to this definition"></a></dt>
+<dd><p>Adjusts the data types of variables in an xarray Dataset to optimize memory usage
+while preserving data integrity. The function evaluates each variable’s current
+data type and determines a more efficient data type, if applicable. It also updates
+attributes like <cite>valid_min</cite> and <cite>valid_max</cite> to match the new data type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The input dataset whose variables’ data types will be evaluated and potentially
+adjusted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new dataset with optimized data types for its variables, potentially saving
+memory space.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If a variable’s data type is changed to an integer type, NaN values are replaced
+with a fill value, and the <cite>_FillValue</cite> encoding is updated accordingly.</p></li>
+<li><p>Logs the percentage of memory saved due to data type adjustments.</p></li>
+<li><p>Relies on the helper functions <cite>find_best_dtype</cite> and <cite>set_fill_value</cite> to determine
+the optimal data type and appropriate fill value, respectively.</p></li>
+<li><p>Logs debug messages for each variable whose data type is changed, including the
+original and new data types.</p></li>
+<li><p>Logs an info message summarizing the overall memory savings.</p></li>
+<li><p>Raises: Assumes that <cite>find_best_dtype</cite> and <cite>set_fill_value</cite> are defined elsewhere in the
+codebase.</p></li>
+<li><p>Raises: Assumes that <cite>_log</cite> is a configured logger available in the current scope.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.utilities.set_fill_value">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.utilities.</span></span><span class="sig-name descname"><span class="pre">set_fill_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/utilities.html#set_fill_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.utilities.set_fill_value" title="Link to this definition"></a></dt>
+<dd><p>Calculate and return the maximum fill value for a given numeric data type.
+The function extracts the bit-width of the provided data type (e.g., int32, uint16)
+and computes the maximum value that can be represented by that type, assuming it
+is a signed integer type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_dtype</strong> (<em>str</em>) – A string representation of the data type (e.g., ‘int32’, ‘uint16’).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The maximum fill value for the given data type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the bit-width cannot be extracted from the provided data type string.:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="demo-output.html" class="btn btn-neutral float-left" title="Parsing data from the Sonardyne FETCH AZA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="FAQ / Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

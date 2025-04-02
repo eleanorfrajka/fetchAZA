@@ -1,0 +1,843 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fetchAZA.readers &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8b92e751"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            fetchAZA
+              <img src="../../_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fetchAZA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ / Troubleshooting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fetchAZA.readers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fetchAZA.readers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fetchAZA</span><span class="w"> </span><span class="kn">import</span> <span class="n">tools</span><span class="p">,</span> <span class="n">utilities</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------</span>
+<span class="c1"># Config files: Variables + variable attributes for archiving</span>
+<span class="c1">#------------------------------------------------------------</span>
+<span class="c1"># Set the directory for yaml files as the root directory + &#39;config/&#39;</span>
+<span class="n">script_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="n">parent_dir</span> <span class="o">=</span> <span class="n">script_dir</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">rootdir</span> <span class="o">=</span> <span class="n">parent_dir</span>
+<span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s1">&#39;config/&#39;</span><span class="p">)</span>
+<span class="c1"># Vocabularies are loosely defined here</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_dir</span> <span class="o">+</span> <span class="s1">&#39;vocab_attrs.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">vocab_attrs</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+<span class="n">record_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;AZA&quot;</span><span class="p">:</span> <span class="s2">&quot;AZA averaged triple pressure sensor records&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AZS&quot;</span><span class="p">:</span> <span class="s2">&quot;AZA starting point, simple triple pressure sensor record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BAS&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline Configuration&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BAT&quot;</span><span class="p">:</span> <span class="s2">&quot;Battery&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BSL&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline range&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DCS&quot;</span><span class="p">:</span> <span class="s2">&quot;Doppler Current Sensor (Aanderaa model 4930R)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DQZ&quot;</span><span class="p">:</span> <span class="s2">&quot;Digiquartz Pressure &amp; Temperature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;INC&quot;</span><span class="p">:</span> <span class="s2">&quot;Inclinometer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;KLR&quot;</span><span class="p">:</span> <span class="s2">&quot;Keller Pressure &amp; Temperature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MOD&quot;</span><span class="p">:</span> <span class="s2">&quot;Module Settings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PAG&quot;</span><span class="p">:</span> <span class="s2">&quot;Page Record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PIES&quot;</span><span class="p">:</span> <span class="s2">&quot;PIES Record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PNS&quot;</span><span class="p">:</span> <span class="s2">&quot;Presens Pressure &amp; Temperature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;QDN&quot;</span><span class="p">:</span> <span class="s2">&quot;Quartzdyne Pressure &amp; Temperature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;REP&quot;</span><span class="p">:</span> <span class="s2">&quot;Log Repeat settings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SLG&quot;</span><span class="p">:</span> <span class="s2">&quot;Start Logging event&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SSP&quot;</span><span class="p">:</span> <span class="s2">&quot;Sound Velocity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;STP&quot;</span><span class="p">:</span> <span class="s2">&quot;Stop logging event&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TIM&quot;</span><span class="p">:</span> <span class="s2">&quot;Time (RTC)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TMP&quot;</span><span class="p">:</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TPS&quot;</span><span class="p">:</span> <span class="s2">&quot;TERPS Pressure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TSO&quot;</span><span class="p">:</span> <span class="s2">&quot;Time Sync Offset&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WUL&quot;</span><span class="p">:</span> <span class="s2">&quot;Wake-Up Logging settings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ERR&quot;</span><span class="p">:</span> <span class="s2">&quot;Error code&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AZAseq&quot;</span><span class="p">:</span> <span class="s2">&quot;AZS-AZA-AZA-AZA-AZS sequence of records&quot;</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="parse_header_data">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.parse_header_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_header_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">allowed_events</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a CSV file and separates it into header and data lines, optionally filtering</span>
+<span class="sd">    by allowed event types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        Path to the CSV file.</span>
+<span class="sd">    allowed_events : set, optional</span>
+<span class="sd">        A set of allowed event types. If provided, only lines with the first field</span>
+<span class="sd">        matching an allowed event type will be included. If None, all lines are included.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple containing:</span>
+<span class="sd">        - header_lines (list of str): The header lines from the file.</span>
+<span class="sd">        - data_lines (list of str): The data lines from the file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">header_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data_section</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;# Data&quot;</span><span class="p">):</span>
+            <span class="n">data_section</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_section</span><span class="p">:</span>
+            <span class="c1"># Only keep header lines if allowed_events is None or the first field is in allowed_events.</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">first_field</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">allowed_events</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">first_field</span> <span class="ow">in</span> <span class="n">allowed_events</span><span class="p">:</span>
+                    <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Only keep data lines if allowed_events is None or the first field is in allowed_events.</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">first_field</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">allowed_events</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">first_field</span> <span class="ow">in</span> <span class="n">allowed_events</span><span class="p">:</span>
+                    <span class="n">data_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">header_lines</span><span class="p">,</span> <span class="n">data_lines</span></div>
+
+
+<div class="viewcode-block" id="parse_column_name">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.parse_column_name">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_column_name</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts the column name and unit from a given column string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    col : str</span>
+<span class="sd">        The column string, which may include a unit in parentheses or specific suffixes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple containing the column name (str) and the unit (str or None).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(.*?)\((.*?)\)&quot;</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>  <span class="c1"># Extract name and unit</span>
+    <span class="n">col_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="n">col</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="c1"># Check for specific units based on last two characters</span>
+    <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; %&quot;</span><span class="p">):</span>
+        <span class="n">col_name</span> <span class="o">=</span> <span class="n">col</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Remove &quot; %&quot; from the column name</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;percent&quot;</span>
+    <span class="k">elif</span> <span class="n">col</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; V&quot;</span><span class="p">):</span>
+        <span class="n">col_name</span> <span class="o">=</span> <span class="n">col</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Remove &quot; V&quot; from the column name</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;V&quot;</span>
+
+    <span class="k">return</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">unit</span></div>
+
+
+<div class="viewcode-block" id="process_header_lines">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.process_header_lines">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_header_lines</span><span class="p">(</span><span class="n">header_lines</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes the header lines to extract event headers and units.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    header_lines : list of str</span>
+<span class="sd">        List of header lines from the CSV file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple containing:</span>
+<span class="sd">        - event_headers (dict): A dictionary mapping event types to column headers.</span>
+<span class="sd">        - event_units (dict): A dictionary mapping event types to column units.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">event_headers</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">event_units</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">header_lines</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">clean_headers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">seen_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+            <span class="n">col_name</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">parse_column_name</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_columns</span><span class="p">:</span>
+                <span class="n">clean_headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+                <span class="n">seen_columns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">unit</span><span class="p">:</span>
+                    <span class="n">units</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicate column name &#39;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">&#39; found in event type &#39;</span><span class="si">{</span><span class="n">event_type</span><span class="si">}</span><span class="s2">&#39;. Skipping.&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+        <span class="n">event_headers</span><span class="p">[</span><span class="n">event_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_headers</span>
+        <span class="n">event_units</span><span class="p">[</span><span class="n">event_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+
+    <span class="k">return</span> <span class="n">event_headers</span><span class="p">,</span> <span class="n">event_units</span></div>
+
+
+<div class="viewcode-block" id="csv_to_xarray">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.csv_to_xarray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">csv_to_xarray</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a CSV file into a dictionary of xarray Datasets, grouped by event type.</span>
+<span class="sd">    The CSV file is expected to have a header section and a data section. The header section</span>
+<span class="sd">    contains metadata about the columns, including event types, column names, and optional units.</span>
+<span class="sd">    The data section contains the actual data values, with each row corresponding to an event type.</span>
+<span class="sd">    The function processes the header to extract column names and units, and then groups the data</span>
+<span class="sd">    by event type to create xarray Datasets. Units are assigned as attributes to the corresponding</span>
+<span class="sd">    variables in the datasets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        The path to the CSV file to be processed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary where keys are event types (str) and values are xarray.Dataset objects</span>
+<span class="sd">        containing the data for each event type. Each dataset includes variables with units</span>
+<span class="sd">        assigned as attributes (if available).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The header section should precede the data section in the CSV file.</span>
+<span class="sd">    - The data section should start with a line containing &quot;# Data&quot;.</span>
+<span class="sd">    - Each row in the data section should begin with the event type, followed by the data values.</span>
+<span class="sd">    - Column names in the header can include units in the format &quot;Column Name (Unit)&quot; or &quot;Column Name %&quot; or &quot;Column Name V&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    
+    <span class="c1"># Extract header and data sections</span>
+    <span class="n">header_lines</span><span class="p">,</span> <span class="n">data_lines</span> <span class="o">=</span> <span class="n">parse_header_data</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    
+    <span class="c1"># Process header lines.</span>
+    <span class="c1"># Each header line is assumed to have the form:</span>
+    <span class="c1">#   EVENT,Col1,Col2,...,ColN</span>
+    <span class="c1"># where some columns may include units in the form &quot;Name (Unit)&quot;.</span>
+    <span class="n">event_headers</span><span class="p">,</span> <span class="n">event_units</span> <span class="o">=</span> <span class="n">process_header_lines</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span>
+    
+    <span class="c1"># Process data manually</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">grouped_data</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data_lines</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data_values</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">grouped_data</span><span class="p">[</span><span class="n">event_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_values</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">event_type</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">grouped_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="ow">in</span> <span class="n">event_headers</span><span class="p">:</span>
+            <span class="n">event_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">event_headers</span><span class="p">[</span><span class="n">event_type</span><span class="p">][:</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">event_df</span><span class="p">)</span>
+            
+            <span class="c1"># Assign units as attributes</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">event_units</span><span class="p">[</span><span class="n">event_type</span><span class="p">]:</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_units</span><span class="p">[</span><span class="n">event_type</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
+            
+            <span class="n">datasets</span><span class="p">[</span><span class="n">event_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span>
+    
+    <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="csv_to_xarray_pattern">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.csv_to_xarray_pattern">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">csv_to_xarray_pattern</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AZS&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZS&#39;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a CSV file with a header section and a data section (after a &quot;# Data&quot; line),</span>
+<span class="sd">    then searches the data lines for contiguous groups of lines that match the given</span>
+<span class="sd">    logging event pattern (by default: [&#39;AZS&#39;, &#39;AZA&#39;, &#39;AZA&#39;, &#39;AZA&#39;, &#39;AZS&#39;]).</span>
+<span class="sd">    </span>
+<span class="sd">    For each matched group, two new columns are appended:</span>
+<span class="sd">      - &quot;Sample Num&quot;: increments for each matched group (starting at 1).</span>
+<span class="sd">      - &quot;Sequence Num&quot;: within the group, numbering from 1 to len(pattern).</span>
+<span class="sd">    </span>
+<span class="sd">    Only groups that match the pattern are processed; any data lines that do not belong</span>
+<span class="sd">    to such a group are skipped.</span>
+<span class="sd">    </span>
+<span class="sd">    The function then groups rows by event type and creates an xarray.Dataset for each,</span>
+<span class="sd">    using the header information (column names and units) for that event type.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        Path to the CSV file.</span>
+<span class="sd">    pattern : list of str, optional</span>
+<span class="sd">        A list of event types defining a valid group (default: [&#39;AZS&#39;,&#39;AZA&#39;,&#39;AZA&#39;,&#39;AZA&#39;,&#39;AZS&#39;]).</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary with keys for each event type found in matched groups and values</span>
+<span class="sd">        that are xarray.Datasets built from the corresponding rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># Read file lines.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    
+    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;===================== Processing for pattern </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> ======================&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Extract header and data sections</span>
+    <span class="n">header_lines</span><span class="p">,</span> <span class="n">data_lines</span> <span class="o">=</span> <span class="n">parse_header_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">allowed_events</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+    
+    <span class="c1"># Process header lines.</span>
+    <span class="c1"># Each header line is assumed to have the form:</span>
+    <span class="c1">#   EVENT,Col1,Col2,...,ColN</span>
+    <span class="c1"># where some columns may include units in the form &quot;Name (Unit)&quot;.</span>
+    <span class="n">event_headers</span><span class="p">,</span> <span class="n">event_units</span> <span class="o">=</span> <span class="n">process_header_lines</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span>
+    
+    <span class="c1"># Process data lines: scan for contiguous groups that exactly match the pattern.</span>
+    <span class="n">pattern_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">sample_num</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">index_num</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1"># Collect rows for each event type.</span>
+    <span class="n">grouped_rows</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_lines</span><span class="p">)</span> <span class="o">-</span> <span class="n">pattern_length</span><span class="p">:</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">data_lines</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">pattern_length</span><span class="p">]</span>
+        <span class="n">events_in_group</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">group</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">events_in_group</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">:</span>
+            <span class="c1"># For each line in the matched group, split and add new columns.</span>
+            <span class="k">for</span> <span class="n">seq_idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+                <span class="c1"># Append new columns.</span>
+                <span class="n">ev</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">index_num</span><span class="p">))</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sample_num</span><span class="p">))</span>       <span class="c1"># &quot;Sample Num&quot;</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">seq_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>        <span class="c1"># &quot;Sequence Num&quot;</span>
+                <span class="n">grouped_rows</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+                <span class="n">index_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sample_num</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">pattern_length</span>  <span class="c1"># Skip this group entirely.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Slide the window</span>
+    
+    <span class="c1"># Build datasets for each event type present in the matched groups.</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">rows</span> <span class="ow">in</span> <span class="n">grouped_rows</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">event_headers</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">event_headers</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span>
+            <span class="c1"># Extend the header with the two new column names.</span>
+            <span class="n">header_extended</span> <span class="o">=</span> <span class="n">header</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;Index Num&quot;</span><span class="p">,</span> <span class="s2">&quot;Sample Num&quot;</span><span class="p">,</span> <span class="s2">&quot;Sequence Num&quot;</span><span class="p">]</span>
+            <span class="c1"># Remove the first column (event type) from the rows.</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+            <span class="c1"># Create a DataFrame from the rows.</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">header_extended</span><span class="p">)</span>
+            <span class="c1"># Convert the DataFrame to an xarray Dataset.</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="c1"># Attach unit attributes if available.</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">event_units</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pattern&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern</span>
+
+            <span class="n">datasets</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span>
+
+    
+    <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="combine_pattern">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.combine_pattern">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">combine_pattern</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">var_to_combine</span><span class="o">=</span><span class="s1">&#39;INDEX_NUM&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combines multiple xarray datasets into a single dataset, adding relevant attributes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    datasets : dict</span>
+<span class="sd">        A dictionary where keys are dataset names and values are xarray.Dataset objects.</span>
+<span class="sd">    pattern : list</span>
+<span class="sd">        The pattern used for grouping events.</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        The file path of the original CSV file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xarray.Dataset</span>
+<span class="sd">        A combined xarray dataset with added attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">var_to_combine</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rename_dims</span><span class="p">({</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;new_index&quot;</span><span class="p">})</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rename_vars</span><span class="p">({</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;new_index&quot;</span><span class="p">})</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">new_index</span><span class="o">=</span><span class="n">dataset</span><span class="p">[</span><span class="n">var_to_combine</span><span class="p">])</span>
+            <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable &#39;</span><span class="si">{</span><span class="n">var_to_combine</span><span class="si">}</span><span class="s2">&#39; not found in dataset &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. Skipping renaming.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert the datasets to a single xarray dataset</span>
+    <span class="n">combined_dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="c1"># Add the attributes from ds in datasets to the combined dataset</span>
+    <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combined_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">combined_dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Remove variable Index Num</span>
+        <span class="k">if</span> <span class="n">var_to_combine</span> <span class="ow">in</span> <span class="n">combined_dataset</span><span class="p">:</span>
+            <span class="n">combined_dataset</span> <span class="o">=</span> <span class="n">combined_dataset</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">var_to_combine</span><span class="p">)</span>
+        <span class="c1"># Rename dimensions to &quot;index&quot;</span>
+        <span class="n">combined_dataset</span> <span class="o">=</span> <span class="n">combined_dataset</span><span class="o">.</span><span class="n">rename_dims</span><span class="p">({</span><span class="s2">&quot;new_index&quot;</span><span class="p">:</span> <span class="s2">&quot;index&quot;</span><span class="p">})</span>
+        <span class="n">combined_dataset</span> <span class="o">=</span> <span class="n">combined_dataset</span><span class="o">.</span><span class="n">rename_vars</span><span class="p">({</span><span class="s2">&quot;new_index&quot;</span><span class="p">:</span> <span class="s2">&quot;index&quot;</span><span class="p">})</span>
+        <span class="n">combined_dataset</span> <span class="o">=</span> <span class="n">combined_dataset</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">combined_dataset</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">combined_dataset</span></div>
+
+
+<div class="viewcode-block" id="standardise_dataset">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.standardise_dataset">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">standardise_dataset</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">replace_fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardizes the given dataset by:</span>
+<span class="sd">      1. Converting constant variables to global attributes and removing them.</span>
+<span class="sd">      2. Converting integer-like and float-like strings to numbers.</span>
+<span class="sd">      3. Converting datetime strings to datetime64.</span>
+<span class="sd">      4. Dropping variables marked for removal.</span>
+<span class="sd">      5. Fixing object variables via utilities.reformat_object_vars.</span>
+<span class="sd">      </span>
+<span class="sd">    Additionally, for any variable of an integer type where the valid values should be &gt;= 1,</span>
+<span class="sd">    any 0 encountered is assumed to be a fill value. If `replace_fill` is True, those 0’s are</span>
+<span class="sd">    replaced with `fill_value` (default –9999) and the variable is given an attribute &#39;_FillValue&#39;.</span>
+
+<span class="sd">    Finally, for variables with &quot;Serial&quot; in their name that are effectively constant </span>
+<span class="sd">    (i.e. all non-fill values are the same), they are promoted to global attributes.</span>
+<span class="sd">  </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The input dataset to be standardized.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xarray.Dataset</span>
+<span class="sd">        The standardized dataset with updated variables and attributes.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Variables with constant values are converted to global attributes and removed from the dataset.</span>
+<span class="sd">    - Integer-like and float-like strings are converted to their respective numeric types.</span>
+<span class="sd">    - Datetime strings are converted to pandas datetime64 format.</span>
+<span class="sd">    - The function assumes the presence of a `utilities.reformat_object_vars` utility for handling object variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
+     
+        <span class="c1"># Convert constant variables to global attributes</span>
+        <span class="n">unique_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">unique_value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">unique_values</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">unique_value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>  <span class="c1"># Mark for removal if empty</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">unique_value</span>  <span class="c1"># Convert to global attribute</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="c1"># Convert integer-like strings to integers</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^-?\d+$&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        
+        <span class="c1"># Convert float-like strings to floats</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^-?\d*\.\d+$&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        
+        <span class="c1"># Convert datetime strings to datetime64</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{4}</span><span class="s1">/\d</span><span class="si">{2}</span><span class="s1">/\d</span><span class="si">{2}</span><span class="s1"> \d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rt_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">rt_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">rt_values</span><span class="p">)</span>
+
+    <span class="c1"># Drop marked variables</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span>
+
+    <span class="c1"># Fix object variables</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">reformat_object_vars</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Handle fill values for integer variables</span>
+    <span class="k">if</span> <span class="n">replace_fill</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+            <span class="c1"># Check if the variable is of an integer type.</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="c1"># Consider this variable a candidate if it contains any zeros</span>
+                <span class="c1"># and if the smallest nonzero value is &gt;= 1.</span>
+                <span class="n">nonzero</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">values</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">nonzero</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nonzero</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="c1"># Replace zeros with fill_value</span>
+                    <span class="n">new_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">new_values</span>
+                    <span class="c1"># Add the _FillValue attribute</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_FillValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_value</span>
+    
+    <span class="c1"># Additional pass: For variables with &quot;Serial&quot; in the name,</span>
+    <span class="c1"># if the only variation is the fill value, promote them to global attributes.</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;Serial&quot;</span> <span class="ow">in</span> <span class="n">var</span><span class="p">:</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checking variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; for constant values.&quot;</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="c1"># Create a set of unique values.</span>
+            <span class="n">unique_vals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="c1"># If the variable has a _FillValue attribute, remove that value from the set.</span>
+            <span class="k">if</span> <span class="s1">&#39;_FillValue&#39;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">unique_vals</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_FillValue&#39;</span><span class="p">])</span>
+            <span class="c1"># If, after discarding fill values, only one unique value remains, then treat it as constant.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">const_val</span> <span class="o">=</span> <span class="n">unique_vals</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; is constant with value &#39;</span><span class="si">{</span><span class="n">const_val</span><span class="si">}</span><span class="s2">&#39;. Promoting to global attribute.&quot;</span><span class="p">)</span>
+                <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">const_val</span>
+                <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="c1"># Check for attributes with value -9999</span>
+    <span class="n">attr_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span><span class="p">:</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; has a fill value of -9999. Removing.&quot;</span><span class="p">)</span>
+            <span class="n">attr_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-9999&quot;</span><span class="p">:</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; has a string fill value of &#39;-9999&#39;. Removing.&quot;</span><span class="p">)</span>
+            <span class="n">attr_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attr_to_delete</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+
+    <span class="c1"># Make variable names uppercase and replace spaces with underscores</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+        <span class="n">new_var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">rename_vars</span><span class="p">({</span><span class="n">var</span><span class="p">:</span> <span class="n">new_var</span><span class="p">})</span>
+
+
+    <span class="c1"># Change floats to integer where possible</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">convert_float_to_int</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Set the best dtype for each variable</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">set_best_dtype</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+
+<div class="viewcode-block" id="load_netcdf_datasets">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.load_netcdf_datasets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_netcdf_datasets</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">file_root</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load netCDF files matching the given file_root and optional keys from the specified data_path into a dictionary of xarray datasets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_path : str </span>
+<span class="sd">        The directory path where the netCDF files are located.</span>
+<span class="sd">    file_root : str </span>
+<span class="sd">        The root name of the files to match.</span>
+<span class="sd">    keys : list of str, optional</span>
+<span class="sd">        A list of keys to filter the files. Only files containing these keys in their names will be loaded.</span>
+<span class="sd">        If None, all matching files will be loaded.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict </span>
+<span class="sd">        A dictionary where keys are dataset names and values are xarray datasets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find matching netCDF files</span>
+    <span class="n">search_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_root</span><span class="si">}</span><span class="s2">*.nc&quot;</span><span class="p">)</span>
+    <span class="n">matching_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_dir</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">search_dir</span><span class="p">)</span>
+    <span class="c1"># Filter files based on keys if provided</span>
+    <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">matching_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">matching_files</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_root</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="c1"># Load the matching netCDF files into a dictionary of xarray datasets</span>
+    <span class="n">datasets_loaded</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">matching_files</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">datasets_loaded</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+
+    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datasets_loaded</span><span class="p">)</span><span class="si">}</span><span class="s2"> datasets from files matching &#39;</span><span class="si">{</span><span class="n">file_root</span><span class="si">}</span><span class="s2">&#39; with keys </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">datasets_loaded</span></div>
+
+
+
+
+<div class="viewcode-block" id="read_csv_to_xarray">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.read_csv_to_xarray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_csv_to_xarray</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">deploy_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">recovery_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AZS&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZA&#39;</span><span class="p">,</span><span class="s1">&#39;AZS&#39;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes a CSV file and converts it into NetCDF-compatible datasets.</span>
+<span class="sd">    This function reads data from the input CSV file, processes it into xarray datasets</span>
+<span class="sd">    by separating the data into datasets corresponding to each logging event type,</span>
+<span class="sd">    standardizes the datasets, and then processes datasets that match a specified</span>
+<span class="sd">    sequence pattern. The matched datasets are further combined into an additional</span>
+<span class="sd">    xarray dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_file : str</span>
+<span class="sd">        The path to the input CSV file.</span>
+<span class="sd">    pattern : list of str, optional</span>
+<span class="sd">        A list of event types defining a valid group (default: [&#39;AZS&#39;, &#39;AZA&#39;, &#39;AZA&#39;, &#39;AZA&#39;, &#39;AZS&#39;]).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary of standardized xarray datasets. The keys are event types, and the values</span>
+<span class="sd">        are the corresponding datasets. An additional dataset with the key &#39;AZAseq&#39; contains</span>
+<span class="sd">        the combined dataset created from patterns in the input CSV file.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The function first processes the input file into individual datasets based on event types.</span>
+<span class="sd">    - It then standardizes each dataset by converting constant variables to attributes, handling</span>
+<span class="sd">      fill values, and ensuring proper data types.</span>
+<span class="sd">    - The function identifies and processes groups of rows matching the specified pattern, adding</span>
+<span class="sd">      sequence-related metadata.</span>
+<span class="sd">    - The combined dataset (&#39;AZAseq&#39;) includes additional attributes describing the sequence pattern.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="n">csv_to_xarray</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+    <span class="n">datasets2</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">datasets4</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;------------------------ Processing dataset &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; ------------------------&quot;</span><span class="p">)</span>
+        <span class="n">datasets2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">standardise_dataset</span><span class="p">(</span><span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="n">datasets3</span> <span class="o">=</span> <span class="n">csv_to_xarray_pattern</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datasets3</span><span class="p">:</span>
+        <span class="n">datasets4</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">standardise_dataset</span><span class="p">(</span><span class="n">datasets3</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="n">combined_ds</span> <span class="o">=</span> <span class="n">combine_pattern</span><span class="p">(</span><span class="n">datasets4</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pattern</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;AZS&#39;</span><span class="p">,</span> <span class="s1">&#39;AZA&#39;</span><span class="p">,</span> <span class="s1">&#39;AZA&#39;</span><span class="p">,</span> <span class="s1">&#39;AZA&#39;</span><span class="p">,</span> <span class="s1">&#39;AZS&#39;</span><span class="p">]:</span>
+        <span class="n">combined_ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;1: Transfer measures ambient (single), &#39;</span>
+            <span class="s1">&#39;2: Calibration start point (settled), transfer measures ambient (averaged pressure value over 30 seconds), &#39;</span>
+            <span class="s1">&#39;3: Calibration zero point (settled), transfer measures low (averaged pressure value over 30 seconds), &#39;</span>
+            <span class="s1">&#39;4: Calibration end point (settled), transfer measures ambient (averaged pressure value over 30 seconds), &#39;</span>
+            <span class="s1">&#39;5: Transfer measures ambient (single)&#39;</span>
+        <span class="p">)</span>
+
+    <span class="n">datasets2</span><span class="p">[</span><span class="s1">&#39;AZAseq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_ds</span>
+
+    <span class="c1"># Remove empty fill values</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datasets2</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">datasets2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">empty_string_attrs</span><span class="p">,</span> <span class="n">empty_string_attr_vars</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">netcdf_compliancer</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">empty_string_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; has an empty string value. Removing it.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">empty_string_attr_vars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                    <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; of variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; has an empty string value. Removing it.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span>  <span class="n">datasets2</span></div>
+
+
+
+<div class="viewcode-block" id="data_overview">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.readers.data_overview">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">data_overview</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">base_filename</span><span class="p">,</span> <span class="n">extracted_parts</span><span class="p">,</span> <span class="n">output_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads data details from a directory and prints or writes them to a file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_path : str</span>
+<span class="sd">        The path to the data directory.</span>
+<span class="sd">    base_filename : str</span>
+<span class="sd">        The base filename for the data files.</span>
+<span class="sd">    extracted_parts : list</span>
+<span class="sd">        A list of parts to be extracted from the base filename.</span>
+<span class="sd">    output_file_path : str, optional</span>
+<span class="sd">        The path to the output file. If None, prints to standard output.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timevar</span> <span class="o">=</span> <span class="s1">&#39;RECORD_TIME&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_output</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_file_path</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">output_file_path</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">extracted_parts</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing part: </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_filename</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">.nc&quot;</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">record_types</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">timevar</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">timevar</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">num_data_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">timevar</span><span class="p">])</span>
+            <span class="n">time_diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">timevar</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;timedelta64[s]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">avg_temporal_resolution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">)</span>  <span class="c1"># Convert seconds to decimal days</span>
+
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filename: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start Time: </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End Time: </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of Data Points: </span><span class="si">{</span><span class="n">num_data_points</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average Temporal Resolution: </span><span class="si">{</span><span class="n">avg_temporal_resolution</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> days&quot;</span><span class="p">)</span>
+
+            <span class="n">write_output</span><span class="p">(</span><span class="s2">&quot;Variables with Units:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">long_name</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;No long_name&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">):</span>
+                        <span class="n">d1</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+                        <span class="n">avg_value</span> <span class="o">=</span> <span class="n">d1</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">max_value</span> <span class="o">=</span> <span class="n">d1</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                        <span class="n">min_value</span> <span class="o">=</span> <span class="n">d1</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                        <span class="n">std_value</span> <span class="o">=</span> <span class="n">d1</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+                        <span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;seconds&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">avg_value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+                        <span class="n">max_value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+                        <span class="n">min_value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+                        <span class="n">std_value</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+                    <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s2">): mean(</span><span class="si">{</span><span class="n">avg_value</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">), min(</span><span class="si">{</span><span class="n">min_value</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)--max(</span><span class="si">{</span><span class="n">max_value</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">), std(</span><span class="si">{</span><span class="n">std_value</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">write_output</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_output</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">output_file_path</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overview written to </span><span class="si">{</span><span class="n">output_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

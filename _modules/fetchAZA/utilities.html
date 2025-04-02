@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fetchAZA.utilities &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8b92e751"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            fetchAZA
+              <img src="../../_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fetchAZA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ / Troubleshooting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fetchAZA.utilities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fetchAZA.utilities</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Based on https://github.com/voto-ocean-knowledge/votoutils/blob/main/votoutils/utilities/utilities.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fetchAZA</span><span class="w"> </span><span class="kn">import</span> <span class="n">readers</span><span class="p">,</span> <span class="n">writers</span><span class="p">,</span> <span class="n">plotters</span><span class="p">,</span> <span class="n">tools</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+
+
+<div class="viewcode-block" id="netcdf_compliancer">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.netcdf_compliancer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">netcdf_compliancer</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for variables and attributes with empty string values in the dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The dataset to check.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find variables with empty string values</span>
+    <span class="n">empty_string_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span> <span class="k">if</span> <span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">())}</span>
+
+    <span class="c1"># Print the variables with empty string values</span>
+    <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">empty_string_vars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; has empty string values.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Find attributes with empty string values</span>
+    <span class="n">empty_string_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+
+    <span class="c1"># Print the attributes with empty string values</span>
+    <span class="c1">#for attr, value in empty_string_attrs.items():</span>
+    <span class="c1">#    _log.warning(f&quot;Attribute &#39;{attr}&#39; has an empty string value.&quot;)</span>
+
+    <span class="c1"># Find attributes on variables with empty string values</span>
+    <span class="n">empty_string_attr_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+        <span class="n">empty_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">empty_attrs</span><span class="p">:</span>
+            <span class="n">empty_string_attr_vars</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_attrs</span>
+
+    <span class="c1"># Print the variables and their attributes with empty string values</span>
+    <span class="c1">#for var, attrs in empty_string_attr_vars.items():</span>
+    <span class="c1">#    for attr, value in attrs.items():</span>
+    <span class="c1">#        _log.warning(f&quot;Variable &#39;{var}&#39; has attribute &#39;{attr}&#39; has an empty string value.&quot;)</span>
+
+    <span class="k">return</span> <span class="n">empty_string_vars</span><span class="p">,</span> <span class="n">empty_string_attrs</span><span class="p">,</span> <span class="n">empty_string_attr_vars</span></div>
+
+
+<div class="viewcode-block" id="find_best_dtype">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.find_best_dtype">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_best_dtype</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">da</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the most appropriate data type for a given variable based on its name and data array.</span>
+
+<span class="sd">    Rules</span>
+<span class="sd">    ------</span>
+<span class="sd">    1. If the variable name contains &quot;latitude&quot; or &quot;longitude&quot; (case-insensitive), return `np.double`.</span>
+<span class="sd">    2. If the variable name ends with &quot;qc&quot; (case-insensitive), return `np.int8`.</span>
+<span class="sd">    3. If the variable name contains &quot;time&quot; (case-insensitive), return the input data type.</span>
+<span class="sd">    4. If the variable name ends with &quot;raw&quot; or the input data type is an integer:</span>
+<span class="sd">       - If the maximum value in the data array is less than 2^15, return `np.int16`.</span>
+<span class="sd">       - If the maximum value in the data array is less than 2^31, return `np.int32`.</span>
+<span class="sd">    5. If the input data type is `np.float64`, return `np.float32`.</span>
+<span class="sd">    6. Otherwise, return the input data type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    var_name : str</span>
+<span class="sd">        The name of the variable. This is used to infer the type based on naming conventions.</span>
+<span class="sd">    da : xarray.DataArray</span>
+<span class="sd">        The data array containing the variable&#39;s values and its current data type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    numpy.dtype</span>
+<span class="sd">        The recommended data type for the variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">input_dtype</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
+    <span class="k">if</span> <span class="s2">&quot;latitude&quot;</span> <span class="ow">in</span> <span class="n">var_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;longitude&quot;</span> <span class="ow">in</span> <span class="n">var_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span>
+    <span class="k">if</span> <span class="n">var_name</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;qc&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+    <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">var_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">input_dtype</span>
+    <span class="k">if</span> <span class="n">var_name</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;raw&quot;</span> <span class="ow">or</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_dtype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span>
+    <span class="k">if</span> <span class="n">input_dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+    <span class="k">return</span> <span class="n">input_dtype</span></div>
+
+
+
+
+<div class="viewcode-block" id="set_best_dtype">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.set_best_dtype">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_best_dtype</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adjusts the data types of variables in an xarray Dataset to optimize memory usage </span>
+<span class="sd">    while preserving data integrity. The function evaluates each variable&#39;s current </span>
+<span class="sd">    data type and determines a more efficient data type, if applicable. It also updates </span>
+<span class="sd">    attributes like `valid_min` and `valid_max` to match the new data type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The input dataset whose variables&#39; data types will be evaluated and potentially </span>
+<span class="sd">        adjusted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    xarray.Dataset</span>
+<span class="sd">        A new dataset with optimized data types for its variables, potentially saving </span>
+<span class="sd">        memory space.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ------</span>
+<span class="sd">    - If a variable&#39;s data type is changed to an integer type, NaN values are replaced </span>
+<span class="sd">      with a fill value, and the `_FillValue` encoding is updated accordingly.</span>
+<span class="sd">    - Logs the percentage of memory saved due to data type adjustments.</span>
+<span class="sd">    - Relies on the helper functions `find_best_dtype` and `set_fill_value` to determine </span>
+<span class="sd">      the optimal data type and appropriate fill value, respectively.</span>
+<span class="sd">    - Logs debug messages for each variable whose data type is changed, including the </span>
+<span class="sd">      original and new data types.</span>
+<span class="sd">    - Logs an info message summarizing the overall memory savings.</span>
+<span class="sd">    - Raises: Assumes that `find_best_dtype` and `set_fill_value` are defined elsewhere in the </span>
+<span class="sd">      codebase.</span>
+<span class="sd">    - Raises: Assumes that `_log` is a configured logger available in the current scope.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bytes_in</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">nbytes</span>
+    <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
+        <span class="n">input_dtype</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
+        <span class="n">new_dtype</span> <span class="o">=</span> <span class="n">find_best_dtype</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;valid_min&quot;</span><span class="p">,</span> <span class="s2">&quot;valid_max&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">att</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">att</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_dtype</span> <span class="o">==</span> <span class="n">input_dtype</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> input dtype </span><span class="si">{</span><span class="n">input_dtype</span><span class="si">}</span><span class="s2"> change to </span><span class="si">{</span><span class="n">new_dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">da_new</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">):</span>
+            <span class="n">fill_val</span> <span class="o">=</span> <span class="n">set_fill_value</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">)</span>
+            <span class="n">da_new</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">da</span><span class="p">)]</span> <span class="o">=</span> <span class="n">fill_val</span>
+            <span class="n">da_new</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s2">&quot;_FillValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_val</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">da_new</span>
+    <span class="n">bytes_out</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">nbytes</span>
+    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Space saved by dtype downgrade: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">bytes_in</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">bytes_out</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">bytes_in</span><span class="p">)</span><span class="si">}</span><span class="s2"> %&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+
+<div class="viewcode-block" id="set_fill_value">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.set_fill_value">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_fill_value</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate and return the maximum fill value for a given numeric data type.</span>
+<span class="sd">    The function extracts the bit-width of the provided data type (e.g., int32, uint16)</span>
+<span class="sd">    and computes the maximum value that can be represented by that type, assuming it</span>
+<span class="sd">    is a signed integer type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    new_dtype : str</span>
+<span class="sd">        A string representation of the data type (e.g., &#39;int32&#39;, &#39;uint16&#39;).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The maximum fill value for the given data type.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError: If the bit-width cannot be extracted from the provided data type string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fill_val</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_dtype</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">fill_val</span></div>
+
+
+
+
+<div class="viewcode-block" id="convert_float_to_int">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.convert_float_to_int">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_float_to_int</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts float variables in an xarray dataset to integer type if all values </span>
+<span class="sd">    are sufficiently close to their integer representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset </span>
+<span class="sd">        An xarray dataset containing variables to be checked and potentially converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None </span>
+<span class="sd">        The dataset is modified in place, with applicable variables converted to integer type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+        <span class="c1"># Check if the variable is of type float</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+            <span class="c1"># Check if all values are equal to their integer representation</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+
+                    <span class="c1"># Convert the variable to integer type</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> to integer type.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+
+<span class="c1"># Convert column types</span>
+<div class="viewcode-block" id="convert_type">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.convert_type">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_type</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a string value to an appropriate type.</span>
+
+<span class="sd">    This function attempts to convert a string value to an integer or a float.</span>
+<span class="sd">    If the value contains a leading zero and is entirely numeric, it is returned as a string to preserve the leading zero.</span>
+<span class="sd">    If the value contains a decimal point, it is converted to a float.</span>
+<span class="sd">    If the value is numeric without a decimal point, it is converted to an integer.</span>
+<span class="sd">    If the conversion to an integer or float fails, the value is returned as a string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : str</span>
+<span class="sd">        The string value to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int, float, or str</span>
+<span class="sd">        The converted value as an integer, float, or string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># Keep leading zeros</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reformat_object_vars">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.utilities.reformat_object_vars">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reformat_object_vars</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fix variables with mixed data types in xarray datasets or a single xarray dataset.</span>
+
+<span class="sd">    This function processes variables with mixed data types (e.g., object type) by attempting to convert them </span>
+<span class="sd">    to a single consistent type (e.g., float, int, or string). It removes common fill values (&#39;0&#39;) and checks </span>
+<span class="sd">    the remaining values to determine the appropriate type. If conversion to integer is not possible, the </span>
+<span class="sd">    variable is converted to a string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : dict or xarray.Dataset</span>
+<span class="sd">        A dictionary of xarray datasets or a single xarray dataset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict or xarray.Dataset</span>
+<span class="sd">        A dictionary of modified xarray datasets or a single modified xarray dataset with variables of type </span>
+<span class="sd">        object converted to numeric (if possible) or string (otherwise).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_multitype_object_variables</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="n">d1</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d1</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">other_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d1</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">d2</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">other_indices</span><span class="p">]</span>
+                <span class="n">d3</span> <span class="o">=</span> <span class="n">d2</span><span class="o">.</span><span class="n">values</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                    <span class="n">number_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d3</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">number_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+                        <span class="n">newtype</span> <span class="o">=</span> <span class="s1">&#39;FLOAT&#39;</span>
+                        <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                        <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">number_type</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">newtype</span> <span class="o">=</span> <span class="s1">&#39;INT&#39;</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_FillValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="n">newtype</span> <span class="o">=</span> <span class="s1">&#39;STR (not INT)&#39;</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                            <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_FillValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                    <span class="k">elif</span> <span class="n">number_type</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                        <span class="n">newtype</span> <span class="o">=</span> <span class="s1">&#39;STR&#39;</span>
+                        <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                        <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                        <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;_FillValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+                    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; is dtype object / &#39;0&#39; occurs </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span><span class="si">}</span><span class="s2"> times --&gt; </span><span class="si">{</span><span class="n">newtype</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable &#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39; is not a numpy array.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ds</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------- utilities.reformat_object_vars --------------&#39;</span><span class="p">)</span>
+        <span class="n">data_new</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">data_new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_fix_multitype_object_variables</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_new</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_fix_multitype_object_variables</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input must be a dictionary of xarray datasets or a single xarray dataset.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

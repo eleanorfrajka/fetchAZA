@@ -1,0 +1,1249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fetchAZA.plotters &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8b92e751"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            fetchAZA
+              <img src="../../_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fetchAZA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ / Troubleshooting</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fetchAZA.plotters</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fetchAZA.plotters</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdates</span>
+
+
+
+<div class="viewcode-block" id="get_record_type">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.get_record_type">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_record_type</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the record type description for a given key or a list of keys.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    key : str or list</span>
+<span class="sd">        The key or list of keys to look up in the `record_types` dictionary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str or None</span>
+<span class="sd">        The record type description if the key is found, otherwise None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">record_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">record_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Unknown key&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input must be a string or a list of strings&quot;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="plot_AZA_pressure">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_AZA_pressure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_AZA_pressure</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">demean</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a comparison of pressure-related variables within a single dataset over a specified time range.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_AZA : xarray.Dataset</span>
+<span class="sd">        The dataset containing the variables to plot.</span>
+<span class="sd">    variables : list</span>
+<span class="sd">        List of variable names (strings) to plot from the dataset.</span>
+<span class="sd">    start_date : str, optional</span>
+<span class="sd">        Start date for the time range to filter the data (format: &#39;YYYY-MM-DD&#39;). Defaults to None.</span>
+<span class="sd">    end_date : str, optional</span>
+<span class="sd">        End date for the time range to filter the data (format: &#39;YYYY-MM-DD&#39;). Defaults to None.</span>
+<span class="sd">    demean : bool, optional</span>
+<span class="sd">        If True, demean the data by subtracting the mean of each variable before plotting. Defaults to False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fig : matplotlib.figure.Figure</span>
+<span class="sd">        Figure object containing the plots.</span>
+<span class="sd">    axs : numpy.ndarray</span>
+<span class="sd">        Array of axes objects corresponding to the subplots.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - If the number of data points in a variable is less than or equal to 20, the data points are plotted with symbols.</span>
+<span class="sd">    - The function automatically adjusts the number of columns in the subplot grid based on the number of variables.</span>
+<span class="sd">    - Unused subplot axes are removed for cleaner visualization.</span>
+<span class="sd">    - The y-axis is inverted for all plots.</span>
+<span class="sd">    - Units for each variable are extracted from the dataset attributes and displayed on the y-axis label.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">time_var</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;RECORD_TIME&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds_AZA</span><span class="o">.</span><span class="n">coords</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">time_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid time coordinate found in the dataset.&quot;</span><span class="p">)</span>
+
+
+
+    <span class="k">if</span> <span class="n">demean</span><span class="p">:</span>
+        <span class="n">ds_AZA</span> <span class="o">=</span> <span class="n">ds_AZA</span> <span class="o">-</span> <span class="n">ds_AZA</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># Check the number of data points</span>
+    <span class="n">num_data_points</span> <span class="o">=</span> <span class="n">ds_AZA</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="n">time_var</span><span class="p">]</span>
+    <span class="n">plot_with_symbol</span> <span class="o">=</span> <span class="n">num_data_points</span> <span class="o">&lt;=</span> <span class="mi">20</span>
+
+    <span class="c1"># Determine the number of columns needed</span>
+    <span class="n">num_vars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+    <span class="n">num_cols</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_vars</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span>  <span class="c1"># Default to 3 rows</span>
+
+    <span class="c1"># Create the plot</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">ds_AZA</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_with_symbol</span><span class="p">:</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">ds_AZA</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">demean</span><span class="p">:</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> (demeaned)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">ds_AZA</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="c1">#axs[i].legend(loc=&#39;center left&#39;, bbox_to_anchor=(1, 0.5))</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+    <span class="c1"># Remove unused axes</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+
+<div class="viewcode-block" id="compare_pressure">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.compare_pressure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_pressure</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">STN</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compare pressure data between multiple time series in a dataset over a specified time range.</span>
+
+<span class="sd">    This function interpolates the pressure data from the specified time series onto a common time axis,</span>
+<span class="sd">    calculates the differences between them, and plots the pressure data and their differences.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_pressure : xarray.Dataset</span>
+<span class="sd">        The dataset containing pressure data. It must have a time coordinate (&#39;TIME&#39;, &#39;SAMPLE_TIME&#39;, or &#39;RECORD_TIME&#39;)</span>
+<span class="sd">        and the specified variable for each key in `keys`.</span>
+<span class="sd">    keys : list of str</span>
+<span class="sd">        A list of strings identifying the pressure time series to compare in the dataset.</span>
+<span class="sd">    variable : str</span>
+<span class="sd">        The name of the variable in the dataset to compare (e.g., &#39;PRESSURE&#39;).</span>
+<span class="sd">    deploy_date : str, optional</span>
+<span class="sd">        The deployment date in &#39;YYYY-MM-DD&#39; format. Data before this date will be excluded.</span>
+<span class="sd">        Default is &#39;2000-01-01&#39;.</span>
+<span class="sd">    recovery_date : str, optional</span>
+<span class="sd">        The recovery date in &#39;YYYY-MM-DD&#39; format. Data after this date will be excluded.</span>
+<span class="sd">        Default is &#39;2099-01-01&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fig : matplotlib.figure.Figure</span>
+<span class="sd">        The figure object containing the plots.</span>
+<span class="sd">    axs : numpy.ndarray</span>
+<span class="sd">        An array of axes objects corresponding to the subplots.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Determine the time variable in the dataset</span>
+    <span class="k">if</span> <span class="s1">&#39;TIME&#39;</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span><span class="p">:</span>
+        <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;TIME&#39;</span>
+    <span class="k">elif</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span><span class="p">:</span>
+        <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span>
+    <span class="k">elif</span> <span class="s1">&#39;RECORD_TIME&#39;</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span><span class="p">:</span>
+        <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;RECORD_TIME&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid time coordinate found in the dataset.&quot;</span><span class="p">)</span>
+
+
+    <span class="c1"># Plot the pressure data and their differences</span>
+    <span class="n">num_keys</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">num_keys</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot each key&#39;s pressure data</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> Pressure&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> Pressure over Time&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pressure (dbar)&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+    <span class="c1"># Calculate and plot the differences between the first key and the others</span>
+    <span class="n">reference_key</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">pressure_difference</span> <span class="o">=</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">reference_key</span><span class="p">]</span> <span class="o">-</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">pressure_difference</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Difference (</span><span class="si">{</span><span class="n">reference_key</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pressure Differences over Time&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pressure Difference (dbar)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="c1"># Add station info to the top right of the figure</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+
+<span class="c1"># Example usage</span>
+<div class="viewcode-block" id="plot_histograms">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_histograms">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_histograms</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">STN</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot histograms of all data variables in the dataset.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ds (xarray.Dataset): The dataset containing variables to plot.</span>
+<span class="sd">    time_var (str): The name of the time variable in the dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_vars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">nrows</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_vars</span> <span class="o">+</span> <span class="n">ncols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">ncols</span>  <span class="c1"># Calculate rows needed for up to 4 columns</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  <span class="c1"># Flatten the 2D array of axes for easier iteration</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Histogram of </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+        <span class="c1">#axs[i].legend()</span>
+
+    <span class="c1"># Hide unused subplots</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+    <span class="c1"># Add station info to the top right of the figure</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="plot_temperature_variables">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_temperature_variables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_temperature_variables</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">STN</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot temperature variables from ds_pressure against RECORD_TIME.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ds_pressure (xarray.Dataset): The dataset containing temperature variables.</span>
+<span class="sd">    keys (str or list): A single key (str) or a list of keys (list of str) to match variable names.</span>
+<span class="sd">    STN (str): Station identifier for annotation.</span>
+<span class="sd">    fig (matplotlib.figure.Figure, optional): Existing figure to plot into. If None, a new figure is created.</span>
+<span class="sd">    axs (numpy.ndarray or matplotlib.axes._axes.Axes, optional): Existing axes to plot into. If None, new axes are created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    fig (matplotlib.figure.Figure): The figure object containing the plots.</span>
+<span class="sd">    axs (numpy.ndarray or list): The array or list of axes objects corresponding to the subplots.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;RECORD_TIME&#39;</span> <span class="k">if</span> <span class="s1">&#39;RECORD_TIME&#39;</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;TIME&#39;</span> <span class="k">if</span> <span class="s1">&#39;TIME&#39;</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds_pressure</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+
+    <span class="c1"># Create new figure and axes if not provided</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">axs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Ensure axs is iterable even if there&#39;s only one subplot</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">axs</span> <span class="o">=</span> <span class="p">[</span><span class="n">axs</span><span class="p">]</span>
+
+    <span class="c1"># Define marker styles and line styles to cycle through</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">]</span>
+    <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="c1"># Find all variables in ds_pressure that include the key in their names</span>
+        <span class="n">temperature_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">data_vars</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+
+        <span class="c1"># Plot each temperature variable</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temperature_vars</span><span class="p">):</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">ds_pressure</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span>
+                <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> (°C)&#39;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">j</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="p">)],</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="n">line_styles</span><span class="p">[</span><span class="n">j</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_styles</span><span class="p">)],</span>
+                <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>  <span class="c1"># Solid for the first, open for subsequent</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Customize the subplot</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Temperature Variables Matching &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; in ds_pressure&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Temperature (°C)&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Customize the shared x-axis</span>
+    <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Record Time&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add station info to the top right of the figure</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Adjust layout</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+
+<div class="viewcode-block" id="plot_temperatures">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_temperatures">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_temperatures</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    
+    <span class="n">transfer_temp_filtered</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;TRANSFER_TEMPERATURE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">ambient_temp_filtered</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;AMBIENT_TEMPERATURE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">if</span> <span class="n">ylim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">combined_temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">transfer_temp_filtered</span><span class="p">,</span> <span class="n">ambient_temp_filtered</span><span class="p">])</span>
+        <span class="n">upper_limit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span>
+        <span class="n">lower_limit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span>
+        <span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="n">lower_limit</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">transfer_temp_filtered</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Transfer Temperature&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ambient_temp_filtered</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ambient Temperature&#39;</span><span class="p">,</span> <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Sample Time&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Temperature (°C)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Transfer and Ambient Temperature over Time&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s1">&#39;STN:&#39;</span> <span class="o">+</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Station&#39;</span><span class="p">],</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
+
+
+<div class="viewcode-block" id="plot_hist_fig">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_hist_fig">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_hist_fig</span><span class="p">(</span><span class="n">data_sets_new</span><span class="p">,</span> <span class="n">types_to_plot</span><span class="p">,</span> <span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">STN</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate and save histogram plots for specified data types within a given time range.</span>
+
+<span class="sd">    This function creates histograms for numeric variables in the provided datasets, </span>
+<span class="sd">    filtered by the deployment and recovery dates. Each histogram is saved as an image </span>
+<span class="sd">    file in the specified data path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_sets_new : dict</span>
+<span class="sd">        A dictionary containing xarray datasets, where keys are data types and values </span>
+<span class="sd">        are the corresponding datasets.</span>
+<span class="sd">    types_to_plot : list</span>
+<span class="sd">        A list of data types to generate histograms for.</span>
+<span class="sd">    deploy_date : str or datetime</span>
+<span class="sd">        The start date for filtering the datasets.</span>
+<span class="sd">    recovery_date : str or datetime</span>
+<span class="sd">        The end date for filtering the datasets.</span>
+<span class="sd">    data_path : str</span>
+<span class="sd">        The directory path where the histogram images will be saved. If None, the images </span>
+<span class="sd">        will not be saved.</span>
+<span class="sd">    STN : str</span>
+<span class="sd">        The station identifier to include in the plot titles and saved filenames.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The function assumes that the datasets are xarray objects with a &#39;TIME&#39; dimension.</span>
+<span class="sd">    - Only numeric variables in the datasets are considered for plotting.</span>
+<span class="sd">    - If a variable has a timedelta64 dtype, it is converted to seconds before plotting.</span>
+<span class="sd">    - The function creates subplots with up to 12 histograms per figure.</span>
+<span class="sd">    - If there are fewer variables than subplot slots, the extra slots are removed.</span>
+<span class="sd">    - The mean of each variable is marked on the histogram with a red dashed line.</span>
+<span class="sd">    - The saved filenames follow the format: &#39;{STN}_{data_type}_histograms.png&#39;.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    plot_hist_fig(</span>
+<span class="sd">        data_sets_new=my_datasets, </span>
+<span class="sd">        types_to_plot=[&#39;type1&#39;, &#39;type2&#39;], </span>
+<span class="sd">        deploy_date=&#39;2023-01-01&#39;, </span>
+<span class="sd">        recovery_date=&#39;2023-12-31&#39;, </span>
+<span class="sd">        data_path=&#39;/path/to/save&#39;, </span>
+<span class="sd">        STN=&#39;Station123&#39;</span>
+<span class="sd">    )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_histogram</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">STN</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+<span class="c1">#        ax.axvline(np.median(data), color=&#39;red&#39;, linestyle=&#39;--&#39;, linewidth=1, label=&#39;Median&#39;)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Mean&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">types_to_plot</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">data_sets_new</span><span class="p">:</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">data_sets_new</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+                <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span>
+            <span class="k">elif</span> <span class="s1">&#39;RECORD_TIME&#39;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+                <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;RECORD_TIME&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must contain either &#39;RECORD_TIME&#39; or &#39;SAMPLE_TIME&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="n">time_var</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">)})</span>
+            <span class="n">numeric_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data_vars</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1"> has numeric variables </span><span class="si">{</span><span class="n">numeric_vars</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">))</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+            <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">numeric_vars</span><span class="p">):</span>
+                <span class="n">d1</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">):</span>
+                    <span class="n">d1</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+
+                <span class="n">plot_histogram</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">d1</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">STN</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                
+            <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1">_histograms.png&#39;</span><span class="p">))</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for type </span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="plot_data_type">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_data_type">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_data_type</span><span class="p">(</span><span class="n">data_sets_new</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">STN</span><span class="p">,</span> <span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot and save figures for a specified data type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_type : str</span>
+<span class="sd">        The type of data to plot.</span>
+<span class="sd">    STN : str</span>
+<span class="sd">        The station identifier.</span>
+<span class="sd">    last_4_digits : str</span>
+<span class="sd">        The last four digits to include in the filename.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - This function checks if the specified data type exists in the `data_sets_new` dictionary.</span>
+<span class="sd">    - If the data type exists, it selects the dataset for the given time range (`deploy_date` to `recovery_date`),</span>
+<span class="sd">      identifies numeric variables, and creates figures to plot these variables over time.</span>
+<span class="sd">    - Each figure contains up to 4 variables, and the figures are saved with filenames that</span>
+<span class="sd">      include the data type, station identifier, and part number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xlbl_orig</span> <span class="o">=</span> <span class="s1">&#39;Time&#39;</span>
+    <span class="n">xlbl</span> <span class="o">=</span> <span class="n">xlbl_orig</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">data_sets_new</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">data_sets_new</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;RECORD_TIME&#39;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;RECORD_TIME&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must contain either &#39;RECORD_TIME&#39; or &#39;SAMPLE_TIME&#39;.&quot;</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="n">time_var</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">)})</span>
+        <span class="n">numeric_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data_vars</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)]</span>
+        
+        <span class="c1"># Determine the number of figures needed</span>
+        <span class="n">num_figures</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">numeric_vars</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">//</span> <span class="mi">6</span>
+        
+        <span class="k">for</span> <span class="n">fig_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_figures</span><span class="p">):</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="n">fig_num</span> <span class="o">*</span> <span class="mi">6</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span> <span class="mi">6</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_vars</span><span class="p">))</span>
+            <span class="n">vars_to_plot</span> <span class="o">=</span> <span class="n">numeric_vars</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+            
+            <span class="c1"># Create a figure for each set of variables</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1"> Variables Over Time (Part </span><span class="si">{</span><span class="n">fig_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vars_to_plot</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">):</span>
+                    <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+                    <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="s1">&#39;.-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">)</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> in </span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+                <span class="c1"># axs[i].legend()</span>
+                
+                <span class="c1"># Check the difference between x-ticks</span>
+                <span class="n">x_ticks</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">min_year</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+                    <span class="n">max_year</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+                    <span class="k">if</span> <span class="n">min_year</span> <span class="o">==</span> <span class="n">max_year</span><span class="p">:</span>
+                        <span class="c1"># Format without %Y and append the year to xlbl</span>
+                        <span class="n">xlbl</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">xlbl_orig</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">min_year</span><span class="si">}</span><span class="s1">)&#39;</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">86400</span><span class="p">:</span>
+                            <span class="c1"># Format as Y/m/d HH if the difference is less than 1 day</span>
+                            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b %Hh&#39;</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+
+                    <span class="k">elif</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">86400</span><span class="p">:</span>
+                        <span class="c1"># Format as Y/m/d HH if the difference is less than 1 day</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %Hh&#39;</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">xlbl</span> <span class="o">=</span> <span class="n">xlbl_orig</span>
+                        <span class="c1"># Format as Y/m/d with at least 10 ticks</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">vars_to_plot</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+            <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+
+            <span class="c1"># Add station info to the top right of the figure</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Save the figure using data_type and part number in the filename</span>
+            <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">fig_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">_tseries.png&#39;</span><span class="p">))</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for type </span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+
+<div class="viewcode-block" id="plot_all_variables">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_all_variables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_all_variables</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">STN</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot and save figures for all variables in a given xarray dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_pressure : xarray.Dataset</span>
+<span class="sd">        The dataset containing the variables to plot.</span>
+<span class="sd">    STN : str</span>
+<span class="sd">        The station identifier.</span>
+<span class="sd">    data_path : str, optional</span>
+<span class="sd">        The directory path where the figures will be saved. If None, the figures will be displayed instead.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - This function cycles through all numeric variables in the dataset and creates time series plots.</span>
+<span class="sd">    - Each figure contains up to 6 variables, and the figures are saved with filenames that</span>
+<span class="sd">      include the station identifier and part number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xlbl_orig</span> <span class="o">=</span> <span class="s1">&#39;Time&#39;</span>
+    <span class="n">xlbl</span> <span class="o">=</span> <span class="n">xlbl_orig</span>
+    <span class="n">time_var</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;RECORD_TIME&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">time_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must contain one of the following time variables: &#39;TIME&#39;, &#39;SAMPLE_TIME&#39;, or &#39;RECORD_TIME&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">time_var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must contain either &#39;RECORD_TIME&#39; or &#39;SAMPLE_TIME&#39; as the time variable.&quot;</span><span class="p">)</span>
+
+    <span class="n">numeric_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds_pressure</span><span class="o">.</span><span class="n">data_vars</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)]</span>
+
+    <span class="c1"># Determine the number of figures needed</span>
+    <span class="n">CC</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">RR</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">num_figures</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">numeric_vars</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">RR</span><span class="o">*</span><span class="n">CC</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">fig_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_figures</span><span class="p">):</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">fig_num</span> <span class="o">*</span> <span class="n">RR</span><span class="o">*</span><span class="n">CC</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">RR</span><span class="o">*</span><span class="n">CC</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_vars</span><span class="p">))</span>
+        <span class="n">vars_to_plot</span> <span class="o">=</span> <span class="n">numeric_vars</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+
+        <span class="c1"># Create a figure for each set of variables</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">CC</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Variables Over Time (Part </span><span class="si">{</span><span class="n">fig_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vars_to_plot</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">):</span>
+                <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+                <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="s1">&#39;.-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">ds_pressure</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Check the difference between x-ticks</span>
+            <span class="n">x_ticks</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">min_year</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+                <span class="n">max_year</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+                <span class="k">if</span> <span class="n">min_year</span> <span class="o">==</span> <span class="n">max_year</span><span class="p">:</span>
+                    <span class="n">xlbl</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">xlbl_orig</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">min_year</span><span class="si">}</span><span class="s1">)&#39;</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">86400</span><span class="p">:</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b %Hh&#39;</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">x_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">86400</span><span class="p">:</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1"> %Hh&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">xlbl</span> <span class="o">=</span> <span class="n">xlbl_orig</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">dates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+                    <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">vars_to_plot</span><span class="p">)</span> <span class="o">-</span> <span class="n">CC</span><span class="p">:</span>
+                <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlbl</span><span class="p">)</span>
+
+        <span class="c1"># Add station info to the top right of the figure</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="c1"># Save the figure using part number in the filename</span>
+        <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">fig_num</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">_tseries.png&#39;</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+<span class="c1">#-----------------------------------------------------------------------------------</span>
+
+<span class="c1">##------------------------------------------------------------------------------------</span>
+<span class="c1">## Views of the ds or nc file</span>
+<span class="c1">##------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="show_contents">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.show_contents">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_contents</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;variables&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display the contents of an xarray Dataset or a netCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : str or xr.Dataset</span>
+<span class="sd">        The input data, either a file path to a netCDF file or an xarray Dataset.</span>
+<span class="sd">    content_type : str</span>
+<span class="sd">        The type of content to display. Options are:</span>
+<span class="sd">        - &#39;variables&#39; or &#39;vars&#39;: Show details about the variables.</span>
+<span class="sd">        - &#39;attributes&#39; or &#39;attrs&#39;: Show details about the attributes.</span>
+<span class="sd">        Default is &#39;variables&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.io.formats.style.Styler or pandas.DataFrame</span>
+<span class="sd">        A styled DataFrame with details about the variables or attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">content_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">,</span> <span class="s1">&#39;vars&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">show_variables</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">show_variables</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input data must be a file path (str) or an xarray Dataset&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">content_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;attributes&#39;</span><span class="p">,</span> <span class="s1">&#39;attrs&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">show_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">show_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Attributes can only be shown for netCDF files (str)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;content_type must be either &#39;variables&#39; (or &#39;vars&#39;) or &#39;attributes&#39; (or &#39;attrs&#39;)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_variables">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.show_variables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_variables</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract variable information from an xarray Dataset or a netCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : str or xr.Dataset</span>
+<span class="sd">        The input data, either a file path to a netCDF file or an xarray Dataset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.io.formats.style.Styler</span>
+<span class="sd">        A styled DataFrame containing the following columns:</span>
+<span class="sd">        - dims : str</span>
+<span class="sd">            The dimension of the variable (or &quot;string&quot; if it is a string type).</span>
+<span class="sd">        - name : str</span>
+<span class="sd">            The name of the variable.</span>
+<span class="sd">        - units : str</span>
+<span class="sd">            The units of the variable (if available).</span>
+<span class="sd">        - comment : str</span>
+<span class="sd">            Any additional comments about the variable (if available).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on xarray Dataset&quot;</span><span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">variables</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input data must be a file path (str) or an xarray Dataset&quot;</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;string&quot;</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">var</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;comment&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;string&quot;</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+            <span class="s2">&quot;dims&quot;</span><span class="p">:</span> <span class="n">dims</span><span class="p">,</span>
+            <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="n">units</span><span class="p">,</span>
+            <span class="s2">&quot;comment&quot;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
+            <span class="s2">&quot;standard_name&quot;</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;standard_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="nb">vars</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">info</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">vars</span><span class="o">.</span><span class="n">dims</span>
+    <span class="n">dim</span><span class="p">[</span><span class="n">dim</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+    <span class="nb">vars</span><span class="p">[</span><span class="s2">&quot;dims&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dim</span>
+
+    <span class="nb">vars</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">vars</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;dims&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;dims&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;comment&quot;</span><span class="p">,</span> <span class="s2">&quot;standard_name&quot;</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">]]</span>
+        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">style</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">vars</span></div>
+
+
+<div class="viewcode-block" id="show_attributes">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.show_attributes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_attributes</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract and display attribute information from an xarray Dataset or a netCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : str or xr.Dataset</span>
+<span class="sd">        The input data, either a file path to a netCDF file or an xarray Dataset.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.DataFrame</span>
+<span class="sd">        A DataFrame containing the following columns:</span>
+<span class="sd">        - Attribute: The name of the attribute.</span>
+<span class="sd">        - Value: The value of the attribute.</span>
+<span class="sd">        - DType: The data type of the attribute value.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - If the input is a file path, the function reads the attributes from the netCDF file.</span>
+<span class="sd">    - If the input is an xarray Dataset, the function reads the attributes directly from the Dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">rootgrp</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4&quot;</span><span class="p">)</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">rootgrp</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">()</span>
+        <span class="n">get_attr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rootgrp</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on xarray Dataset&quot;</span><span class="p">)</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">get_attr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input data must be a file path (str) or an xarray Dataset&quot;</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">attributes</span><span class="p">):</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">get_attr</span><span class="p">(</span><span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Attribute&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+            <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="n">get_attr</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+            <span class="s2">&quot;DType&quot;</span><span class="p">:</span> <span class="n">dtype</span>
+        <span class="p">}</span>
+
+    <span class="n">attrs</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">info</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">return</span> <span class="n">attrs</span></div>
+
+
+<div class="viewcode-block" id="show_variables_by_dimension">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.show_variables_by_dimension">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_variables_by_dimension</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dimension_name</span><span class="o">=</span><span class="s1">&#39;trajectory&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract variable information filtered by a specific dimension from an xarray Dataset or a netCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : str or xr.Dataset</span>
+<span class="sd">        The input data, either a file path to a netCDF file or an xarray Dataset.</span>
+<span class="sd">    dimension_name : str</span>
+<span class="sd">        The name of the dimension to filter variables by.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.io.formats.style.Styler</span>
+<span class="sd">        A styled DataFrame containing the following columns:</span>
+<span class="sd">        - dims : str</span>
+<span class="sd">            The dimension of the variable (or &quot;string&quot; if it is a string type).</span>
+<span class="sd">        - name : str</span>
+<span class="sd">            The name of the variable.</span>
+<span class="sd">        - units : str</span>
+<span class="sd">            The units of the variable (if available).</span>
+<span class="sd">        - comment : str</span>
+<span class="sd">            Any additional comments about the variable (if available).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;information is based on xarray Dataset&quot;</span><span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">variables</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input data must be a file path (str) or an xarray Dataset&quot;</span><span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;string&quot;</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">var</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;comment&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">var</span><span class="o">.</span><span class="n">comment</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;string&quot;</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">dims</span> <span class="o">==</span> <span class="n">dimension_name</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;dims&quot;</span><span class="p">:</span> <span class="n">dims</span><span class="p">,</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="n">units</span><span class="p">,</span>
+                <span class="s2">&quot;comment&quot;</span><span class="p">:</span> <span class="n">comment</span><span class="p">,</span>
+            <span class="p">}</span>
+
+    <span class="nb">vars</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">info</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">vars</span><span class="o">.</span><span class="n">dims</span>
+    <span class="n">dim</span><span class="p">[</span><span class="n">dim</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+    <span class="nb">vars</span><span class="p">[</span><span class="s2">&quot;dims&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dim</span>
+
+    <span class="nb">vars</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">vars</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;dims&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;dims&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;comment&quot;</span><span class="p">]]</span>
+        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">style</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">vars</span></div>
+
+
+
+<div class="viewcode-block" id="plot_age_values">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_age_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_age_values</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">fig_path</span><span class="p">,</span> <span class="n">time_var</span><span class="o">=</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots AGE values for AZA and AZS datasets.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        ds_AZA (xarray.Dataset): The AZA dataset.</span>
+<span class="sd">        age_values_aza (xarray.DataArray): AGE values for AZA.</span>
+<span class="sd">        age_values_azs (xarray.DataArray): AGE values for AZS.</span>
+<span class="sd">        STN (str): Station identifier.</span>
+<span class="sd">        fig_path (str): Path to save the figure.</span>
+<span class="sd">        time_var (str): Time variable name. Default is &#39;SAMPLE_TIME&#39;.</span>
+<span class="sd">        ax (matplotlib.axes._axes.Axes, optional): Axes to plot into. If None, a new figure and axes are created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.axes._axes.Axes: The axes containing the plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialize the figure and axes if not provided</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+    <span class="n">STN</span> <span class="o">=</span> <span class="n">ds_AZA</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Station&#39;</span><span class="p">]</span>
+    <span class="n">time_var</span> <span class="o">=</span> <span class="s1">&#39;SAMPLE_TIME&#39;</span>
+    <span class="c1"># Extract the AGE values from the AZA and AZS datasets</span>
+    <span class="n">age_values_aza</span> <span class="o">=</span> <span class="n">ds_AZA</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">age_values_azs</span> <span class="o">=</span> <span class="n">ds_AZA</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Convert age values from ns to seconds</span>
+    <span class="k">if</span> <span class="n">age_values_aza</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;timedelta64[ns]&#39;</span><span class="p">:</span>
+        <span class="n">age_values_aza</span> <span class="o">=</span> <span class="n">age_values_aza</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="n">age_values_azs</span> <span class="o">=</span> <span class="n">age_values_azs</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;seconds&#39;</span>
+        <span class="n">age_values_aza</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="n">age_values_azs</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+
+    <span class="c1"># Plot the AGE values for AZA and AZS datasets</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_values_aza</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">age_values_aza</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AGE AZA&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_values_azs</span><span class="p">[</span><span class="n">time_var</span><span class="p">],</span> <span class="n">age_values_azs</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AGE AZS&#39;</span><span class="p">,</span> <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Set labels, title, and grid</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AGE (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;AGE values in AZA sequence&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+    <span class="c1"># Fix the axes limits</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">age_values_aza</span><span class="p">[</span><span class="n">time_var</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">age_values_aza</span><span class="p">[</span><span class="n">time_var</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">age_values_aza</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">age_values_azs</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="mi">50</span><span class="p">])</span>
+
+    <span class="c1"># Add station information</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+
+    <span class="c1"># Rotate the x-axis tick labels by 45 degrees</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+    <span class="c1"># Save the plot if a new figure was created</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fig_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_AGE_plot_fixed_axes.png&quot;</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
+
+
+<div class="viewcode-block" id="plot_pressure_sequence">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_pressure_sequence">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_pressure_sequence</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">key1</span><span class="p">,</span> <span class="n">STN</span><span class="p">):</span>
+    <span class="c1"># Filter the dataset for SEQUENCE_NUM 1, 2, 3, 4, and 5</span>
+    <span class="n">ds_seq1</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds_seq2</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds_seq3</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">3</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds_seq4</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">4</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ds_seq5</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">5</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot the ambient pressure and its difference for sequence 1 and 2</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="c1"># Plot the ambient pressure for sequence 1 and 2</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq2</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq2</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 2 (AZA)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq1</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq1</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 1 (AZS)&#39;</span><span class="p">)</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+    <span class="n">standard_name</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;standard_name&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;long_name&#39;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+        <span class="n">long_name</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">long_name</span> <span class="o">=</span> <span class="n">standard_name</span>
+    <span class="n">long_name</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;long_name&#39;</span><span class="p">]</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">standard_name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="se">\n</span><span class="s1">Sequence 1 and 2&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot the ambient pressure for sequence 4 and 5</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq4</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq4</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 4 (AZA)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq5</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq5</span><span class="p">[</span><span class="n">key1</span><span class="p">],</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 5 (AZS)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">standard_name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="se">\n</span><span class="s1">Sequence 4 and 5&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Plot the difference in ambient pressure</span>
+    <span class="n">diff_2_1</span> <span class="o">=</span> <span class="n">ds_seq2</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">ds_seq1</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">diff_5_4</span> <span class="o">=</span> <span class="n">ds_seq5</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">ds_seq4</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq2</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">diff_2_1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 2 - Seq 1&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq5</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">diff_5_4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkgray&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Seq 5 - Seq 4&#39;</span><span class="p">)</span>  
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;$\Delta$</span><span class="si">{</span><span class="n">standard_name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Difference in </span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Set x-ticks every 2 months</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+
+
+<div class="viewcode-block" id="plot_pressure_diff_and_age">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.plotters.plot_pressure_diff_and_age">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_pressure_diff_and_age</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span><span class="p">,</span> <span class="n">seqnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots the pressure difference, AGE, and temperatures for specified sequences in a dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The dataset containing the data to be plotted. It should include variables such as </span>
+<span class="sd">        &#39;SEQUENCE_NUM&#39;, &#39;SAMPLE_TIME&#39;, &#39;AGE&#39;, &#39;AMBIENT_TEMPERATURE&#39;, and &#39;TRANSFER_TEMPERATURE&#39;.</span>
+<span class="sd">    key1 : str</span>
+<span class="sd">        The name of the first pressure variable in the dataset.</span>
+<span class="sd">    key2 : str</span>
+<span class="sd">        The name of the second pressure variable in the dataset.</span>
+<span class="sd">    seqnum : list of int</span>
+<span class="sd">        A list of sequence numbers to filter and plot.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    fig : matplotlib.figure.Figure</span>
+<span class="sd">        The figure object containing the plots.</span>
+<span class="sd">    axs : numpy.ndarray of matplotlib.axes._subplots.AxesSubplot</span>
+<span class="sd">        The array of axes objects for the subplots.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ------</span>
+<span class="sd">    - The function calculates the difference between the two pressure variables (`key1` and `key2`) </span>
+<span class="sd">      and plots it against time for each sequence in `seqnum`.</span>
+<span class="sd">    - The AGE variable is converted to seconds and plotted against time.</span>
+<span class="sd">    - Ambient and transfer temperatures are plotted on the third subplot.</span>
+<span class="sd">    - The x-axis is formatted to display time in 2-month intervals.</span>
+<span class="sd">    - The temperature subplot&#39;s y-axis limits are determined based on the median and standard </span>
+<span class="sd">      deviation of the combined temperature data.</span>
+<span class="sd">    - The function assumes that the dataset variables have attributes `standard_name` and `units` </span>
+<span class="sd">      for proper labeling.</span>
+<span class="sd">    - A station identifier (`STN`) is expected to be available in the global scope for annotation.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    KeyError:</span>
+<span class="sd">        If any of the required variables (`key1`, `key2`, &#39;AGE&#39;, &#39;AMBIENT_TEMPERATURE&#39;, </span>
+<span class="sd">        &#39;TRANSFER_TEMPERATURE&#39;, or &#39;SEQUENCE_NUM&#39;) are missing from the dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Plot the difference and AGE of sequence 3</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+    <span class="n">STN</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Station&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">seqnum</span><span class="p">:</span>
+        <span class="n">ds_seq3</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;SEQUENCE_NUM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">sn</span><span class="p">]),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the difference between the transfer and low pressure</span>
+        <span class="n">pressure_diff</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="n">key2</span><span class="p">]</span>
+
+        <span class="c1"># Plot the pressure difference</span>
+        <span class="n">name1</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;standard_name&#39;</span><span class="p">]</span>
+        <span class="n">name2</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="n">key2</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;standard_name&#39;</span><span class="p">]</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="n">key1</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">pressure_diff</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Sequence </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span><span class="si">}</span><span class="s1">): </span><span class="si">{</span><span class="n">name1</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="n">name2</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">Age1</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">]</span>
+        <span class="c1"># Convert Age1 to units of seconds</span>
+        <span class="n">Age1_seconds</span> <span class="o">=</span> <span class="n">Age1</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+        <span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;seconds&#39;</span>
+        <span class="c1"># Plot the AGE of sequence 3</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">Age1_seconds</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;AGE&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Plot the temperatures</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;AMBIENT_TEMPERATURE&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ambient Temperature&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;magenta&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;SAMPLE_TIME&#39;</span><span class="p">],</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;TRANSFER_TEMPERATURE&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Transfer Temperature&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Pressure Difference (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Difference between </span><span class="si">{</span><span class="n">name1</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">name2</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Set x-ticks every 2 months</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">MonthLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%Y-%m&#39;</span><span class="p">))</span>
+
+    <span class="n">units</span> <span class="o">=</span> <span class="n">ds_seq3</span><span class="p">[</span><span class="s1">&#39;AGE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AGE (</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;AGE for Sequence (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">seqnum</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Temperature (°C)&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Ambient and Low Temperature&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">combined_temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;TRANSFER_TEMPERATURE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;AMBIENT_TEMPERATURE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">])</span>
+    <span class="n">upper_limit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">)</span>
+    <span class="n">lower_limit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">combined_temps</span><span class="p">))</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">lower_limit</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;STN: </span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
