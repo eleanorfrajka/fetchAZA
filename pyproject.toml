@@ -2,7 +2,7 @@
 build-backend = "setuptools.build_meta"
 requires = [
   "setuptools>=42",
-  "setuptools-scm[toml]>=3.4",
+  "setuptools-scm[toml]>=6.3",
   "wheel",
 ]
 
@@ -49,6 +49,9 @@ write_to_template = "__version__ = '{version}'"
 tag_regex = "^(?P<prefix>v)?(?P<version>[^\\+]+)(?P<suffix>.*)?$"
 local_scheme = "no-local-version"
 
+
+[tool.setuptools.package-data]
+"fetchAZA" = ["config/*"]
 
 [tool.check-manifest]
 ignore = [
