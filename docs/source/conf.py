@@ -28,9 +28,16 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
+    "sphinx.ext.mathjax",
     "nbsphinx",
     "myst_parser",
 ]
+
+mathjax3_config = {
+    'chtml' : {
+        'mtextInheritFont' : 'true',
+    }
+}
 
 templates_path = ['_templates']
 
