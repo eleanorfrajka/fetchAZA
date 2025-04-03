@@ -11,7 +11,6 @@ Welcome to fetchAZA's documentation!
 
 For recommendations or bug reports, please visit https://github.com/eleanorfrajka/fetchAZA/issues/new
 
-
   
 .. toctree::
    :maxdepth: 3
@@ -30,10 +29,8 @@ For recommendations or bug reports, please visit https://github.com/eleanorfrajk
    :maxdepth: 3
    :caption: Help and reference
 
-   GitHub Repo <http://github.com/eleanorfrajka/fetchAZA>
    fetchAZA
-   aboutfetch
-   funding
+   faq
 
 Indices and tables
 ==================

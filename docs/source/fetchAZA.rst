@@ -10,7 +10,7 @@ readers
    :undoc-members:
 
 tools
-=====
+=======
 .. automodule:: fetchAZA.tools
    :members:
    :undoc-members:
@@ -31,7 +31,7 @@ writers
 
 
 utilities
-=========
+=======
 .. automodule:: fetchAZA.utilities
    :members:
    :undoc-members:
