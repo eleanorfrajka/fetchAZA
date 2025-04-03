@@ -17,6 +17,8 @@
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"chtml": {"mtextInheritFont": "true"}, "mathjax_path": "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML", "tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -78,7 +80,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">About Fetch AZA</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/aboutfetch.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/aboutfetch.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -88,24 +90,29 @@
              
   <section id="about-fetch-aza">
 <h1>About Fetch AZA<a class="headerlink" href="#about-fetch-aza" title="Link to this heading"></a></h1>
-<p>Two Sonardyne Fetch AZA instruments have the possibility to self-correct the pressure drift, a common and known problem that occurs with sensing pressure in the ocean.  It does this by using 3 separate pressure sensors, and an internal volume within the sensor which is kept at a controlled pressure (near atmospheric pressure).  Of these three sensors, 1 sensor is rated to near-atmospheric pressure (the “Low” pressure sensor), and two are rated to deep pressures (the Digiquartz or “transfer” pressure, and the Keller or “ambient” pressure).  The Keller sensor reads seawater pressure, the low pressure reads in the controlled pressure volume, and the digiquartz sensor “transfers” between seawater pressure and the controlled pressure volume.</p>
-<p>At a set interval (starting frequent and with sample intervals increasing with time), the sensor runs through an AZA sequence.  During this sequence, it makes an instantaneous pressure measurement (sequence 1) with the Keller/Ambient and Transfer/Digiquartz measuring seawater pressure, and the low pressure sensor measuring in the controlled volume.  It then makes an AZA measurement which is provided as an average over 30 sections with the same quantities.  The transfer/Digiquartz sensor then switches to measure the pressure in the controlled pressure volume and the Fetch instrument makes a 30 second average of data in this configuration.  Finally, the transfer/Digiquartz sensor returns to measuring seawater pressure and another 30 second average is made.  At the end of the sequence, an instantaneous measurement is made by the three sensors.</p>
-<p>See figure:
-<img alt="Figure: Transfer Table" src="_images/transfer-table.png" /></p>
-<p>The idea is that the AZA sequence 3 will provide the offset or drift on the digiquartz sensor at increasing intervals:</p>
-<p>.. math::
-dP_{offset,1}(t_i) = P_{low}(t_i)-P_{DQZ}(t_i)</p>
-<p>where $i$ indicates that these are measured at AZA sampling intervals (roughly 150 samples over a 2 year deployment).  However, the Transfer/Digiquartz sensor and Ambient/Keller sensor also measure pressure at hourly intervals.  We will call this :math:<code class="docutils literal notranslate"><span class="pre">j</span></code>.</p>
-<p>A fit can be calculated against :math:<code class="docutils literal notranslate"><span class="pre">dP_{offset,1}(t_i)</span></code> and then linearly interpolated onto the hourly time vector :math:<code class="docutils literal notranslate"><span class="pre">t_j</span></code>.  This can be used to correct the Transfer/Digiquartz sensor as</p>
-<p>.. math::
-P_{DQZ,corr}(t_j) = P_{DQZ}(t_j) + dP_{offset,1}(t_j)</p>
-<p>and to determine an offset between the Ambient/Keller and Transfer/Digiquartz as</p>
-<p>.. math::
-dP_{offset,2}(t_j) = P_{DQZ}(t_j) - D_{KLR}(t_j)</p>
-<p>This can then further be used to correct the Ambient/Keller pressure sensor as</p>
-<p>.. math::
-P_{KLR,corr}(t_j) = P_{KLR}(t_j) + dP_{offset,1}(t_j) + dP_{offset,2}(t_j)\qquad .</p>
-<p>Note that offset :math:<code class="docutils literal notranslate"><span class="pre">dP_{offset,1}</span></code> is available at AZA sampling intervals (roughly 150 over a 2 year deployment), whereas the other samples are hourly (15000 over a 2-year deployment).</p>
+<p>Two Sonardyne Fetch AZA instruments have the possibility to self-correct the pressure drift, a common and known problem that occurs with sensing pressure in the ocean. It does this by using three separate pressure sensors and an internal volume within the sensor, which is kept at a controlled pressure (near atmospheric pressure). Of these three sensors, one sensor is rated to near-atmospheric pressure (the “Low” pressure sensor), and two are rated to deep pressures (the Digiquartz or “transfer” pressure, and the Keller or “ambient” pressure). The Keller sensor reads seawater pressure, the low-pressure sensor reads in the controlled pressure volume, and the Digiquartz sensor “transfers” between seawater pressure and the controlled pressure volume.</p>
+<p>At a set interval (starting frequent and with sample intervals increasing with time), the sensor runs through an AZA sequence. During this sequence, it makes an instantaneous pressure measurement (sequence 1) with the Keller/Ambient and Transfer/Digiquartz measuring seawater pressure, and the low-pressure sensor measuring in the controlled volume. It then makes an AZA measurement, which is provided as an average over 30 sections with the same quantities. The Transfer/Digiquartz sensor then switches to measure the pressure in the controlled pressure volume, and the Fetch instrument makes a 30-second average of data in this configuration. Finally, the Transfer/Digiquartz sensor returns to measuring seawater pressure, and another 30-second average is made. At the end of the sequence, an instantaneous measurement is made by the three sensors.</p>
+<p>See figure:</p>
+<figure class="align-default" id="id1">
+<img alt="Figure: Transfer Table" src="_images/transfer-table.png" />
+<figcaption>
+<p><span class="caption-text">Figure: Transfer Table</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The idea is that the AZA sequence 3 will provide the offset or drift on the Digiquartz sensor at increasing intervals:</p>
+<div class="math notranslate nohighlight">
+\[dP_{offset,1}(t_i) = P_{low}(t_i)-P_{DQZ}(t_i)\]</div>
+<p>where <span class="math notranslate nohighlight">\(i\)</span> indicates that these are measured at AZA sampling intervals (roughly 150 samples over a 2-year deployment). However, the Transfer/Digiquartz sensor and Ambient/Keller sensor also measure pressure at hourly intervals. We will call this <span class="math notranslate nohighlight">\(j\)</span>.</p>
+<p>A fit can be calculated against <span class="math notranslate nohighlight">\(dP_{offset,1}(t_i)\)</span> and then linearly interpolated onto the hourly time vector <span class="math notranslate nohighlight">\(t_j\)</span>. This can be used to correct the Transfer/Digiquartz sensor as:</p>
+<div class="math notranslate nohighlight">
+\[P_{DQZ,corr}(t_j) = P_{DQZ}(t_j) + dP_{offset,1}(t_j)\]</div>
+<p>and to determine an offset between the Ambient/Keller and Transfer/Digiquartz as:</p>
+<div class="math notranslate nohighlight">
+\[dP_{offset,2}(t_j) = P_{DQZ}(t_j) - D_{KLR}(t_j)\]</div>
+<p>This can then further be used to correct the Ambient/Keller pressure sensor as:</p>
+<div class="math notranslate nohighlight">
+\[P_{KLR,corr}(t_j) = P_{KLR}(t_j) + dP_{offset,1}(t_j) + dP_{offset,2}(t_j)\]</div>
+<p>Note that offset <span class="math notranslate nohighlight">\(dP_{offset,1}\)</span> is available at AZA sampling intervals (roughly 150 over a 2-year deployment), whereas the other samples are hourly (15,000 over a 2-year deployment).</p>
 </section>
 
 
