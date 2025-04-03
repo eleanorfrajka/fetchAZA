@@ -17,11 +17,11 @@ _log = logging.getLogger(__name__)
 #------------------------------------------------------------
 # Config files: Variables + variable attributes for archiving
 #------------------------------------------------------------
-# Set the directory for yaml files as the root directory + 'config/'
+# Set the directory for yaml files as the root directory + 'fetchAZA/config/'
 script_dir = pathlib.Path(__file__).parent.absolute()
 parent_dir = script_dir.parents[0]
 rootdir = parent_dir
-config_dir = os.path.join(rootdir, 'config/')
+config_dir = os.path.join(rootdir, 'fetchAZA/config/')
 # Vocabularies are loosely defined here
 with open(config_dir + 'vocab_attrs.yaml', 'r') as file:
     vocab_attrs = yaml.safe_load(file)

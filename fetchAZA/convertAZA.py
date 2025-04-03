@@ -14,7 +14,7 @@ import pathlib
 import logging
 _log = logging.getLogger(__name__)
 
-def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_date='2099-01-01', latitude='0', longitude='0', water_depth='0', cleanup=True):
+def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_date='2099-01-01', latitude='0', longitude='0', water_depth='0', keys=['PIES','TMP','KLR','DQZ','INC'], cleanup=True):
     """
     Processes and converts AZA data from CSV to netCDF format.
 
