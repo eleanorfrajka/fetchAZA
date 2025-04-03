@@ -4,7 +4,56 @@ from numbers import Number
 import os
 from fetchAZA import utilities
 import logging
+import glob
+import re
+import datetime
 _log = logging.getLogger(__name__)
+
+
+def delete_netcdf_datasets(data_path, file_root, keys=None):
+    """
+    Delete netCDF files matching the given file_root and optional keys from the specified data_path.
+
+    Parameters
+    ----------
+    data_path : str 
+        The directory path where the netCDF files are located.
+    file_root : str 
+        The root name of the files to match.
+    keys : list of str, optional
+        A list of keys to filter the files. Only files containing these keys in their names will be deleted.
+        If None, all matching files will be deleted.
+
+    Returns
+    -------
+    int 
+        The number of files successfully deleted.
+    """
+    # Find matching netCDF files
+    search_dir = os.path.join(data_path, f"{file_root}*.nc")
+    matching_files = glob.glob(search_dir)
+
+    # Filter files based on keys if provided
+    if keys is not None:
+        matching_files = [
+            file for file in matching_files
+            if any(f"{file_root}_{key}" in os.path.basename(file) for key in keys)
+        ]
+
+    # Delete the matching netCDF files
+    deleted_count = 0
+    for file in matching_files:
+        try:
+            print(f"Deleting file: {file}")
+            os.remove(file)
+            _log.info(f"Deleted file: {file}")
+            deleted_count += 1
+        except Exception as e:
+            _log.error(f"Failed to delete file: {file}. Error: {e}")
+
+    _log.info(f"Deleted {deleted_count} files matching '{file_root}' with keys {keys}.")
+
+    return deleted_count
 
 def save_dataset(ds, output_file='../data/test.nc'):
     """
