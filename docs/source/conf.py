@@ -36,7 +36,8 @@ extensions = [
 mathjax3_config = {
     'chtml' : {
         'mtextInheritFont' : 'true',
-    }
+    },
+    'mathjax_path': 'https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 }
 
 templates_path = ['_templates']
