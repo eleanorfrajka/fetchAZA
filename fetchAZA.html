@@ -57,6 +57,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="http://github.com/eleanorfrajka/fetchAZA">GitHub Repo</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.convertAZA">convertAZA</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.convertAZA.convertAZA"><code class="docutils literal notranslate"><span class="pre">convertAZA()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.readers">readers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.combine_pattern"><code class="docutils literal notranslate"><span class="pre">combine_pattern()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.readers.csv_to_xarray"><code class="docutils literal notranslate"><span class="pre">csv_to_xarray()</span></code></a></li>
@@ -77,6 +81,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.tools.reformat_units_var"><code class="docutils literal notranslate"><span class="pre">reformat_units_var()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.writers">writers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.delete_netcdf_datasets"><code class="docutils literal notranslate"><span class="pre">delete_netcdf_datasets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_dataset"><code class="docutils literal notranslate"><span class="pre">save_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_datasets"><code class="docutils literal notranslate"><span class="pre">save_datasets()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.plotters">plotters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.compare_pressure"><code class="docutils literal notranslate"><span class="pre">compare_pressure()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.get_record_type"><code class="docutils literal notranslate"><span class="pre">get_record_type()</span></code></a></li>
@@ -94,12 +104,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_contents"><code class="docutils literal notranslate"><span class="pre">show_contents()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_variables"><code class="docutils literal notranslate"><span class="pre">show_variables()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.plotters.show_variables_by_dimension"><code class="docutils literal notranslate"><span class="pre">show_variables_by_dimension()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.writers">writers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.delete_netcdf_datasets"><code class="docutils literal notranslate"><span class="pre">delete_netcdf_datasets()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_dataset"><code class="docutils literal notranslate"><span class="pre">save_dataset()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fetchAZA.writers.save_datasets"><code class="docutils literal notranslate"><span class="pre">save_datasets()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.utilities">utilities</a><ul>
@@ -145,6 +149,35 @@
              
   <section id="fetchaza-api">
 <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code><a class="headerlink" href="#fetchaza-api" title="Link to this heading"></a></h1>
+<section id="module-fetchAZA.convertAZA">
+<span id="convertaza"></span><h2>convertAZA<a class="headerlink" href="#module-fetchAZA.convertAZA" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.convertAZA.convertAZA">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.convertAZA.</span></span><span class="sig-name descname"><span class="pre">convertAZA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deploy_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2000-01-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2099-01-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">water_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['DQZ',</span> <span class="pre">'PIES',</span> <span class="pre">'INC',</span> <span class="pre">'TMP',</span> <span class="pre">'KLR']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/convertAZA.html#convertAZA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.convertAZA.convertAZA" title="Link to this definition"></a></dt>
+<dd><p>Processes and converts AZA data from CSV to netCDF format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to the data directory.</p></li>
+<li><p><strong>fn</strong> (<em>str</em>) – Filename of the input CSV file.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – Station identifier.</p></li>
+<li><p><strong>deploy_date</strong> (<em>str</em>) – Deployment date in ‘YYYY-MM-DD’ format.</p></li>
+<li><p><strong>recovery_date</strong> (<em>str</em>) – Recovery date in ‘YYYY-MM-DD’ format.</p></li>
+<li><p><strong>latitude</strong> (<em>float</em>) – Latitude of the station.</p></li>
+<li><p><strong>longitude</strong> (<em>float</em>) – Longitude of the station.</p></li>
+<li><p><strong>water_depth</strong> (<em>float</em>) – Water depth at the station.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ds_pressure and ds_AZA datasets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-fetchAZA.readers">
 <span id="readers"></span><h2>readers<a class="headerlink" href="#module-fetchAZA.readers" title="Link to this heading"></a></h2>
 <dl class="py function">
@@ -519,6 +552,79 @@ Attributes with certain prefixes or exact matches are removed from the combined 
 <dd class="field-odd"><p>The dataset with renamed units.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-fetchAZA.writers">
+<span id="writers"></span><h2>writers<a class="headerlink" href="#module-fetchAZA.writers" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.writers.delete_netcdf_datasets">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">delete_netcdf_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['KLR',</span> <span class="pre">'DQZ',</span> <span class="pre">'PIES',</span> <span class="pre">'TMP',</span> <span class="pre">'INC']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#delete_netcdf_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.delete_netcdf_datasets" title="Link to this definition"></a></dt>
+<dd><p>Delete netCDF files matching the given file_root and optional keys from the specified data_path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – The directory path where the netCDF files are located.</p></li>
+<li><p><strong>file_root</strong> (<em>str</em>) – The root name of the files to match.</p></li>
+<li><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of keys to filter the files. Only files containing these keys in their names will be deleted.
+If None, all matching files will be deleted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of files successfully deleted.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.writers.save_dataset">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../data/test.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_dataset" title="Link to this definition"></a></dt>
+<dd><p>Attempts to save the dataset to a NetCDF file. If a TypeError occurs due to invalid attribute values,
+it converts the invalid attributes to strings and retries the save operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_file</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bool</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the dataset was saved successfully, False otherwise.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Based on: <a class="reference external" href="https://github.com/pydata/xarray/issues/3743">https://github.com/pydata/xarray/issues/3743</a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fetchAZA.writers.save_datasets">
+<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sets_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_datasets" title="Link to this definition"></a></dt>
+<dd><p>Save multiple datasets to NetCDF files with filenames derived from the input filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_sets_new</strong> (<em>dict</em>) – A dictionary where keys are dataset identifiers (e.g., strings) and values are the corresponding datasets to be saved.</p></li>
+<li><p><strong>input_fn</strong> (<em>str</em>) – The input filename used as a base to generate output filenames.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Iterates through the <cite>data_sets_new</cite> dictionary.</p></li>
+<li><p>For each dataset, constructs an output filename by appending the dataset key to the base name of <cite>input_fn</cite> and adding the <cite>.nc</cite> extension.</p></li>
+<li><p>Calls <cite>save_dataset</cite> to save each dataset to the corresponding output file.</p></li>
+<li><p>Prints the key of each dataset being processed.</p></li>
+<li><p>If saving a dataset fails, prints an error message indicating the failure.</p></li>
+</ul>
+<p>Assumes the existence of a <cite>save_dataset</cite> function that handles the actual saving of datasets to files.</p>
 </dd></dl>
 
 </section>
@@ -928,79 +1034,6 @@ Default is ‘variables’.</p></li>
 <dd class="field-odd"><p>pandas.io.formats.style.Styler</p>
 </dd>
 </dl>
-</dd></dl>
-
-</section>
-<section id="module-fetchAZA.writers">
-<span id="writers"></span><h2>writers<a class="headerlink" href="#module-fetchAZA.writers" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="fetchAZA.writers.delete_netcdf_datasets">
-<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">delete_netcdf_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['KLR',</span> <span class="pre">'DQZ',</span> <span class="pre">'PIES',</span> <span class="pre">'TMP',</span> <span class="pre">'INC']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#delete_netcdf_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.delete_netcdf_datasets" title="Link to this definition"></a></dt>
-<dd><p>Delete netCDF files matching the given file_root and optional keys from the specified data_path.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data_path</strong> (<em>str</em>) – The directory path where the netCDF files are located.</p></li>
-<li><p><strong>file_root</strong> (<em>str</em>) – The root name of the files to match.</p></li>
-<li><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – A list of keys to filter the files. Only files containing these keys in their names will be deleted.
-If None, all matching files will be deleted.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The number of files successfully deleted.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fetchAZA.writers.save_dataset">
-<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../data/test.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_dataset" title="Link to this definition"></a></dt>
-<dd><p>Attempts to save the dataset to a NetCDF file. If a TypeError occurs due to invalid attribute values,
-it converts the invalid attributes to strings and retries the save operation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>xarray.Dataset</strong><strong>)</strong> (<em>ds</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_file</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>bool</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the dataset was saved successfully, False otherwise.</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Based on: <a class="reference external" href="https://github.com/pydata/xarray/issues/3743">https://github.com/pydata/xarray/issues/3743</a></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fetchAZA.writers.save_datasets">
-<span class="sig-prename descclassname"><span class="pre">fetchAZA.writers.</span></span><span class="sig-name descname"><span class="pre">save_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sets_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/writers.html#save_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.writers.save_datasets" title="Link to this definition"></a></dt>
-<dd><p>Save multiple datasets to NetCDF files with filenames derived from the input filename.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data_sets_new</strong> (<em>dict</em>) – A dictionary where keys are dataset identifiers (e.g., strings) and values are the corresponding datasets to be saved.</p></li>
-<li><p><strong>input_fn</strong> (<em>str</em>) – The input filename used as a base to generate output filenames.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Iterates through the <cite>data_sets_new</cite> dictionary.</p></li>
-<li><p>For each dataset, constructs an output filename by appending the dataset key to the base name of <cite>input_fn</cite> and adding the <cite>.nc</cite> extension.</p></li>
-<li><p>Calls <cite>save_dataset</cite> to save each dataset to the corresponding output file.</p></li>
-<li><p>Prints the key of each dataset being processed.</p></li>
-<li><p>If saving a dataset fails, prints an error message indicating the failure.</p></li>
-</ul>
-<p>Assumes the existence of a <cite>save_dataset</cite> function that handles the actual saving of datasets to files.</p>
 </dd></dl>
 
 </section>

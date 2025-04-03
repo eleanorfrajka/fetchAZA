@@ -1,6 +1,13 @@
 :mod:`fetchAZA API`
 -----------------------
 
+convertAZA
+===========
+.. automodule:: fetchAZA.convertAZA
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 readers
 =======
@@ -16,16 +23,17 @@ tools
    :undoc-members:
 
 
-plotters
-========
-.. automodule:: fetchAZA.plotters
-   :members:
-   :undoc-members:
-
 
 writers
 =======
 .. automodule:: fetchAZA.writers
+   :members:
+   :undoc-members:
+
+
+plotters
+========
+.. automodule:: fetchAZA.plotters
    :members:
    :undoc-members:
 

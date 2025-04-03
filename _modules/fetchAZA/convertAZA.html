@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fetchAZA.convertAZA &mdash; fetchAZA v0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8b92e751"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            fetchAZA
+              <img src="../../_static/logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Users guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="http://github.com/eleanorfrajka/fetchAZA">GitHub Repo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fetchAZA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../aboutfetch.html">About Fetch AZA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../funding.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../funding.html#funding">Funding</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">fetchAZA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fetchAZA.convertAZA</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fetchAZA.convertAZA</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fetchAZA</span><span class="w"> </span><span class="kn">import</span> <span class="n">tools</span><span class="p">,</span> <span class="n">readers</span><span class="p">,</span> <span class="n">writers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="convertAZA">
+<a class="viewcode-back" href="../../fetchAZA.html#fetchAZA.convertAZA.convertAZA">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convertAZA</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">STN</span><span class="o">=</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="n">deploy_date</span><span class="o">=</span><span class="s1">&#39;2000-01-01&#39;</span><span class="p">,</span> <span class="n">recovery_date</span><span class="o">=</span><span class="s1">&#39;2099-01-01&#39;</span><span class="p">,</span> <span class="n">latitude</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">longitude</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">water_depth</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DQZ&#39;</span><span class="p">,</span><span class="s1">&#39;PIES&#39;</span><span class="p">,</span><span class="s1">&#39;INC&#39;</span><span class="p">,</span><span class="s1">&#39;TMP&#39;</span><span class="p">,</span><span class="s1">&#39;KLR&#39;</span><span class="p">],</span><span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes and converts AZA data from CSV to netCDF format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_path : str</span>
+<span class="sd">        Path to the data directory.</span>
+<span class="sd">    fn : str</span>
+<span class="sd">        Filename of the input CSV file.</span>
+<span class="sd">    STN : str</span>
+<span class="sd">        Station identifier.</span>
+<span class="sd">    deploy_date : str</span>
+<span class="sd">        Deployment date in &#39;YYYY-MM-DD&#39; format.</span>
+<span class="sd">    recovery_date : str</span>
+<span class="sd">        Recovery date in &#39;YYYY-MM-DD&#39; format.</span>
+<span class="sd">    latitude : float</span>
+<span class="sd">        Latitude of the station.</span>
+<span class="sd">    longitude : float</span>
+<span class="sd">        Longitude of the station.</span>
+<span class="sd">    water_depth : float</span>
+<span class="sd">        Water depth at the station.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        ds_pressure and ds_AZA datasets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Process filename</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+    <span class="n">file_root</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">platform_id</span> <span class="o">=</span> <span class="n">file_root</span>
+    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a log file</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">platform_id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2">_read.log&quot;</span><span class="p">)</span>
+    <span class="n">logf_with_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
+    <span class="c1"># Create the log file</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">logf_with_path</span><span class="p">,</span> 
+        <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)-8s</span><span class="s2"> </span><span class="si">%(funcName)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="c1"># &#39;w&#39; to overwrite, &#39;a&#39; to append</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+        <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">T%H%M%S&quot;</span><span class="p">,</span>
+        <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading AZA from CSV to netCDF&#39;</span><span class="p">)</span>
+    <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing data from: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+    <span class="c1"># Convert the data</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">read_csv_to_xarray</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="c1"># Save intermediate files</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+    <span class="c1"># Process the data</span>
+    <span class="n">ds_pressure</span><span class="p">,</span> <span class="n">ds_AZA</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">process_datasets</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">file_root</span><span class="p">,</span> <span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span><span class="p">)</span>
+    <span class="c1"># Save the datasets</span>
+    <span class="c1"># Add attributes to ds_pressure</span>
+    <span class="n">ds_pressure</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;Station&#39;</span><span class="p">:</span> <span class="n">STN</span><span class="p">,</span>
+        <span class="s1">&#39;Latitude&#39;</span><span class="p">:</span> <span class="n">latitude</span><span class="p">,</span>
+        <span class="s1">&#39;Longitude&#39;</span><span class="p">:</span> <span class="n">longitude</span><span class="p">,</span>
+        <span class="s1">&#39;Water_Depth&#39;</span><span class="p">:</span> <span class="n">water_depth</span><span class="p">,</span>
+        <span class="s1">&#39;Start_Time&#39;</span><span class="p">:</span> <span class="n">deploy_date</span><span class="p">,</span>
+        <span class="s1">&#39;End_Time&#39;</span><span class="p">:</span> <span class="n">recovery_date</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Add attributes to ds_AZA</span>
+    <span class="n">ds_AZA</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;Station&#39;</span><span class="p">:</span> <span class="n">STN</span><span class="p">,</span>
+        <span class="s1">&#39;Latitude&#39;</span><span class="p">:</span> <span class="n">latitude</span><span class="p">,</span>
+        <span class="s1">&#39;Longitude&#39;</span><span class="p">:</span> <span class="n">longitude</span><span class="p">,</span>
+        <span class="s1">&#39;Water_Depth&#39;</span><span class="p">:</span> <span class="n">water_depth</span><span class="p">,</span>
+        <span class="s1">&#39;Start_Time&#39;</span><span class="p">:</span> <span class="n">deploy_date</span><span class="p">,</span>
+        <span class="s1">&#39;End_Time&#39;</span><span class="p">:</span> <span class="n">recovery_date</span>
+    <span class="p">})</span>
+
+    <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_use.nc&quot;</span><span class="p">)</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+
+    <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_AZA.nc&quot;</span><span class="p">)</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+        <span class="c1"># Delete the intermediate files</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Deleting intermediate files&#39;</span><span class="p">)</span>
+        <span class="n">writers</span><span class="o">.</span><span class="n">delete_netcdf_datasets</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">file_root</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds_pressure</span><span class="p">,</span> <span class="n">ds_AZA</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Eleanor Frajka-Williams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
