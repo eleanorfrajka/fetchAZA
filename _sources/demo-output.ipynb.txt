@@ -27,10 +27,10 @@
    "id": "6a1920f3",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:15.880277Z",
-     "iopub.status.busy": "2025-04-03T08:41:15.880102Z",
-     "iopub.status.idle": "2025-04-03T08:41:16.961738Z",
-     "shell.execute_reply": "2025-04-03T08:41:16.961216Z"
+     "iopub.execute_input": "2025-04-03T09:38:39.922851Z",
+     "iopub.status.busy": "2025-04-03T09:38:39.922692Z",
+     "iopub.status.idle": "2025-04-03T09:38:41.409852Z",
+     "shell.execute_reply": "2025-04-03T09:38:41.409324Z"
     }
    },
    "outputs": [
@@ -89,10 +89,10 @@
    "id": "721efe8c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:16.963556Z",
-     "iopub.status.busy": "2025-04-03T08:41:16.963300Z",
-     "iopub.status.idle": "2025-04-03T08:41:17.768131Z",
-     "shell.execute_reply": "2025-04-03T08:41:17.767627Z"
+     "iopub.execute_input": "2025-04-03T09:38:41.411709Z",
+     "iopub.status.busy": "2025-04-03T09:38:41.411449Z",
+     "iopub.status.idle": "2025-04-03T09:38:42.218928Z",
+     "shell.execute_reply": "2025-04-03T09:38:42.218404Z"
     }
    },
    "outputs": [
@@ -119,15 +119,16 @@
      ]
     },
     {
-     "ename": "NameError",
-     "evalue": "name 'keys' is not defined",
+     "ename": "TypeError",
+     "evalue": "'bool' object is not iterable",
      "output_type": "error",
      "traceback": [
       "\u001b[31m---------------------------------------------------------------------------\u001b[39m",
-      "\u001b[31mNameError\u001b[39m                                 Traceback (most recent call last)",
+      "\u001b[31mTypeError\u001b[39m                                 Traceback (most recent call last)",
       "\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[2]\u001b[39m\u001b[32m, line 9\u001b[39m\n\u001b[32m      6\u001b[39m longitude = -\u001b[32m76.75\u001b[39m\n\u001b[32m      7\u001b[39m water_depth = -\u001b[32m3800\u001b[39m\n\u001b[32m----> \u001b[39m\u001b[32m9\u001b[39m ds_pressure, ds_AZA = \u001b[43mconvertAZA\u001b[49m\u001b[43m.\u001b[49m\u001b[43mconvertAZA\u001b[49m\u001b[43m(\u001b[49m\u001b[43mdata_path\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mfn\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mSTN\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mdeploy_date\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mrecovery_date\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mlatitude\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mlongitude\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mwater_depth\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43;01mTrue\u001b[39;49;00m\u001b[43m)\u001b[49m\n",
-      "\u001b[36mFile \u001b[39m\u001b[32m~/work/fetchAZA/fetchAZA/fetchAZA/convertAZA.py:104\u001b[39m, in \u001b[36mconvertAZA\u001b[39m\u001b[34m(data_path, fn, STN, deploy_date, recovery_date, latitude, longitude, water_depth, cleanup)\u001b[39m\n\u001b[32m    101\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m cleanup:\n\u001b[32m    102\u001b[39m     \u001b[38;5;66;03m# Delete the intermediate files\u001b[39;00m\n\u001b[32m    103\u001b[39m     _log.info(\u001b[33m'\u001b[39m\u001b[33mDeleting intermediate files\u001b[39m\u001b[33m'\u001b[39m)\n\u001b[32m--> \u001b[39m\u001b[32m104\u001b[39m     writers.delete_netcdf_datasets(data_path, file_root, \u001b[43mkeys\u001b[49m)\n\u001b[32m    106\u001b[39m \u001b[38;5;28;01mreturn\u001b[39;00m ds_pressure, ds_AZA\n",
-      "\u001b[31mNameError\u001b[39m: name 'keys' is not defined"
+      "\u001b[36mFile \u001b[39m\u001b[32m~/work/fetchAZA/fetchAZA/fetchAZA/convertAZA.py:104\u001b[39m, in \u001b[36mconvertAZA\u001b[39m\u001b[34m(data_path, fn, STN, deploy_date, recovery_date, latitude, longitude, water_depth, keys, cleanup)\u001b[39m\n\u001b[32m    101\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m cleanup:\n\u001b[32m    102\u001b[39m     \u001b[38;5;66;03m# Delete the intermediate files\u001b[39;00m\n\u001b[32m    103\u001b[39m     _log.info(\u001b[33m'\u001b[39m\u001b[33mDeleting intermediate files\u001b[39m\u001b[33m'\u001b[39m)\n\u001b[32m--> \u001b[39m\u001b[32m104\u001b[39m     \u001b[43mwriters\u001b[49m\u001b[43m.\u001b[49m\u001b[43mdelete_netcdf_datasets\u001b[49m\u001b[43m(\u001b[49m\u001b[43mdata_path\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mfile_root\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mkeys\u001b[49m\u001b[43m)\u001b[49m\n\u001b[32m    106\u001b[39m \u001b[38;5;28;01mreturn\u001b[39;00m ds_pressure, ds_AZA\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~/work/fetchAZA/fetchAZA/fetchAZA/writers.py:40\u001b[39m, in \u001b[36mdelete_netcdf_datasets\u001b[39m\u001b[34m(data_path, file_root, keys)\u001b[39m\n\u001b[32m     36\u001b[39m \u001b[38;5;66;03m# Filter files based on keys if provided\u001b[39;00m\n\u001b[32m     37\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m keys \u001b[38;5;129;01mis\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[32m     38\u001b[39m     matching_files = [\n\u001b[32m     39\u001b[39m         file \u001b[38;5;28;01mfor\u001b[39;00m file \u001b[38;5;129;01min\u001b[39;00m matching_files\n\u001b[32m---> \u001b[39m\u001b[32m40\u001b[39m         \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28many\u001b[39m(\u001b[33mf\u001b[39m\u001b[33m\"\u001b[39m\u001b[38;5;132;01m{\u001b[39;00mfile_root\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m_\u001b[39m\u001b[38;5;132;01m{\u001b[39;00mkey\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m\"\u001b[39m \u001b[38;5;129;01min\u001b[39;00m os.path.basename(file) \u001b[38;5;28;01mfor\u001b[39;00m key \u001b[38;5;129;01min\u001b[39;00m keys)\n\u001b[32m     41\u001b[39m     ]\n\u001b[32m     43\u001b[39m \u001b[38;5;66;03m# Delete the matching netCDF files\u001b[39;00m\n\u001b[32m     44\u001b[39m deleted_count = \u001b[32m0\u001b[39m\n",
+      "\u001b[31mTypeError\u001b[39m: 'bool' object is not iterable"
      ]
     }
    ],
@@ -163,10 +164,10 @@
    "id": "73497da9",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:17.770039Z",
-     "iopub.status.busy": "2025-04-03T08:41:17.769663Z",
-     "iopub.status.idle": "2025-04-03T08:41:18.036243Z",
-     "shell.execute_reply": "2025-04-03T08:41:18.035782Z"
+     "iopub.execute_input": "2025-04-03T09:38:42.220788Z",
+     "iopub.status.busy": "2025-04-03T09:38:42.220462Z",
+     "iopub.status.idle": "2025-04-03T09:38:42.469336Z",
+     "shell.execute_reply": "2025-04-03T09:38:42.468927Z"
     }
    },
    "outputs": [],
@@ -217,10 +218,10 @@
    "id": "affaa641",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:18.038350Z",
-     "iopub.status.busy": "2025-04-03T08:41:18.037970Z",
-     "iopub.status.idle": "2025-04-03T08:41:18.149753Z",
-     "shell.execute_reply": "2025-04-03T08:41:18.149283Z"
+     "iopub.execute_input": "2025-04-03T09:38:42.471084Z",
+     "iopub.status.busy": "2025-04-03T09:38:42.470928Z",
+     "iopub.status.idle": "2025-04-03T09:38:42.575138Z",
+     "shell.execute_reply": "2025-04-03T09:38:42.574670Z"
     }
    },
    "outputs": [],
@@ -260,10 +261,10 @@
    "id": "54879aeb",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:18.151707Z",
-     "iopub.status.busy": "2025-04-03T08:41:18.151525Z",
-     "iopub.status.idle": "2025-04-03T08:41:18.262289Z",
-     "shell.execute_reply": "2025-04-03T08:41:18.261807Z"
+     "iopub.execute_input": "2025-04-03T09:38:42.576934Z",
+     "iopub.status.busy": "2025-04-03T09:38:42.576648Z",
+     "iopub.status.idle": "2025-04-03T09:38:42.684020Z",
+     "shell.execute_reply": "2025-04-03T09:38:42.683538Z"
     }
    },
    "outputs": [
@@ -683,7 +684,7 @@
        "    Serial_Number_INC:         0\n",
        "    Serial_Number_KLR:         1262636\n",
        "    Serial_Number_TMP:         0\n",
-       "    UID:                       007217</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-5cc07edf-1b62-48dc-91f7-cfe80b7edbc5' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-5cc07edf-1b62-48dc-91f7-cfe80b7edbc5' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>TIME</span>: 103</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-7065895b-4b40-46db-a0b5-7d28fc175e0c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7065895b-4b40-46db-a0b5-7d28fc175e0c' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>TIME</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-03-03T23:00:00 ... 2023-03-...</div><input id='attrs-29f637dc-3420-442c-aac6-0a18fe9bd435' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-29f637dc-3420-442c-aac6-0a18fe9bd435' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-21bc99ae-8f00-4e26-99e3-123f87f97e4f' class='xr-var-data-in' type='checkbox'><label for='data-21bc99ae-8f00-4e26-99e3-123f87f97e4f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-03-03T23:00:00.000000000&#x27;, &#x27;2023-03-04T00:00:00.000000000&#x27;,\n",
+       "    UID:                       007217</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-fd3e2ee3-1131-480c-b240-7d5709484dd3' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-fd3e2ee3-1131-480c-b240-7d5709484dd3' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>TIME</span>: 103</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-85a6d0ab-32bf-459b-a720-3d34313e3004' class='xr-section-summary-in' type='checkbox'  checked><label for='section-85a6d0ab-32bf-459b-a720-3d34313e3004' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>TIME</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-03-03T23:00:00 ... 2023-03-...</div><input id='attrs-c8b80c2a-031a-4afc-972d-57b9c869c720' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c8b80c2a-031a-4afc-972d-57b9c869c720' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-56d87bc8-cdb0-4189-8ee1-993ed35850b6' class='xr-var-data-in' type='checkbox'><label for='data-56d87bc8-cdb0-4189-8ee1-993ed35850b6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-03-03T23:00:00.000000000&#x27;, &#x27;2023-03-04T00:00:00.000000000&#x27;,\n",
        "       &#x27;2023-03-04T01:00:00.000000000&#x27;, &#x27;2023-03-04T02:00:00.000000000&#x27;,\n",
        "       &#x27;2023-03-04T03:00:00.000000000&#x27;, &#x27;2023-03-04T04:00:00.000000000&#x27;,\n",
        "       &#x27;2023-03-04T05:00:00.000000000&#x27;, &#x27;2023-03-04T06:00:00.000000000&#x27;,\n",
@@ -734,7 +735,7 @@
        "       &#x27;2023-03-07T23:00:00.000000000&#x27;, &#x27;2023-03-08T00:00:00.000000000&#x27;,\n",
        "       &#x27;2023-03-08T01:00:00.000000000&#x27;, &#x27;2023-03-08T02:00:00.000000000&#x27;,\n",
        "       &#x27;2023-03-08T03:00:00.000000000&#x27;, &#x27;2023-03-08T04:00:00.000000000&#x27;,\n",
-       "       &#x27;2023-03-08T05:00:00.000000000&#x27;], dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d258dc51-5b1f-43ef-96a8-3defe411c2a9' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d258dc51-5b1f-43ef-96a8-3defe411c2a9' class='xr-section-summary' >Data variables: <span>(14)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_RMLE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.11 ... 5.148 5.146</div><input id='attrs-778f8885-39d0-48a3-a0d0-38d531262b83' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-778f8885-39d0-48a3-a0d0-38d531262b83' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-156146f1-dac7-4a3a-ba98-286febfe276a' class='xr-var-data-in' type='checkbox'><label for='data-156146f1-dac7-4a3a-ba98-286febfe276a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.110247, 5.109858, 5.110258, 5.110012, 5.110123, 5.110325,\n",
+       "       &#x27;2023-03-08T05:00:00.000000000&#x27;], dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-edeb71f0-6a6a-4610-bc77-048739a305fc' class='xr-section-summary-in' type='checkbox'  checked><label for='section-edeb71f0-6a6a-4610-bc77-048739a305fc' class='xr-section-summary' >Data variables: <span>(14)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_RMLE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.11 ... 5.148 5.146</div><input id='attrs-66088b8c-7ce4-40e3-a076-79244b21b4b2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-66088b8c-7ce4-40e3-a076-79244b21b4b2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e40518ee-58c0-42af-a91c-053ac9a598ca' class='xr-var-data-in' type='checkbox'><label for='data-e40518ee-58c0-42af-a91c-053ac9a598ca' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.110247, 5.109858, 5.110258, 5.110012, 5.110123, 5.110325,\n",
        "       5.109411, 5.110261, 5.111422, 5.110181, 5.111349, 5.112188,\n",
        "       5.110297, 5.110992, 5.112417, 5.109969, 5.108989, 5.110755,\n",
        "       5.109984, 5.109122, 5.111227, 5.109663, 5.111249, 5.112476,\n",
@@ -751,7 +752,7 @@
        "       5.113582, 5.156992, 5.144918, 5.154339, 5.139468, 5.151501,\n",
        "       5.111321, 5.166002, 5.110594, 5.158479, 5.166721, 5.111527,\n",
        "       5.15003 , 5.145074, 5.190253, 5.14652 , 5.148196, 5.148328,\n",
-       "       5.145778])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_XCORR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.109 ... 5.109 5.109</div><input id='attrs-ab6c148d-b79f-4ea6-ad11-0689c561c434' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ab6c148d-b79f-4ea6-ad11-0689c561c434' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7c8a483b-da7b-48ac-8525-61856bd0b8c5' class='xr-var-data-in' type='checkbox'><label for='data-7c8a483b-da7b-48ac-8525-61856bd0b8c5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.109885, 5.109944, 5.108936, 5.108754, 5.108865, 5.108939,\n",
+       "       5.145778])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TIME_OF_FLIGHT_XCORR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>5.11 5.11 5.109 ... 5.109 5.109</div><input id='attrs-d155bde5-f9da-405d-b176-543f00cf61da' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d155bde5-f9da-405d-b176-543f00cf61da' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7f2161a8-e0f5-4bcf-926f-7e9a1a320373' class='xr-var-data-in' type='checkbox'><label for='data-7f2161a8-e0f5-4bcf-926f-7e9a1a320373' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>seconds</dd><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([5.109885, 5.109944, 5.108936, 5.108754, 5.108865, 5.108939,\n",
        "       5.109433, 5.108491, 5.109588, 5.109755, 5.111883, 5.110482,\n",
        "       5.109871, 5.110054, 5.110455, 5.109351, 5.108947, 5.108921,\n",
        "       5.109302, 5.108888, 5.109393, 5.109749, 5.109927, 5.11077 ,\n",
@@ -768,7 +769,7 @@
        "       5.110916, 5.110358, 5.110188, 5.109433, 5.10909 , 5.108515,\n",
        "       5.108463, 5.108104, 5.107672, 5.107557, 5.108567, 5.106045,\n",
        "       5.109284, 5.109896, 5.103683, 5.108526, 5.108858, 5.109438,\n",
-       "       5.108744])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>HALFLIFE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>251.4 230.3 229.1 ... 345.3 335.9</div><input id='attrs-abd96a30-6813-4f70-9ff7-be19cf244a8f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-abd96a30-6813-4f70-9ff7-be19cf244a8f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4f192bec-cc2f-424a-a3c5-48e454d5a193' class='xr-var-data-in' type='checkbox'><label for='data-4f192bec-cc2f-424a-a3c5-48e454d5a193' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([251.39337, 230.27922, 229.05432, 248.44684, 234.31633, 223.24167,\n",
+       "       5.108744])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>HALFLIFE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>251.4 230.3 229.1 ... 345.3 335.9</div><input id='attrs-e1e7fa68-a3fa-4026-9977-5b4fd632b498' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e1e7fa68-a3fa-4026-9977-5b4fd632b498' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-44f502eb-ef53-4092-a20e-8d9b258f6adb' class='xr-var-data-in' type='checkbox'><label for='data-44f502eb-ef53-4092-a20e-8d9b258f6adb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([251.39337, 230.27922, 229.05432, 248.44684, 234.31633, 223.24167,\n",
        "       265.86505, 225.23824, 241.59631, 269.30753, 246.37376, 217.66837,\n",
        "       201.66423, 242.16425, 241.72632, 200.69757, 220.8017 , 227.6382 ,\n",
        "       201.65556, 207.28368, 211.43442, 190.46619, 213.33742, 211.62201,\n",
@@ -785,7 +786,7 @@
        "       318.55197, 480.2876 , 368.67484, 367.19043, 355.31134, 348.7923 ,\n",
        "       385.09866, 415.4711 , 309.2839 , 542.4069 , 317.23337, 348.1767 ,\n",
        "       285.0195 , 316.94257, 291.65097, 329.4741 , 368.7936 , 345.25894,\n",
-       "       335.86673], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>MAGNITUDE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>6.903e+03 9.485e+03 ... 1.506e+03</div><input id='attrs-fd197f60-fb27-4b84-89c5-66e19e480ba2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fd197f60-fb27-4b84-89c5-66e19e480ba2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-487ce842-f6fd-4462-8e9b-40035a1702f7' class='xr-var-data-in' type='checkbox'><label for='data-487ce842-f6fd-4462-8e9b-40035a1702f7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 6903.,  9485.,  5926.,  7720.,  7467.,  5859.,  8928.,  6605.,\n",
+       "       335.86673], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>MAGNITUDE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>6.903e+03 9.485e+03 ... 1.506e+03</div><input id='attrs-a9c852bc-0c2c-4fc2-831c-d522a050e0eb' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a9c852bc-0c2c-4fc2-831c-d522a050e0eb' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d69bb4b2-4de3-4503-9fcf-2bf6489a0f5d' class='xr-var-data-in' type='checkbox'><label for='data-d69bb4b2-4de3-4503-9fcf-2bf6489a0f5d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 6903.,  9485.,  5926.,  7720.,  7467.,  5859.,  8928.,  6605.,\n",
        "        8302.,  7399.,  9180., 11413.,  8459.,  7785.,  8392.,  8810.,\n",
        "       10151.,  8812.,  6849.,  8794.,  7831., 12961.,  8641.,  8516.,\n",
        "       14634.,  1709.,  1985.,  2300.,    nan,  2726.,  2315.,  3157.,\n",
@@ -798,7 +799,7 @@
        "        2137.,  2129.,  1345.,  2955.,  1550.,  1860.,  2438.,  1661.,\n",
        "        1812.,  2269.,  1841.,  1826.,  1855.,  1861.,  1930.,  1124.,\n",
        "        1831.,  2984.,  1537.,  1761.,  2249.,  1965.,  1506.],\n",
-       "      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PEAK_POSITION</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.008512 0.008704 ... 0.007808</div><input id='attrs-a25a9ac2-36d8-4843-8a23-8ae6e506238e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a25a9ac2-36d8-4843-8a23-8ae6e506238e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ab805817-3d09-441d-ab00-ed46eccbb6e5' class='xr-var-data-in' type='checkbox'><label for='data-ab805817-3d09-441d-ab00-ed46eccbb6e5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([0.008512, 0.008704, 0.007872, 0.007872, 0.008128, 0.008256,\n",
+       "      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PEAK_POSITION</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.008512 0.008704 ... 0.007808</div><input id='attrs-2a4fd979-0f69-4cbe-ba89-fbf0b248457b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2a4fd979-0f69-4cbe-ba89-fbf0b248457b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9c3a792d-cc88-4e83-b03e-bdc29ff0d7b6' class='xr-var-data-in' type='checkbox'><label for='data-9c3a792d-cc88-4e83-b03e-bdc29ff0d7b6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([0.008512, 0.008704, 0.007872, 0.007872, 0.008128, 0.008256,\n",
        "       0.008704, 0.007616, 0.008512, 0.008448, 0.010368, 0.008832,\n",
        "       0.008192, 0.008448, 0.009024, 0.008128, 0.007936, 0.008064,\n",
        "       0.008512, 0.008064, 0.008448, 0.00864 , 0.00864 , 0.009344,\n",
@@ -815,7 +816,7 @@
        "       0.00928 , 0.008576, 0.008384, 0.007744, 0.007616, 0.007296,\n",
        "       0.007488, 0.007296, 0.006912, 0.00672 , 0.007552, 0.0048  ,\n",
        "       0.007808, 0.008256, 0.001984, 0.006912, 0.007424, 0.008256,\n",
-       "       0.007808], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PITCH</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-1.875 -1.862 ... -1.853 -1.847</div><input id='attrs-3c5a8411-4746-4a8c-a449-23eb0137e993' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3c5a8411-4746-4a8c-a449-23eb0137e993' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-77500789-c01c-4d38-b414-be94c8196b99' class='xr-var-data-in' type='checkbox'><label for='data-77500789-c01c-4d38-b414-be94c8196b99' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>forward positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (pitch) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/PITCH/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-1.875 , -1.8625, -1.8875, -1.8719, -1.8688, -1.8625, -1.8563,\n",
+       "       0.007808], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PITCH</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-1.875 -1.862 ... -1.853 -1.847</div><input id='attrs-2cd3a4b7-6c10-41c3-bde3-1e11fb20665b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2cd3a4b7-6c10-41c3-bde3-1e11fb20665b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6d09510d-bc94-4f7a-b7b7-2a7cd36730cc' class='xr-var-data-in' type='checkbox'><label for='data-6d09510d-bc94-4f7a-b7b7-2a7cd36730cc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>forward positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (pitch) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/PITCH/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-1.875 , -1.8625, -1.8875, -1.8719, -1.8688, -1.8625, -1.8563,\n",
        "       -1.8594, -1.85  , -1.8469, -1.8563, -1.8594, -1.8531, -1.8469,\n",
        "       -1.85  , -1.85  , -1.8469, -1.85  , -1.85  , -1.8563, -1.8406,\n",
        "       -1.8438, -1.85  , -1.8469, -1.85  , -1.8469, -1.8563, -1.8469,\n",
@@ -829,7 +830,7 @@
        "       -1.8469, -1.8563, -1.8531, -1.8406, -1.85  , -1.8625, -1.85  ,\n",
        "       -1.8531, -1.85  , -1.8438, -1.8406, -1.8531, -1.8531, -1.8531,\n",
        "       -1.8375, -1.8438, -1.8594, -1.8594, -1.8531, -1.85  , -1.8531,\n",
-       "       -1.8563, -1.8469, -1.85  , -1.8531, -1.8469], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.919e+03</div><input id='attrs-2900b206-1f0b-4483-95d1-0aaed3d9ef9f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2900b206-1f0b-4483-95d1-0aaed3d9ef9f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1f7acc0e-443c-4320-8587-a647e5a1a442' class='xr-var-data-in' type='checkbox'><label for='data-1f7acc0e-443c-4320-8587-a647e5a1a442' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd><dt><span>comment :</span></dt><dd>Interpolated pressure from DQZ, identical to pressure in PIES logging events</dd></dl></div><div class='xr-var-data'><pre>array([3919.2722, 3919.1716, 3919.037 , 3918.8992, 3918.789 , 3918.7485,\n",
+       "       -1.8563, -1.8469, -1.85  , -1.8531, -1.8469], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.919e+03</div><input id='attrs-23b5911b-ee5b-479e-ad6c-8f0f8cf171e5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-23b5911b-ee5b-479e-ad6c-8f0f8cf171e5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-21a23f28-cf2a-4c21-94a1-7569641e78b1' class='xr-var-data-in' type='checkbox'><label for='data-21a23f28-cf2a-4c21-94a1-7569641e78b1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd><dt><span>comment :</span></dt><dd>Interpolated pressure from DQZ, identical to pressure in PIES logging events</dd></dl></div><div class='xr-var-data'><pre>array([3919.2722, 3919.1716, 3919.037 , 3918.8992, 3918.789 , 3918.7485,\n",
        "       3918.7837, 3918.8938, 3919.0469, 3919.222 , 3919.3796, 3919.4824,\n",
        "       3919.5044, 3919.449 , 3919.3164, 3919.1582, 3918.9968, 3918.8801,\n",
        "       3918.8298, 3918.8552, 3918.947 , 3919.072 , 3919.207 , 3919.3123,\n",
@@ -846,7 +847,7 @@
        "       3919.472 , 3919.5828, 3919.5994, 3919.5122, 3919.3484, 3919.1555,\n",
        "       3918.9705, 3918.843 , 3918.8064, 3918.865 , 3919.0005, 3919.175 ,\n",
        "       3919.3503, 3919.4746, 3919.52  , 3919.4556, 3919.3184, 3919.1274,\n",
-       "       3918.9402], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.918e+03</div><input id='attrs-885d3985-7d22-4158-b309-1aef2805dbd5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-885d3985-7d22-4158-b309-1aef2805dbd5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-354d4f8b-10fe-407b-8ce2-cfc3cf7816e2' class='xr-var-data-in' type='checkbox'><label for='data-354d4f8b-10fe-407b-8ce2-cfc3cf7816e2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([3918.6445, 3918.615 , 3918.4082, 3918.242 , 3918.1172, 3918.0564,\n",
+       "       3918.9402], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRESSURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.919e+03 3.919e+03 ... 3.918e+03</div><input id='attrs-40934f24-ece2-4cb0-a710-bc3328461267' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-40934f24-ece2-4cb0-a710-bc3328461267' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6de92304-ecbf-4b4f-b73f-9b88f60f952b' class='xr-var-data-in' type='checkbox'><label for='data-6de92304-ecbf-4b4f-b73f-9b88f60f952b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>dbar</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Pressure (spatial coordinate) exerted by the water body by pressure sensor</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>reference_datum :</span></dt><dd>sea-surface</dd><dt><span>standard_name :</span></dt><dd>pressure</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([3918.6445, 3918.615 , 3918.4082, 3918.242 , 3918.1172, 3918.0564,\n",
        "       3918.082 , 3918.193 , 3918.345 , 3918.5037, 3918.6523, 3918.7363,\n",
        "       3918.7563, 3918.696 , 3918.576 , 3918.403 , 3918.218 , 3918.106 ,\n",
        "       3918.054 , 3918.068 , 3918.154 , 3918.274 , 3918.3992, 3918.4863,\n",
@@ -863,7 +864,7 @@
        "       3918.4778, 3918.5837, 3918.5994, 3918.5085, 3918.3352, 3918.153 ,\n",
        "       3917.9536, 3917.8325, 3917.7927, 3917.8542, 3917.9817, 3918.1606,\n",
        "       3918.3286, 3918.4426, 3918.4856, 3918.4197, 3918.287 , 3918.0867,\n",
-       "       3917.8962], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRETRIGGER_NOISE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>82.88 82.62 86.51 ... 64.36 65.5</div><input id='attrs-06eb9904-86fb-46e1-a894-6ad144976996' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-06eb9904-86fb-46e1-a894-6ad144976996' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d3ec3ddf-86d8-406c-8182-d5d526c8baec' class='xr-var-data-in' type='checkbox'><label for='data-d3ec3ddf-86d8-406c-8182-d5d526c8baec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 82.88018 ,  82.621605,  86.50508 ,  94.26092 ,  83.696724,\n",
+       "       3917.8962], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>PRETRIGGER_NOISE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>82.88 82.62 86.51 ... 64.36 65.5</div><input id='attrs-5d939c00-9653-49f3-9d6a-7dd0746686eb' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5d939c00-9653-49f3-9d6a-7dd0746686eb' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ceb725ba-3654-4f26-8a14-510fae266a8e' class='xr-var-data-in' type='checkbox'><label for='data-ceb725ba-3654-4f26-8a14-510fae266a8e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 82.88018 ,  82.621605,  86.50508 ,  94.26092 ,  83.696724,\n",
        "        77.835236,  89.09337 ,  95.13427 , 105.12323 ,  92.6603  ,\n",
        "       100.88058 ,  92.77622 ,  87.56836 ,  92.46656 ,  84.74118 ,\n",
        "        90.01213 ,  86.11518 ,  79.99684 ,  82.304085,  93.171036,\n",
@@ -883,7 +884,7 @@
        "        55.929558,  67.21253 ,  61.824776,  67.618546,  62.65341 ,\n",
        "        42.359272,  59.612343,  41.825146,  62.51128 ,  54.832718,\n",
        "        41.704918,  68.94338 ,  69.66822 ,  55.290012,  66.84985 ,\n",
-       "        61.284344,  64.36308 ,  65.495255], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>RDIFF</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>178.6 183.0 169.2 ... 86.83 89.4</div><input id='attrs-7b86110a-1c98-48f2-bb6b-adbc97058703' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7b86110a-1c98-48f2-bb6b-adbc97058703' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-240a5fde-11f5-4949-ae02-a14ce6e1f420' class='xr-var-data-in' type='checkbox'><label for='data-240a5fde-11f5-4949-ae02-a14ce6e1f420' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 178.59473 ,  182.98535 ,  169.1748  ,  150.05371 ,  173.15137 ,\n",
+       "        61.284344,  64.36308 ,  65.495255], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>RDIFF</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>178.6 183.0 169.2 ... 86.83 89.4</div><input id='attrs-fab08f46-4a34-4a3e-858c-1e90f9900daf' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fab08f46-4a34-4a3e-858c-1e90f9900daf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d57dd279-013f-4d44-9bc2-ecde9ae080ec' class='xr-var-data-in' type='checkbox'><label for='data-d57dd279-013f-4d44-9bc2-ecde9ae080ec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>PIES</dd></dl></div><div class='xr-var-data'><pre>array([ 178.59473 ,  182.98535 ,  169.1748  ,  150.05371 ,  173.15137 ,\n",
        "        220.28906 ,  140.60547 ,  167.81445 ,  135.52148 ,  143.47852 ,\n",
        "        131.85938 ,  177.20508 ,  180.58496 ,  173.81543 ,  201.67773 ,\n",
        "        172.16406 ,  173.69336 ,  200.98828 ,  208.23438 ,  160.7793  ,\n",
@@ -903,7 +904,7 @@
        "         99.34082 ,   76.24805 ,   63.52539 ,   70.62891 ,   70.69531 ,\n",
        "         70.83008 ,   70.143555,   72.47949 ,   75.75781 ,   90.87109 ,\n",
        "         69.00879 ,  115.49902 ,  125.97949 ,  187.64844 ,   84.58789 ,\n",
-       "         66.583984,   86.8291  ,   89.39844 ], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ROLL</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.1813 -0.1906 ... -0.1969 -0.1844</div><input id='attrs-289fd59d-0a90-4bc5-9d6e-b202bea88399' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-289fd59d-0a90-4bc5-9d6e-b202bea88399' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-158cb7db-8679-4647-bb18-18572d109e81' class='xr-var-data-in' type='checkbox'><label for='data-158cb7db-8679-4647-bb18-18572d109e81' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>port positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (roll angle) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/ROLL/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-0.1813, -0.1906, -0.1781, -0.1781, -0.1906, -0.1687, -0.1719,\n",
+       "         66.583984,   86.8291  ,   89.39844 ], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ROLL</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.1813 -0.1906 ... -0.1969 -0.1844</div><input id='attrs-f71f1d3b-da3e-4802-bfcd-1f08c84c3d98' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f71f1d3b-da3e-4802-bfcd-1f08c84c3d98' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8045f5ee-91af-4d58-b50a-8adddd25aea4' class='xr-var-data-in' type='checkbox'><label for='data-8045f5ee-91af-4d58-b50a-8adddd25aea4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>convention :</span></dt><dd>port positive</dd><dt><span>resolution :</span></dt><dd>0.0001</dd><dt><span>long_name :</span></dt><dd>Orientation (roll angle) of measurement platform by inclinometer</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/P02/current/ROLL/</dd><dt><span>Logging Event :</span></dt><dd>INC</dd></dl></div><div class='xr-var-data'><pre>array([-0.1813, -0.1906, -0.1781, -0.1781, -0.1906, -0.1687, -0.1719,\n",
        "       -0.2   , -0.1937, -0.1906, -0.1969, -0.1938, -0.1813, -0.1938,\n",
        "       -0.1875, -0.1875, -0.1906, -0.1969, -0.2   , -0.1875, -0.1875,\n",
        "       -0.1906, -0.2156, -0.1875, -0.2   , -0.1906, -0.2   , -0.2   ,\n",
@@ -917,7 +918,7 @@
        "       -0.1969, -0.1813, -0.1938, -0.1844, -0.1844, -0.1813, -0.1906,\n",
        "       -0.2   , -0.1813, -0.1938, -0.1813, -0.1938, -0.1969, -0.1781,\n",
        "       -0.1938, -0.2   , -0.1969, -0.1812, -0.1906, -0.1875, -0.1875,\n",
-       "       -0.1844, -0.1969, -0.1906, -0.1969, -0.1844], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.073 2.9 2.756 ... 2.372 2.378</div><input id='attrs-16403759-7da0-4060-a632-5df71f888c13' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-16403759-7da0-4060-a632-5df71f888c13' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-397e4841-43ad-46f3-b7a8-5f2bdf202d43' class='xr-var-data-in' type='checkbox'><label for='data-397e4841-43ad-46f3-b7a8-5f2bdf202d43' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>TMP</dd></dl></div><div class='xr-var-data'><pre>array([3.0726, 2.8997, 2.7557, 2.6579, 2.54  , 2.4765, 2.4282, 2.3975,\n",
+       "       -0.1844, -0.1969, -0.1906, -0.1969, -0.1844], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.073 2.9 2.756 ... 2.372 2.378</div><input id='attrs-d8160bec-b9b3-4127-848c-41e762e78f98' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d8160bec-b9b3-4127-848c-41e762e78f98' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e4744cba-4cb3-495d-a1e7-6f4e01ed8902' class='xr-var-data-in' type='checkbox'><label for='data-e4744cba-4cb3-495d-a1e7-6f4e01ed8902' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>Logging Event :</span></dt><dd>TMP</dd></dl></div><div class='xr-var-data'><pre>array([3.0726, 2.8997, 2.7557, 2.6579, 2.54  , 2.4765, 2.4282, 2.3975,\n",
        "       2.3836, 2.372 , 2.3609, 2.3495, 2.3162, 2.2902, 2.2814, 2.2806,\n",
        "       2.2897, 2.2951, 2.2868, 2.2847, 2.2847, 2.2884, 2.2878, 2.2897,\n",
        "       2.2902, 2.2881, 2.2958,    nan, 2.293 , 2.293 , 2.2948, 2.2984,\n",
@@ -930,7 +931,7 @@
        "       2.3503, 2.3493, 2.349 , 2.3493, 2.35  , 2.356 , 2.3591, 2.3645,\n",
        "       2.3681, 2.3663, 2.3699, 2.3815, 2.3722, 2.3696, 2.3758, 2.3782,\n",
        "       2.381 , 2.3833, 2.3818, 2.3764, 2.3862, 2.372 , 2.3782],\n",
-       "      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>5.63 4.87 4.27 ... 2.43 2.43 2.43</div><input id='attrs-75feeed1-a134-443c-99ae-78e5bc3718bf' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-75feeed1-a134-443c-99ae-78e5bc3718bf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-446f8855-c1f8-48a3-95e8-8d758c104634' class='xr-var-data-in' type='checkbox'><label for='data-446f8855-c1f8-48a3-95e8-8d758c104634' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd></dl></div><div class='xr-var-data'><pre>array([5.63, 4.87, 4.27, 3.84, 3.5 , 3.23, 3.03, 2.88, 2.77, 2.68, 2.62,\n",
+       "      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_DQZ</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>5.63 4.87 4.27 ... 2.43 2.43 2.43</div><input id='attrs-42344dc1-2a36-4175-807d-a58a461de82a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-42344dc1-2a36-4175-807d-a58a461de82a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4e9f6948-ab55-4493-90df-2822c4f4d150' class='xr-var-data-in' type='checkbox'><label for='data-4e9f6948-ab55-4493-90df-2822c4f4d150' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>DQZ</dd></dl></div><div class='xr-var-data'><pre>array([5.63, 4.87, 4.27, 3.84, 3.5 , 3.23, 3.03, 2.88, 2.77, 2.68, 2.62,\n",
        "       2.57, 2.52, 2.47, 2.44, 2.41, 2.39, 2.39, 2.37, 2.37, 2.36, 2.35,\n",
        "       2.35, 2.35, 2.35, 2.35, 2.39, 2.38,  nan, 2.36, 2.35, 2.35, 2.35,\n",
        "       2.35, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36, 2.36,\n",
@@ -939,7 +940,7 @@
        "       2.4 , 2.39, 2.39, 2.39, 2.39, 2.39, 2.39, 2.39, 2.43, 2.43, 2.42,\n",
        "       2.41, 2.41, 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.4 , 2.41, 2.41,\n",
        "       2.41, 2.42, 2.42, 2.42, 2.42, 2.42, 2.42, 2.43, 2.43, 2.43, 2.43,\n",
-       "       2.43, 2.43, 2.43, 2.43], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>7.012 5.885 4.936 ... 2.215 2.214</div><input id='attrs-89682a30-aa72-4e6c-9700-589ca893ce08' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-89682a30-aa72-4e6c-9700-589ca893ce08' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-06378ef1-ae76-4eb7-b0f1-3440c6665df9' class='xr-var-data-in' type='checkbox'><label for='data-06378ef1-ae76-4eb7-b0f1-3440c6665df9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([7.012, 5.885, 4.936, 4.279, 3.786, 3.407, 3.123, 2.903, 2.741,\n",
+       "       2.43, 2.43, 2.43, 2.43], dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>TEMPERATURE_KLR</span></div><div class='xr-var-dims'>(TIME)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>7.012 5.885 4.936 ... 2.215 2.214</div><input id='attrs-83e1b760-e253-4473-bd38-c9fa28633387' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-83e1b760-e253-4473-bd38-c9fa28633387' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a4d9f2e2-014b-4ac9-adee-1b1b855e6b53' class='xr-var-data-in' type='checkbox'><label for='data-a4d9f2e2-014b-4ac9-adee-1b1b855e6b53' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Celsius</dd><dt><span>observation_type :</span></dt><dd>measured</dd><dt><span>standard_name :</span></dt><dd>temperature</dd><dt><span>resolution :</span></dt><dd>0.001</dd><dt><span>valid_max :</span></dt><dd>42.0</dd><dt><span>valid_min :</span></dt><dd>-5.0</dd><dt><span>uri :</span></dt><dd>https://vocab.nerc.ac.uk/collection/OG1/current/TEMP/</dd><dt><span>Logging Event :</span></dt><dd>KLR</dd></dl></div><div class='xr-var-data'><pre>array([7.012, 5.885, 4.936, 4.279, 3.786, 3.407, 3.123, 2.903, 2.741,\n",
        "       2.613, 2.517, 2.441, 2.381, 2.32 , 2.272, 2.235, 2.208, 2.192,\n",
        "       2.177, 2.166, 2.156, 2.149, 2.145, 2.141, 2.138, 2.134, 2.251,\n",
        "       2.184,   nan, 2.155, 2.145, 2.142, 2.141, 2.14 , 2.143, 2.145,\n",
@@ -950,7 +951,7 @@
        "       2.177, 2.177, 2.286, 2.225, 2.207, 2.198, 2.192, 2.19 , 2.188,\n",
        "       2.187, 2.185, 2.185, 2.184, 2.186, 2.188, 2.192, 2.196, 2.199,\n",
        "       2.199, 2.204, 2.206, 2.204, 2.205, 2.208, 2.211, 2.213, 2.214,\n",
-       "       2.214, 2.215, 2.215, 2.214], dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-327274b0-a135-48cf-8d87-24f507b9aa8e' class='xr-section-summary-in' type='checkbox'  ><label for='section-327274b0-a135-48cf-8d87-24f507b9aa8e' class='xr-section-summary' >Indexes: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>TIME</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-ec4d4590-3936-41ff-8f04-bb7112fb85bf' class='xr-index-data-in' type='checkbox'/><label for='index-ec4d4590-3936-41ff-8f04-bb7112fb85bf' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2023-03-03 23:00:00&#x27;, &#x27;2023-03-04 00:00:00&#x27;,\n",
+       "       2.214, 2.215, 2.215, 2.214], dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4a2376ba-e234-4b36-aa8a-d5bd90cb086e' class='xr-section-summary-in' type='checkbox'  ><label for='section-4a2376ba-e234-4b36-aa8a-d5bd90cb086e' class='xr-section-summary' >Indexes: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>TIME</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-594dd4e4-cee2-4a3c-a6aa-65982ddf1353' class='xr-index-data-in' type='checkbox'/><label for='index-594dd4e4-cee2-4a3c-a6aa-65982ddf1353' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2023-03-03 23:00:00&#x27;, &#x27;2023-03-04 00:00:00&#x27;,\n",
        "               &#x27;2023-03-04 01:00:00&#x27;, &#x27;2023-03-04 02:00:00&#x27;,\n",
        "               &#x27;2023-03-04 03:00:00&#x27;, &#x27;2023-03-04 04:00:00&#x27;,\n",
        "               &#x27;2023-03-04 05:00:00&#x27;, &#x27;2023-03-04 06:00:00&#x27;,\n",
@@ -961,7 +962,7 @@
        "               &#x27;2023-03-08 00:00:00&#x27;, &#x27;2023-03-08 01:00:00&#x27;,\n",
        "               &#x27;2023-03-08 02:00:00&#x27;, &#x27;2023-03-08 03:00:00&#x27;,\n",
        "               &#x27;2023-03-08 04:00:00&#x27;, &#x27;2023-03-08 05:00:00&#x27;],\n",
-       "              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;TIME&#x27;, length=103, freq=None))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-212b43a9-94e8-4ee7-8c1e-f5c6c60d5e22' class='xr-section-summary-in' type='checkbox'  ><label for='section-212b43a9-94e8-4ee7-8c1e-f5c6c60d5e22' class='xr-section-summary' >Attributes: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>Calculation_Version_PIES :</span></dt><dd>3</dd><dt><span>Index_DQZ :</span></dt><dd>3</dd><dt><span>Index_INC :</span></dt><dd>1</dd><dt><span>Index_KLR :</span></dt><dd>5</dd><dt><span>Index_PIES :</span></dt><dd>3</dd><dt><span>Index_TMP :</span></dt><dd>4</dd><dt><span>Serial_Number_DQZ :</span></dt><dd>155399</dd><dt><span>Serial_Number_INC :</span></dt><dd>0</dd><dt><span>Serial_Number_KLR :</span></dt><dd>1262636</dd><dt><span>Serial_Number_TMP :</span></dt><dd>0</dd><dt><span>UID :</span></dt><dd>007217</dd></dl></div></li></ul></div></div>"
+       "              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;TIME&#x27;, length=103, freq=None))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-e189c41b-f1c1-4423-be47-a79ca6125013' class='xr-section-summary-in' type='checkbox'  ><label for='section-e189c41b-f1c1-4423-be47-a79ca6125013' class='xr-section-summary' >Attributes: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>Calculation_Version_PIES :</span></dt><dd>3</dd><dt><span>Index_DQZ :</span></dt><dd>3</dd><dt><span>Index_INC :</span></dt><dd>1</dd><dt><span>Index_KLR :</span></dt><dd>5</dd><dt><span>Index_PIES :</span></dt><dd>3</dd><dt><span>Index_TMP :</span></dt><dd>4</dd><dt><span>Serial_Number_DQZ :</span></dt><dd>155399</dd><dt><span>Serial_Number_INC :</span></dt><dd>0</dd><dt><span>Serial_Number_KLR :</span></dt><dd>1262636</dd><dt><span>Serial_Number_TMP :</span></dt><dd>0</dd><dt><span>UID :</span></dt><dd>007217</dd></dl></div></li></ul></div></div>"
       ],
       "text/plain": [
        "<xarray.Dataset> Size: 7kB\n",
@@ -1020,10 +1021,10 @@
    "id": "583c8970",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:18.264100Z",
-     "iopub.status.busy": "2025-04-03T08:41:18.263765Z",
-     "iopub.status.idle": "2025-04-03T08:41:18.292795Z",
-     "shell.execute_reply": "2025-04-03T08:41:18.292381Z"
+     "iopub.execute_input": "2025-04-03T09:38:42.685609Z",
+     "iopub.status.busy": "2025-04-03T09:38:42.685455Z",
+     "iopub.status.idle": "2025-04-03T09:38:42.714580Z",
+     "shell.execute_reply": "2025-04-03T09:38:42.714147Z"
     }
    },
    "outputs": [
@@ -1069,10 +1070,10 @@
    "id": "83c49c02",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:18.294363Z",
-     "iopub.status.busy": "2025-04-03T08:41:18.294198Z",
-     "iopub.status.idle": "2025-04-03T08:41:18.721208Z",
-     "shell.execute_reply": "2025-04-03T08:41:18.720716Z"
+     "iopub.execute_input": "2025-04-03T09:38:42.716517Z",
+     "iopub.status.busy": "2025-04-03T09:38:42.715984Z",
+     "iopub.status.idle": "2025-04-03T09:38:43.135833Z",
+     "shell.execute_reply": "2025-04-03T09:38:43.135345Z"
     }
    },
    "outputs": [
@@ -1123,10 +1124,10 @@
    "id": "30562979",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:18.722898Z",
-     "iopub.status.busy": "2025-04-03T08:41:18.722660Z",
-     "iopub.status.idle": "2025-04-03T08:41:19.765655Z",
-     "shell.execute_reply": "2025-04-03T08:41:19.765084Z"
+     "iopub.execute_input": "2025-04-03T09:38:43.137598Z",
+     "iopub.status.busy": "2025-04-03T09:38:43.137426Z",
+     "iopub.status.idle": "2025-04-03T09:38:44.181652Z",
+     "shell.execute_reply": "2025-04-03T09:38:44.181119Z"
     }
    },
    "outputs": [
@@ -1161,10 +1162,10 @@
    "id": "4b15e155",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:19.767571Z",
-     "iopub.status.busy": "2025-04-03T08:41:19.767113Z",
-     "iopub.status.idle": "2025-04-03T08:41:21.130638Z",
-     "shell.execute_reply": "2025-04-03T08:41:21.130064Z"
+     "iopub.execute_input": "2025-04-03T09:38:44.183326Z",
+     "iopub.status.busy": "2025-04-03T09:38:44.183169Z",
+     "iopub.status.idle": "2025-04-03T09:38:45.518275Z",
+     "shell.execute_reply": "2025-04-03T09:38:45.517781Z"
     }
    },
    "outputs": [
@@ -1200,10 +1201,10 @@
    "id": "af3e686c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:21.132415Z",
-     "iopub.status.busy": "2025-04-03T08:41:21.132127Z",
-     "iopub.status.idle": "2025-04-03T08:41:21.524853Z",
-     "shell.execute_reply": "2025-04-03T08:41:21.524332Z"
+     "iopub.execute_input": "2025-04-03T09:38:45.520018Z",
+     "iopub.status.busy": "2025-04-03T09:38:45.519700Z",
+     "iopub.status.idle": "2025-04-03T09:38:45.907887Z",
+     "shell.execute_reply": "2025-04-03T09:38:45.907360Z"
     }
    },
    "outputs": [
@@ -1237,10 +1238,10 @@
    "id": "536a7dee",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:21.526685Z",
-     "iopub.status.busy": "2025-04-03T08:41:21.526276Z",
-     "iopub.status.idle": "2025-04-03T08:41:21.819964Z",
-     "shell.execute_reply": "2025-04-03T08:41:21.819486Z"
+     "iopub.execute_input": "2025-04-03T09:38:45.909766Z",
+     "iopub.status.busy": "2025-04-03T09:38:45.909364Z",
+     "iopub.status.idle": "2025-04-03T09:38:46.199208Z",
+     "shell.execute_reply": "2025-04-03T09:38:46.198679Z"
     }
    },
    "outputs": [
@@ -1268,10 +1269,10 @@
    "id": "9cb49834",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-04-03T08:41:21.821668Z",
-     "iopub.status.busy": "2025-04-03T08:41:21.821348Z",
-     "iopub.status.idle": "2025-04-03T08:41:21.968099Z",
-     "shell.execute_reply": "2025-04-03T08:41:21.967582Z"
+     "iopub.execute_input": "2025-04-03T09:38:46.201055Z",
+     "iopub.status.busy": "2025-04-03T09:38:46.200760Z",
+     "iopub.status.idle": "2025-04-03T09:38:46.347702Z",
+     "shell.execute_reply": "2025-04-03T09:38:46.347221Z"
     }
    },
    "outputs": [
