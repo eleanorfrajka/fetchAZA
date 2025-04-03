@@ -101,6 +101,6 @@ def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_d
     if cleanup:
         # Delete the intermediate files
         _log.info('Deleting intermediate files')
-        writers.delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP','INC'])
+        writers.delete_netcdf_datasets(data_path, file_root, keys)
 
     return ds_pressure, ds_AZA

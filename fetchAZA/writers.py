@@ -10,7 +10,7 @@ import datetime
 _log = logging.getLogger(__name__)
 
 
-def delete_netcdf_datasets(data_path, file_root, keys=None):
+def delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP','INC']):
     """
     Delete netCDF files matching the given file_root and optional keys from the specified data_path.
 
