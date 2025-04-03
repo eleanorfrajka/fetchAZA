@@ -17,13 +17,13 @@ on:
 
 permissions:
   contents: read
+  id-token: write # Needed for OIDC auth with PyPI
 
 jobs:
   release-build:
     runs-on: ubuntu-latest
     environment: release
-    permissions:
-      id-token: write
+
     steps:
     - uses: actions/checkout@v4
 
@@ -40,22 +40,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip wheel setuptools setuptools_scm build twine
 
-      shell: bash
-
-    - name: Build binary wheel
+    - name: Build distributions (binary wheel)
       run: python -m build --sdist --wheel . --outdir dist
 
-    - name: CheckFiles
+    - name: Check distributions
       run: |
         ls dist
+        twine check dist/*
       shell: bash
 
     - name: Test wheels
       run: |
-        cd dist && python -m pip install *.whl
-        python -m twine check *
+        python -m pip install dist/*.whl
       shell: bash
 
     - name: Publish a Python distribution to PyPI
-      if: success() && github.event_name == 'release'
       uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        verbose: true
