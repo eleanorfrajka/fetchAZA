@@ -6,14 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FAQ / Troubleshooting &mdash; fetchAZA v0.0.0 documentation</title>
+  <title>FAQ / Troubleshooting &mdash; fetchAZA v0.0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=1078e4cb" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=8b92e751"></script>
+      <script src="_static/documentation_options.js?v=1812e922"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -50,6 +51,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="demo-output.html">Parsing data from the Sonardyne FETCH AZA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="demo-output.html#Diagnostics-&amp;-basic-statistics">Diagnostics &amp; basic statistics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data format</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="format_AZA.html">DUMMY TEMPLATE - content incorrect</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
 <ul>
@@ -105,7 +110,7 @@
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/Users/eddifying/github/fetchAZA&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>before the line where you try <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">fetchAZA</span> <span class="pre">import</span> <span class="pre">plotters</span></code>.  The secon</p>
+<p>before the line where you try <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">fetchAZA</span> <span class="pre">import</span> <span class="pre">plotters</span></code>.</p>
 </section>
 <section id="failing-to-install-the-package-in-a-github-action">
 <h2>Failing to install the package in a Github Action<a class="headerlink" href="#failing-to-install-the-package-in-a-github-action" title="Link to this heading"></a></h2>
@@ -116,10 +121,10 @@
 </div>
 <p>To test the installation, you’ll want a fresh environment.</p>
 <p><strong>In a terminal window, at the root of your project</strong> (for me, this is <code class="docutils literal notranslate"><span class="pre">/Users/eddifying/github/fetchAZA/</span></code>), run the following commands in order.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="n">venv</span> 
-<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span> <span class="o">&amp;&amp;</span> <span class="n">micromamba</span> <span class="n">deactivate</span> 
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> 
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="n">venv</span>
+<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span> <span class="o">&amp;&amp;</span> <span class="n">micromamba</span> <span class="n">deactivate</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
 </pre></div>
 </div>
 <p>Then check and troubleshoot any errors.  When this runs, you are probably ready to try it with the GitHub Actions (where the workflows are in your repository in <code class="docutils literal notranslate"><span class="pre">.github/workflows/*.yml</span></code>)</p>
