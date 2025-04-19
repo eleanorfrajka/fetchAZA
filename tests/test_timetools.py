@@ -5,15 +5,8 @@ script_dir = pathlib.Path(__file__).parent.absolute()
 parent_dir = script_dir.parents[0]
 sys.path.append(str(parent_dir))
 
-import pytest
-import numpy as np
 import pandas as pd
-import xarray as xr
-from fetchAZA import tools, timetools
-
-
-
-
+from fetchAZA import timetools
 
 
 def test_increment_duplicate_time():

@@ -1,16 +1,11 @@
 # Based on https://github.com/voto-ocean-knowledge/votoutils/blob/main/votoutils/utilities/utilities.py
 import re
 import numpy as np
-import pandas as pd
-import datetime
 import xarray as xr
-from fetchAZA import readers, writers, plotters, tools
 
 import logging
 
 _log = logging.getLogger(__name__)
-
-
 
 
 def netcdf_compliancer(ds):
@@ -27,32 +22,41 @@ def netcdf_compliancer(ds):
     None
     """
     # Find variables with empty string values
-    empty_string_vars = {var: ds[var].values for var in ds.data_vars if (ds[var].dtype == object and (ds[var] == '').any())}
+    empty_string_vars = {
+        var: ds[var].values
+        for var in ds.data_vars
+        if (ds[var].dtype == object and (ds[var] == "").any())
+    }
 
     # Print the variables with empty string values
     for var, values in empty_string_vars.items():
         _log.warning(f"Variable '{var}' has empty string values.")
 
     # Find attributes with empty string values
-    empty_string_attrs = {attr: value for attr, value in ds.attrs.items() if value == ''}
+    empty_string_attrs = {
+        attr: value for attr, value in ds.attrs.items() if value == ""
+    }
 
     # Print the attributes with empty string values
-    #for attr, value in empty_string_attrs.items():
+    # for attr, value in empty_string_attrs.items():
     #    _log.warning(f"Attribute '{attr}' has an empty string value.")
 
     # Find attributes on variables with empty string values
     empty_string_attr_vars = {}
     for var in ds.data_vars:
-        empty_attrs = {attr: value for attr, value in ds[var].attrs.items() if value == ''}
+        empty_attrs = {
+            attr: value for attr, value in ds[var].attrs.items() if value == ""
+        }
         if empty_attrs:
             empty_string_attr_vars[var] = empty_attrs
 
     # Print the variables and their attributes with empty string values
-    #for var, attrs in empty_string_attr_vars.items():
+    # for var, attrs in empty_string_attr_vars.items():
     #    for attr, value in attrs.items():
     #        _log.warning(f"Variable '{var}' has attribute '{attr}' has an empty string value.")
 
     return empty_string_vars, empty_string_attrs, empty_string_attr_vars
+
 
 def find_best_dtype(var_name, da):
     """
@@ -99,37 +103,36 @@ def find_best_dtype(var_name, da):
     return input_dtype
 
 
-
 def set_best_dtype(ds):
     """
-    Adjusts the data types of variables in an xarray Dataset to optimize memory usage 
-    while preserving data integrity. The function evaluates each variable's current 
-    data type and determines a more efficient data type, if applicable. It also updates 
+    Adjusts the data types of variables in an xarray Dataset to optimize memory usage
+    while preserving data integrity. The function evaluates each variable's current
+    data type and determines a more efficient data type, if applicable. It also updates
     attributes like `valid_min` and `valid_max` to match the new data type.
 
     Parameters
     ----------
     ds : xarray.Dataset
-        The input dataset whose variables' data types will be evaluated and potentially 
+        The input dataset whose variables' data types will be evaluated and potentially
         adjusted.
 
     Returns
     --------
     xarray.Dataset
-        A new dataset with optimized data types for its variables, potentially saving 
+        A new dataset with optimized data types for its variables, potentially saving
         memory space.
 
     Notes
     ------
-    - If a variable's data type is changed to an integer type, NaN values are replaced 
+    - If a variable's data type is changed to an integer type, NaN values are replaced
       with a fill value, and the `_FillValue` encoding is updated accordingly.
     - Logs the percentage of memory saved due to data type adjustments.
-    - Relies on the helper functions `find_best_dtype` and `set_fill_value` to determine 
+    - Relies on the helper functions `find_best_dtype` and `set_fill_value` to determine
       the optimal data type and appropriate fill value, respectively.
-    - Logs debug messages for each variable whose data type is changed, including the 
+    - Logs debug messages for each variable whose data type is changed, including the
       original and new data types.
     - Logs an info message summarizing the overall memory savings.
-    - Raises: Assumes that `find_best_dtype` and `set_fill_value` are defined elsewhere in the 
+    - Raises: Assumes that `find_best_dtype` and `set_fill_value` are defined elsewhere in the
       codebase.
     - Raises: Assumes that `_log` is a configured logger available in the current scope.
     """
@@ -158,6 +161,7 @@ def set_best_dtype(ds):
     )
     return ds
 
+
 def set_fill_value(new_dtype):
     """
     Calculate and return the maximum fill value for a given numeric data type.
@@ -180,37 +184,41 @@ def set_fill_value(new_dtype):
     ValueError: If the bit-width cannot be extracted from the provided data type string.
     """
 
-    fill_val = 2 ** (int(re.findall("\d+", str(new_dtype))[0]) - 1) - 1
+    fill_val = 2 ** (int(re.findall(r"\d+", str(new_dtype))[0]) - 1) - 1
     return fill_val
-
 
 
 def convert_float_to_int(ds):
     """
-    Converts float variables in an xarray dataset to integer type if all values 
+    Converts float variables in an xarray dataset to integer type if all values
     are sufficiently close to their integer representation.
 
     Parameters
     ----------
-    ds : xarray.Dataset 
+    ds : xarray.Dataset
         An xarray dataset containing variables to be checked and potentially converted.
 
     Returns
     -------
-    None 
+    None
         The dataset is modified in place, with applicable variables converted to integer type.
     """
     for var in ds.data_vars:
         # Check if the variable is of type float
         if np.issubdtype(ds[var].dtype, np.floating):
             # Check if all values are equal to their integer representation
-            with np.errstate(invalid='ignore'):
-                if np.all(np.isclose(ds[var].values, ds[var].values.astype(int), equal_nan=True)):
+            with np.errstate(invalid="ignore"):
+                if np.all(
+                    np.isclose(
+                        ds[var].values, ds[var].values.astype(int), equal_nan=True
+                    )
+                ):
 
                     # Convert the variable to integer type
                     ds[var] = ds[var].astype(int)
                     _log.info(f"Converted {var} to integer type.")
     return ds
+
 
 # Convert column types
 def convert_type(value):
@@ -241,13 +249,14 @@ def convert_type(value):
     except ValueError:
         return str(value)
 
+
 def reformat_object_vars(data):
     """
     Fix variables with mixed data types in xarray datasets or a single xarray dataset.
 
-    This function processes variables with mixed data types (e.g., object type) by attempting to convert them 
-    to a single consistent type (e.g., float, int, or string). It removes common fill values ('0') and checks 
-    the remaining values to determine the appropriate type. If conversion to integer is not possible, the 
+    This function processes variables with mixed data types (e.g., object type) by attempting to convert them
+    to a single consistent type (e.g., float, int, or string). It removes common fill values ('0') and checks
+    the remaining values to determine the appropriate type. If conversion to integer is not possible, the
     variable is converted to a string.
 
     Parameters
@@ -258,48 +267,51 @@ def reformat_object_vars(data):
     Returns
     -------
     dict or xarray.Dataset
-        A dictionary of modified xarray datasets or a single modified xarray dataset with variables of type 
+        A dictionary of modified xarray datasets or a single modified xarray dataset with variables of type
         object converted to numeric (if possible) or string (otherwise).
     """
+
     def _fix_multitype_object_variables(ds):
         for var in ds.variables:
             d1 = ds[var]
             if ds[var].dtype == object:
-                indices = np.where(d1 == '0')[0]
-                other_indices = np.where(d1 != '0')[0]
+                indices = np.where(d1 == "0")[0]
+                other_indices = np.where(d1 != "0")[0]
                 d2 = ds[var][other_indices]
                 d3 = d2.values
 
                 if isinstance(d3, np.ndarray):
                     number_type = type(d3[0])
                     if number_type is float:
-                        newtype = 'FLOAT'
+                        newtype = "FLOAT"
                         ds[var][indices] = np.nan
                         ds[var] = ds[var].astype(float)
                     elif number_type is int:
                         try:
-                            newtype = 'INT'
+                            newtype = "INT"
                             ds[var] = ds[var].astype(int)
                             ds[var][indices] = -9999
-                            ds[var].attrs['_FillValue'] = -9999
+                            ds[var].attrs["_FillValue"] = -9999
                         except:
-                            newtype = 'STR (not INT)'
+                            newtype = "STR (not INT)"
                             ds[var] = ds[var].astype(str)
-                            ds[var][indices] = ''
-                            ds[var].attrs['_FillValue'] = ''
+                            ds[var][indices] = ""
+                            ds[var].attrs["_FillValue"] = ""
                     elif number_type is str:
-                        newtype = 'STR'
+                        newtype = "STR"
                         ds[var] = ds[var].astype(str)
-                        ds[var][indices] = ''
-                        ds[var].attrs['_FillValue'] = ''
+                        ds[var][indices] = ""
+                        ds[var].attrs["_FillValue"] = ""
 
-                    _log.info(f"- '{var}' is dtype object / '0' occurs {str(len(indices))} times --> {newtype}.")
+                    _log.info(
+                        f"- '{var}' is dtype object / '0' occurs {str(len(indices))} times --> {newtype}."
+                    )
                 else:
                     _log.warning(f"Variable '{var}' is not a numpy array.")
         return ds
 
     if isinstance(data, dict):
-        _log.info('-------------- utilities.reformat_object_vars --------------')
+        _log.info("-------------- utilities.reformat_object_vars --------------")
         data_new = {}
         for key, ds in data.items():
             _log.info(f"{key}")
@@ -308,4 +320,6 @@ def reformat_object_vars(data):
     elif isinstance(data, xr.Dataset):
         return _fix_multitype_object_variables(data)
     else:
-        raise TypeError("Input must be a dictionary of xarray datasets or a single xarray dataset.")
+        raise TypeError(
+            "Input must be a dictionary of xarray datasets or a single xarray dataset."
+        )

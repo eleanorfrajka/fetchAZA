@@ -1,57 +1,54 @@
 import numpy as np
-import pandas as pd
 import xarray as xr
-from datetime import datetime
-from collections import Counter
-from fetchAZA import readers, writers, plotters, utilities, timetools
+from fetchAZA import readers, utilities, timetools
 import logging
-import re
+
 _log = logging.getLogger(__name__)
 
 
 # Various conversions from the key to units_name with the multiplicative conversion factor
 unit_conversion = {
-    'cm/s': {'units_name': 'm/s', 'factor': 0.01},
-    'cm s-1': {'units_name': 'm s-1', 'factor': 0.01},
-    'm/s': {'units_name': 'cm/s', 'factor': 100},
-    'm s-1': {'units_name': 'cm s-1', 'factor': 100},
-    'S/m': {'units_name': 'mS/cm', 'factor': 0.1},
-    'S m-1': {'units_name': 'mS cm-1', 'factor': 0.1},
-    'mS/cm': {'units_name': 'S/m', 'factor': 10},
-    'mS cm-1': {'units_name': 'S m-1', 'factor': 10},
-    'dbar': {'units_name': 'Pa', 'factor': 10000},
-    'kPa': {'units_name': 'dbar', 'factor': .1},
-    'kPa s-1': {'units_name': 'dbar s-1', 'factor': .1},
-    'Pa': {'units_name': 'dbar', 'factor': 0.0001},
-    'deg': {'units_name': 'degrees', 'factor': 1},
-    'dbar': {'units_name': 'kPa', 'factor': 10},
-    'Deg C': {'units_name': 'Celcius', 'factor': 1},
-    'degrees_Celcius': {'units_name': 'Celsius', 'factor': 1},
-    'degrees_Celsius': {'units_name': 'Celsius', 'factor': 1},
-    'Celsius': {'units_name': 'degrees_Celsius', 'factor': 1},
-    'm': {'units_name': 'cm', 'factor': 100},
-    'm': {'units_name': 'km', 'factor': 0.001},
-    'cm': {'units_name': 'm', 'factor': 0.01},
-    'km': {'units_name': 'm', 'factor': 1000},
-    'g m-3': {'units_name': 'kg m-3', 'factor': 0.001},
-    'kg m-3': {'units_name': 'g m-3', 'factor': 1000},
+    "cm/s": {"units_name": "m/s", "factor": 0.01},
+    "cm s-1": {"units_name": "m s-1", "factor": 0.01},
+    "m/s": {"units_name": "cm/s", "factor": 100},
+    "m s-1": {"units_name": "cm s-1", "factor": 100},
+    "S/m": {"units_name": "mS/cm", "factor": 0.1},
+    "S m-1": {"units_name": "mS cm-1", "factor": 0.1},
+    "mS/cm": {"units_name": "S/m", "factor": 10},
+    "mS cm-1": {"units_name": "S m-1", "factor": 10},
+    "dbar": {"units_name": "Pa", "factor": 10000},
+    "kPa": {"units_name": "dbar", "factor": 0.1},
+    "kPa s-1": {"units_name": "dbar s-1", "factor": 0.1},
+    "Pa": {"units_name": "dbar", "factor": 0.0001},
+    "deg": {"units_name": "degrees", "factor": 1},
+    "dbar": {"units_name": "kPa", "factor": 10},
+    "Deg C": {"units_name": "Celcius", "factor": 1},
+    "degrees_Celcius": {"units_name": "Celsius", "factor": 1},
+    "degrees_Celsius": {"units_name": "Celsius", "factor": 1},
+    "Celsius": {"units_name": "degrees_Celsius", "factor": 1},
+    "m": {"units_name": "cm", "factor": 100},
+    "m": {"units_name": "km", "factor": 0.001},
+    "cm": {"units_name": "m", "factor": 0.01},
+    "km": {"units_name": "m", "factor": 1000},
+    "g m-3": {"units_name": "kg m-3", "factor": 0.001},
+    "kg m-3": {"units_name": "g m-3", "factor": 1000},
 }
 
 # Specify the preferred units, and it will convert if the conversion is available in unit_conversion
-preferred_units = ['m s-1', 'dbar', 'S m-1', 'dbar s-1']
+preferred_units = ["m s-1", "dbar", "S m-1", "dbar s-1"]
 
 # String formats for units.  The key is the original, the value is the desired format
 unit_str_format = {
-    'm/s': 'm s-1',
-    'hex': 'hexadecimal',
-    's': 'seconds',
-    'cm/s': 'cm s-1',
-    'S/m': 'S m-1',
-    'meters': 'm',
-    'Deg C': 'Celsius',
-    'kPa/Sec': 'kPa s-1',
-    'degrees_Celsius': 'Celsius',
-    'g/m^3': 'g m-3',
+    "m/s": "m s-1",
+    "hex": "hexadecimal",
+    "s": "seconds",
+    "cm/s": "cm s-1",
+    "S/m": "S m-1",
+    "meters": "m",
+    "Deg C": "Celsius",
+    "kPa/Sec": "kPa s-1",
+    "degrees_Celsius": "Celsius",
+    "g/m^3": "g m-3",
 }
 
 
@@ -68,14 +65,15 @@ def reformat_units_var(ds, var_name, unit_format=unit_str_format):
     -------
     xarray.Dataset: The dataset with renamed units.
     """
-    old_unit = ds[var_name].attrs.get('units')
+    old_unit = ds[var_name].attrs.get("units")
     if old_unit in unit_format:
         new_unit = unit_format[old_unit]
     else:
         new_unit = old_unit
     return new_unit
 
-def convert_units(ds, key=''):
+
+def convert_units(ds, key=""):
     """
     Convert the units of variables in an xarray Dataset to preferred units.  This is useful, for instance, to convert cm/s to m/s.
 
@@ -90,25 +88,32 @@ def convert_units(ds, key=''):
 
     for var in ds.variables:
         var_values = ds[var].values
-        orig_unit = ds[var].attrs.get('units')
+        orig_unit = ds[var].attrs.get("units")
         interim_unit = reformat_units_var(ds, var)
         if var in readers.vocab_attrs:
-            if 'units' in readers.vocab_attrs[var]:
-                new_unit = readers.vocab_attrs[var].get('units')
+            if "units" in readers.vocab_attrs[var]:
+                new_unit = readers.vocab_attrs[var].get("units")
                 if orig_unit != new_unit:
-                    var_values, new_unit, errstr = convert_units_var(var_values, orig_unit, new_unit)
+                    var_values, new_unit, errstr = convert_units_var(
+                        var_values, orig_unit, new_unit
+                    )
                     ds[var].values = var_values
-                    ds[var].attrs['units'] = new_unit
+                    ds[var].attrs["units"] = new_unit
                 new_unit = reformat_units_var(ds, var)
-                ds[var].attrs['units'] = new_unit
+                ds[var].attrs["units"] = new_unit
 
                 if orig_unit != new_unit:
-                    _log.info(f"{var}".ljust(25) + f"Converted UNITS {orig_unit} --> {new_unit}")
+                    _log.info(
+                        f"{var}".ljust(25)
+                        + f"Converted UNITS {orig_unit} --> {new_unit}"
+                    )
 
     return ds
 
 
-def convert_units_var(var_values, current_unit, new_unit, unit_conversion=unit_conversion):
+def convert_units_var(
+    var_values, current_unit, new_unit, unit_conversion=unit_conversion
+):
     """
     Convert the units of variables in an xarray Dataset to preferred units.  This is useful, for instance, to convert cm/s to m/s.
 
@@ -125,12 +130,15 @@ def convert_units_var(var_values, current_unit, new_unit, unit_conversion=unit_c
     -------
     xarray.Dataset: The dataset with converted units.
     """
-    if current_unit in unit_conversion and new_unit in unit_conversion[current_unit]['units_name']:
-        errstr = ''
-        conversion_factor = unit_conversion[current_unit]['factor']
+    if (
+        current_unit in unit_conversion
+        and new_unit in unit_conversion[current_unit]["units_name"]
+    ):
+        errstr = ""
+        conversion_factor = unit_conversion[current_unit]["factor"]
         new_values = var_values * conversion_factor
     elif current_unit == new_unit:
-        errstr = ''
+        errstr = ""
         new_values = var_values
     else:
         errstr = f"No conversion info for {current_unit} to {new_unit}"
@@ -138,7 +146,14 @@ def convert_units_var(var_values, current_unit, new_unit, unit_conversion=unit_c
         new_unit = current_unit
     return new_values, new_unit, errstr
 
-def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KLR', 'INC', 'DQZ', 'TMP', 'PIES', 'AZAseq']):
+
+def process_datasets(
+    data_path,
+    file_root,
+    deploy_date,
+    recovery_date,
+    keys=["KLR", "INC", "DQZ", "TMP", "PIES", "AZAseq"],
+):
     """
     Processes datasets by loading, transforming, and combining data from multiple sources.
 
@@ -188,7 +203,9 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
         ds = timetools.convert_seconds_to_float(ds)
 
     # Assign sampling time for AZA sequence
-    datasets['AZAseq'] = timetools.assign_sample_time(datasets['AZAseq'], pattern=datasets['AZAseq'].attrs['pattern'], adjust_time=15)
+    datasets["AZAseq"] = timetools.assign_sample_time(
+        datasets["AZAseq"], pattern=datasets["AZAseq"].attrs["pattern"], adjust_time=15
+    )
 
     # Cut dataset to deployment period
     datasets = timetools.cut_to_deployment(datasets, deploy_date, recovery_date)
@@ -202,7 +219,9 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
                     if attr_name not in ds[var].attrs:
                         ds[var].attrs[attr_name] = attr_value
                     else:
-                        _log.warning(f"Variable '{var}' already has attribute '{attr_name}'. Not overwriting.")
+                        _log.warning(
+                            f"Variable '{var}' already has attribute '{attr_name}'. Not overwriting."
+                        )
             else:
                 _log.warning(f"Variable '{var}' not found in vocab_attrs")
         datasets[key] = ds
@@ -213,15 +232,33 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
         ds = timetools.reindex_on_time(ds)
         datasets[key] = ds
 
-    time_var = 'RECORD_TIME'
-    keys_to_combine = ['KLR', 'INC', 'DQZ', 'TMP', 'PIES']
+    time_var = "RECORD_TIME"
+    keys_to_combine = ["KLR", "INC", "DQZ", "TMP", "PIES"]
 
     vars_to_rename = {
-        'KLR': {'PRESSURE': 'PRESSURE_KLR', 'TEMPERATURE': 'TEMPERATURE_KLR', 'Serial_Number': 'Serial_Number_KLR', 'Index': 'Index_KLR'},
-        'DQZ': {'PRESSURE': 'PRESSURE_DQZ', 'TEMPERATURE': 'TEMPERATURE_DQZ', 'Serial_Number': 'Serial_Number_DQZ', 'Index': 'Index_DQZ'},
-        'INC': {'Serial_Number': 'Serial_Number_INC', 'Index': 'Index_INC'},
-        'TMP': {'TEMPERATURE_DEG_C': 'TEMPERATURE', 'Serial_Number': 'Serial_Number_TMP', 'Index': 'Index_TMP'},
-        'PIES': {'PRESSURE': 'PRESSURE_PIES', 'Serial_Number': 'Serial_Number_PIES', 'Index': 'Index_PIES'}
+        "KLR": {
+            "PRESSURE": "PRESSURE_KLR",
+            "TEMPERATURE": "TEMPERATURE_KLR",
+            "Serial_Number": "Serial_Number_KLR",
+            "Index": "Index_KLR",
+        },
+        "DQZ": {
+            "PRESSURE": "PRESSURE_DQZ",
+            "TEMPERATURE": "TEMPERATURE_DQZ",
+            "Serial_Number": "Serial_Number_DQZ",
+            "Index": "Index_DQZ",
+        },
+        "INC": {"Serial_Number": "Serial_Number_INC", "Index": "Index_INC"},
+        "TMP": {
+            "TEMPERATURE_DEG_C": "TEMPERATURE",
+            "Serial_Number": "Serial_Number_TMP",
+            "Index": "Index_TMP",
+        },
+        "PIES": {
+            "PRESSURE": "PRESSURE_PIES",
+            "Serial_Number": "Serial_Number_PIES",
+            "Index": "Index_PIES",
+        },
     }
 
     # Rename variables in datasets
@@ -239,10 +276,10 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
     for key in datasets:
         ds = datasets[key]
         for var in ds.variables:
-            if var not in ['RECORD_TIME', 'TIME']:
-                ds[var].attrs['Logging Event'] = key
+            if var not in ["RECORD_TIME", "TIME"]:
+                ds[var].attrs["Logging Event"] = key
         datasets[key] = ds
-        
+
     # Collect all attributes from the datasets
     all_attributes = {}
     # Combine datasets
@@ -256,45 +293,51 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
             print(f"Dataset {key} not included in combined datasets")
 
     # Combine datasets into one
-    combined_dataset = xr.merge(combined_datasets.values(), compat='override')
+    combined_dataset = xr.merge(combined_datasets.values(), compat="override")
     # Assign attributes to combined_dataset from all_attributes
     for key, attrs in all_attributes.items():
         for attr_name, attr_value in attrs.items():
-            attr_name = attr_name.replace(' ', '_')
+            attr_name = attr_name.replace(" ", "_")
             combined_dataset.attrs[f"{attr_name}_{key}"] = attr_value
     # Remove attributes that start with attr_skip = ['UID_']
-    attr_skip = ['UID_', 'Sensor']
+    attr_skip = ["UID_", "Sensor"]
     for attr_name in list(combined_dataset.attrs.keys()):
         if any(attr_name.startswith(skip) for skip in attr_skip):
             del combined_dataset.attrs[attr_name]
     # Remove attributes that EXACTLY match attr_skip = ['Calculation Version']
-    attr_skip = ['Calculation Version', 'Index']
+    attr_skip = ["Calculation Version", "Index"]
     for attr_name in list(combined_dataset.attrs.keys()):
         if any(attr_name == skip for skip in attr_skip):
             del combined_dataset.attrs[attr_name]
     _, med_sr = timetools.calculate_sample_rate(combined_dataset)
 
-
     # Create an evenly spaced time grid based on combined_dataset['RECORD_TIME']
-    time_start = combined_dataset['RECORD_TIME'].min().values
-    time_end = combined_dataset['RECORD_TIME'].max().values
+    time_start = combined_dataset["RECORD_TIME"].min().values
+    time_end = combined_dataset["RECORD_TIME"].max().values
     time_grid = xr.DataArray(
-        np.arange(time_start, time_end, med_sr*np.timedelta64(1, 's'), dtype='datetime64[ns]'),
-        dims='TIME',
-        name='TIME'
+        np.arange(
+            time_start,
+            time_end,
+            med_sr * np.timedelta64(1, "s"),
+            dtype="datetime64[ns]",
+        ),
+        dims="TIME",
+        name="TIME",
     )
 
     # Create a new dataset with the time grid, linearly interpolating data from combined_dataset['RECORD_TIME']
     _log.info(f"Interpolating dataset to {len(time_grid)} time points")
-    ds_pressure = combined_dataset.interp(RECORD_TIME=time_grid, method='linear')
-    ds_pressure['RECORD_TIME'] = time_grid
-    ds_pressure['RECORD_TIME'].values
-    ds_pressure['RECORD_TIME'].attrs['description'] = 'Interpolated record time'
+    ds_pressure = combined_dataset.interp(RECORD_TIME=time_grid, method="linear")
+    ds_pressure["RECORD_TIME"] = time_grid
+    ds_pressure["RECORD_TIME"].values
+    ds_pressure["RECORD_TIME"].attrs["description"] = "Interpolated record time"
 
     # Remove PRESSURE_PIES from the variable ds_pressure
-    if 'PRESSURE_PIES' in ds_pressure.variables:
-        ds_pressure = ds_pressure.drop_vars('PRESSURE_PIES')
-        ds_pressure['PRESSURE_DQZ'].attrs['description'] = 'Interpolated pressure from DQZ, identical to pressure in PIES logging events'
+    if "PRESSURE_PIES" in ds_pressure.variables:
+        ds_pressure = ds_pressure.drop_vars("PRESSURE_PIES")
+        ds_pressure["PRESSURE_DQZ"].attrs[
+            "description"
+        ] = "Interpolated pressure from DQZ, identical to pressure in PIES logging events"
 
     # Sort the dataset variables
     ds_pressure = ds_pressure[sorted(ds_pressure.data_vars)]
@@ -302,34 +345,42 @@ def process_datasets(data_path, file_root, deploy_date, recovery_date, keys=['KL
     sorted_attrs = dict(sorted(ds_pressure.attrs.items()))
     ds_pressure.attrs = sorted_attrs
     ds_pressure = utilities.set_best_dtype(ds_pressure)
-    ds_pressure = ds_pressure.drop_vars('index')
+    ds_pressure = ds_pressure.drop_vars("index")
 
-    ds_AZA = datasets['AZAseq']
+    ds_AZA = datasets["AZAseq"]
     ds_AZA = ds_AZA[sorted(ds_AZA.data_vars)]
     # Replace spaces with underscores in attributes of ds_AZA
     for attr_name in list(ds_AZA.attrs.keys()):
-        new_attr_name = attr_name.replace(' ', '_')
+        new_attr_name = attr_name.replace(" ", "_")
         ds_AZA.attrs[new_attr_name] = ds_AZA.attrs.pop(attr_name)
-    rename_attr = {'Transfer_SN': 'Serial_Number_Transfer', 'Ambient_SN': 'Serial_Number_Ambient', 'Serial Number': 'Serial_Number'}
+    rename_attr = {
+        "Transfer_SN": "Serial_Number_Transfer",
+        "Ambient_SN": "Serial_Number_Ambient",
+        "Serial Number": "Serial_Number",
+    }
     for old_name, new_name in rename_attr.items():
         if old_name in ds_AZA.attrs:
             ds_AZA.attrs[new_name] = ds_AZA.attrs.pop(old_name)
-    if 'SERIAL_NUMBER' in ds_AZA.variables:
-        snvalue = ds_AZA['SERIAL_NUMBER'].mean().item()
-        ds_AZA.attrs['Serial_Number_Low'] = int(snvalue)
-        ds_AZA = ds_AZA.drop_vars('SERIAL_NUMBER')
+    if "SERIAL_NUMBER" in ds_AZA.variables:
+        snvalue = ds_AZA["SERIAL_NUMBER"].mean().item()
+        ds_AZA.attrs["Serial_Number_Low"] = int(snvalue)
+        ds_AZA = ds_AZA.drop_vars("SERIAL_NUMBER")
 
     ds_AZA = utilities.set_best_dtype(ds_AZA)
 
     # Rename 'description' attribute to 'comment' if 'comment' does not exist
     for var in ds_pressure.variables:
-        if 'description' in ds_pressure[var].attrs and 'comment' not in ds_pressure[var].attrs:
-            ds_pressure[var].attrs['comment'] = ds_pressure[var].attrs.pop('description')
+        if (
+            "description" in ds_pressure[var].attrs
+            and "comment" not in ds_pressure[var].attrs
+        ):
+            ds_pressure[var].attrs["comment"] = ds_pressure[var].attrs.pop(
+                "description"
+            )
 
     for var in ds_AZA.variables:
-        if 'description' in ds_AZA[var].attrs and 'comment' not in ds_AZA[var].attrs:
-            ds_AZA[var].attrs['comment'] = ds_AZA[var].attrs.pop('description')
+        if "description" in ds_AZA[var].attrs and "comment" not in ds_AZA[var].attrs:
+            ds_AZA[var].attrs["comment"] = ds_AZA[var].attrs.pop("description")
 
-
-    ds_pressure = ds_pressure.set_index(TIME='RECORD_TIME')
+    ds_pressure = ds_pressure.set_index(TIME="RECORD_TIME")
     return ds_pressure, ds_AZA

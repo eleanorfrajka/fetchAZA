@@ -19,7 +19,7 @@ FIRMWARE_VERSION:
   long_name: platform firmware version
   fill_value: '0'
 
-EVENT_MASK: 
+EVENT_MASK:
   units: hex
 INDEX:
   units: integer
@@ -56,7 +56,7 @@ LOW_PRESSURE:
 PRESSURE:
   units: dbar
   resolution: 0.0001
-  long_name: Pressure (spatial coordinate) exerted by the water body by pressure sensor 
+  long_name: Pressure (spatial coordinate) exerted by the water body by pressure sensor
   observation_type: measured
   reference_datum: sea-surface
   standard_name: pressure
@@ -192,4 +192,3 @@ TYPE:
 
 SEQUENCE_TIME:
   units: seconds
-

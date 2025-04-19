@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 
-
 def get_record_type(key):
     """
     Retrieve the record type description for a given key or a list of keys.
@@ -28,7 +27,6 @@ def get_record_type(key):
             print(f"{k}: {record_types.get(k, 'Unknown key')}")
     else:
         raise TypeError("Input must be a string or a list of strings")
-
 
 
 def plot_AZA_pressure(ds_AZA, variables, demean=False):
@@ -64,11 +62,12 @@ def plot_AZA_pressure(ds_AZA, variables, demean=False):
     - Units for each variable are extracted from the dataset attributes and displayed on the y-axis label.
     """
 
-    time_var = next((var for var in ['TIME', 'SAMPLE_TIME', 'RECORD_TIME'] if var in ds_AZA.coords), None)
+    time_var = next(
+        (var for var in ["TIME", "SAMPLE_TIME", "RECORD_TIME"] if var in ds_AZA.coords),
+        None,
+    )
     if time_var is None:
         raise ValueError("No valid time coordinate found in the dataset.")
-
-
 
     if demean:
         ds_AZA = ds_AZA - ds_AZA.mean()
@@ -87,27 +86,30 @@ def plot_AZA_pressure(ds_AZA, variables, demean=False):
     axs = axs.flatten()
 
     for i, var in enumerate(variables):
-        axs[i].plot(ds_AZA[time_var], ds_AZA[var], label=f'{var}', color='blue')
+        axs[i].plot(ds_AZA[time_var], ds_AZA[var], label=f"{var}", color="blue")
         if plot_with_symbol:
-            axs[i].plot(ds_AZA[time_var], ds_AZA[var], 'o', label=f'{var}', color='blue')
+            axs[i].plot(
+                ds_AZA[time_var], ds_AZA[var], "o", label=f"{var}", color="blue"
+            )
 
         if demean:
-            axs[i].set_title(f'{var} (demeaned)')
+            axs[i].set_title(f"{var} (demeaned)")
         else:
-            axs[i].set_title(f'{var}')
-        units = ds_AZA[var].attrs.get('units', 'units')
-        axs[i].set_ylabel(f'{var} ({units})')
-        #axs[i].legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            axs[i].set_title(f"{var}")
+        units = ds_AZA[var].attrs.get("units", "units")
+        axs[i].set_ylabel(f"{var} ({units})")
+        # axs[i].legend(loc='center left', bbox_to_anchor=(1, 0.5))
         axs[i].invert_yaxis()
 
     # Remove unused axes
     for j in range(i + 1, len(axs)):
         fig.delaxes(axs[j])
 
-    plt.xlabel('Time')
+    plt.xlabel("Time")
     plt.tight_layout()
     plt.show()
     return fig, axs
+
 
 def compare_pressure(ds_pressure, keys, STN):
     """
@@ -140,15 +142,14 @@ def compare_pressure(ds_pressure, keys, STN):
         An array of axes objects corresponding to the subplots.
     """
     # Determine the time variable in the dataset
-    if 'TIME' in ds_pressure.coords:
-        time_var = 'TIME'
-    elif 'SAMPLE_TIME' in ds_pressure.coords:
-        time_var = 'SAMPLE_TIME'
-    elif 'RECORD_TIME' in ds_pressure.coords:
-        time_var = 'RECORD_TIME'
+    if "TIME" in ds_pressure.coords:
+        time_var = "TIME"
+    elif "SAMPLE_TIME" in ds_pressure.coords:
+        time_var = "SAMPLE_TIME"
+    elif "RECORD_TIME" in ds_pressure.coords:
+        time_var = "RECORD_TIME"
     else:
         raise ValueError("No valid time coordinate found in the dataset.")
-
 
     # Plot the pressure data and their differences
     num_keys = len(keys)
@@ -156,9 +157,14 @@ def compare_pressure(ds_pressure, keys, STN):
 
     # Plot each key's pressure data
     for i, key in enumerate(keys):
-        axs[i].plot(ds_pressure[time_var], ds_pressure[key], label=f'{key} Pressure', color=f'C{i}')
-        axs[i].set_title(f'{key} Pressure over Time')
-        axs[i].set_ylabel('Pressure (dbar)')
+        axs[i].plot(
+            ds_pressure[time_var],
+            ds_pressure[key],
+            label=f"{key} Pressure",
+            color=f"C{i}",
+        )
+        axs[i].set_title(f"{key} Pressure over Time")
+        axs[i].set_ylabel("Pressure (dbar)")
         axs[i].legend()
         axs[i].invert_yaxis()
 
@@ -166,16 +172,23 @@ def compare_pressure(ds_pressure, keys, STN):
     reference_key = keys[0]
     for key in keys[1:]:
         pressure_difference = ds_pressure[reference_key] - ds_pressure[key]
-        axs[-1].plot(ds_pressure[time_var], pressure_difference, label=f'Difference ({reference_key} - {key})')
+        axs[-1].plot(
+            ds_pressure[time_var],
+            pressure_difference,
+            label=f"Difference ({reference_key} - {key})",
+        )
 
-    axs[-1].set_title('Pressure Differences over Time')
-    axs[-1].set_xlabel('Time')
-    axs[-1].set_ylabel('Pressure Difference (dbar)')
+    axs[-1].set_title("Pressure Differences over Time")
+    axs[-1].set_xlabel("Time")
+    axs[-1].set_ylabel("Pressure Difference (dbar)")
     axs[-1].legend()
 
     # Add station info to the top right of the figure
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+    fig.text(
+        0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+    )
     return fig, axs
+
 
 # Example usage
 def plot_histograms(ds, STN):
@@ -195,18 +208,20 @@ def plot_histograms(ds, STN):
 
     for i, var in enumerate(ds.data_vars):
         data = ds[var].values.flatten()
-        axs[i].hist(data[~np.isnan(data)], bins=30, alpha=0.7, label=f'{var}')
-        axs[i].set_title(f'Histogram of {var}')
-        axs[i].set_xlabel('Value')
-        axs[i].set_ylabel('Frequency')
-        #axs[i].legend()
+        axs[i].hist(data[~np.isnan(data)], bins=30, alpha=0.7, label=f"{var}")
+        axs[i].set_title(f"Histogram of {var}")
+        axs[i].set_xlabel("Value")
+        axs[i].set_ylabel("Frequency")
+        # axs[i].legend()
 
     # Hide unused subplots
     for j in range(i + 1, len(axs)):
         fig.delaxes(axs[j])
 
     # Add station info to the top right of the figure
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+    fig.text(
+        0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+    )
 
     plt.tight_layout()
     plt.show()
@@ -227,8 +242,14 @@ def plot_temperature_variables(ds_pressure, keys, STN, fig=None, axs=None):
     fig (matplotlib.figure.Figure): The figure object containing the plots.
     axs (numpy.ndarray or list): The array or list of axes objects corresponding to the subplots.
     """
-    time_var = 'RECORD_TIME' if 'RECORD_TIME' in ds_pressure.coords else list(ds_pressure.coords.keys())[0]
-    time_var = 'TIME' if 'TIME' in ds_pressure.coords else list(ds_pressure.coords.keys())[0]
+    time_var = (
+        "RECORD_TIME"
+        if "RECORD_TIME" in ds_pressure.coords
+        else list(ds_pressure.coords.keys())[0]
+    )
+    time_var = (
+        "TIME" if "TIME" in ds_pressure.coords else list(ds_pressure.coords.keys())[0]
+    )
 
     if isinstance(keys, str):
         keys = [keys]
@@ -242,47 +263,54 @@ def plot_temperature_variables(ds_pressure, keys, STN, fig=None, axs=None):
         axs = [axs]
 
     # Define marker styles and line styles to cycle through
-    markers = ['o', 'v', 's']
-    line_styles = ['-', '--', ':']
-    
+    markers = ["o", "v", "s"]
+    line_styles = ["-", "--", ":"]
+
     for i, key in enumerate(keys):
         # Find all variables in ds_pressure that include the key in their names
-        temperature_vars = [var for var in ds_pressure.data_vars if key.upper() in var.upper()]
+        temperature_vars = [
+            var for var in ds_pressure.data_vars if key.upper() in var.upper()
+        ]
 
         # Plot each temperature variable
         for j, var in enumerate(temperature_vars):
             axs[i].plot(
                 ds_pressure[time_var],
                 ds_pressure[var],
-                label=f'{var} (°C)',
+                label=f"{var} (°C)",
                 marker=markers[j % len(markers)],
                 linestyle=line_styles[j % len(line_styles)],
-                markerfacecolor='none' if j > 0 else None  # Solid for the first, open for subsequent
+                markerfacecolor=(
+                    "none" if j > 0 else None
+                ),  # Solid for the first, open for subsequent
             )
 
         # Customize the subplot
         axs[i].set_title(f'Temperature Variables Matching "{key}" in ds_pressure')
-        axs[i].set_ylabel('Temperature (°C)')
+        axs[i].set_ylabel("Temperature (°C)")
         axs[i].legend()
         axs[i].grid(True)
 
     # Customize the shared x-axis
-    axs[-1].set_xlabel('Record Time')
+    axs[-1].set_xlabel("Record Time")
 
     # Add station info to the top right of the figure
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+    fig.text(
+        0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+    )
 
     # Adjust layout
     plt.tight_layout()
 
     return fig, axs
 
+
 def plot_temperatures(ds, fig=None, ax=None, ylim=None):
     if fig is None or ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
-    
-    transfer_temp_filtered = ds['TRANSFER_TEMPERATURE'].values
-    ambient_temp_filtered = ds['AMBIENT_TEMPERATURE'].values
+
+    transfer_temp_filtered = ds["TRANSFER_TEMPERATURE"].values
+    ambient_temp_filtered = ds["AMBIENT_TEMPERATURE"].values
 
     if ylim is None:
         combined_temps = np.concatenate([transfer_temp_filtered, ambient_temp_filtered])
@@ -292,35 +320,50 @@ def plot_temperatures(ds, fig=None, ax=None, ylim=None):
 
     ax.set_ylim(ylim)
 
-    ax.plot(ds['SAMPLE_TIME'], transfer_temp_filtered, label='Transfer Temperature')
-    ax.plot(ds['SAMPLE_TIME'], ambient_temp_filtered, label='Ambient Temperature', markerfacecolor='none')
-    
-    ax.set_xlabel('Sample Time')
-    ax.set_ylabel('Temperature (°C)')
-    ax.set_title('Transfer and Ambient Temperature over Time')
+    ax.plot(ds["SAMPLE_TIME"], transfer_temp_filtered, label="Transfer Temperature")
+    ax.plot(
+        ds["SAMPLE_TIME"],
+        ambient_temp_filtered,
+        label="Ambient Temperature",
+        markerfacecolor="none",
+    )
+
+    ax.set_xlabel("Sample Time")
+    ax.set_ylabel("Temperature (°C)")
+    ax.set_title("Transfer and Ambient Temperature over Time")
     ax.legend()
     ax.grid(True)
 
-    ax.tick_params(axis='x', rotation=45)
-    
-    ax.text(0.99, 0.05, 'STN:' +ds.attrs['Station'], transform=ax.transAxes, fontsize=12, horizontalalignment='right')
+    ax.tick_params(axis="x", rotation=45)
+
+    ax.text(
+        0.99,
+        0.05,
+        "STN:" + ds.attrs["Station"],
+        transform=ax.transAxes,
+        fontsize=12,
+        horizontalalignment="right",
+    )
 
     if fig is None:
         plt.show()
     return fig, ax
 
-def plot_hist_fig(data_sets_new, types_to_plot, deploy_date, recovery_date, data_path, STN):
+
+def plot_hist_fig(
+    data_sets_new, types_to_plot, deploy_date, recovery_date, data_path, STN
+):
     """
     Generate and save histogram plots for specified data types within a given time range.
 
-    This function creates histograms for numeric variables in the provided datasets, 
-    filtered by the deployment and recovery dates. Each histogram is saved as an image 
+    This function creates histograms for numeric variables in the provided datasets,
+    filtered by the deployment and recovery dates. Each histogram is saved as an image
     file in the specified data path.
 
     Parameters
     ----------
     data_sets_new : dict
-        A dictionary containing xarray datasets, where keys are data types and values 
+        A dictionary containing xarray datasets, where keys are data types and values
         are the corresponding datasets.
     types_to_plot : list
         A list of data types to generate histograms for.
@@ -329,7 +372,7 @@ def plot_hist_fig(data_sets_new, types_to_plot, deploy_date, recovery_date, data
     recovery_date : str or datetime
         The end date for filtering the datasets.
     data_path : str
-        The directory path where the histogram images will be saved. If None, the images 
+        The directory path where the histogram images will be saved. If None, the images
         will not be saved.
     STN : str
         The station identifier to include in the plot titles and saved filenames.
@@ -351,61 +394,81 @@ def plot_hist_fig(data_sets_new, types_to_plot, deploy_date, recovery_date, data
     Example
     -------
     plot_hist_fig(
-        data_sets_new=my_datasets, 
-        types_to_plot=['type1', 'type2'], 
-        deploy_date='2023-01-01', 
-        recovery_date='2023-12-31', 
-        data_path='/path/to/save', 
+        data_sets_new=my_datasets,
+        types_to_plot=['type1', 'type2'],
+        deploy_date='2023-01-01',
+        recovery_date='2023-12-31',
+        data_path='/path/to/save',
         STN='Station123'
     )
     """
 
     def plot_histogram(ax, data, var, data_type, units, STN):
         ax.hist(data, bins=50, label=var)
-        ax.set_title(f'{var}')
-        ax.set_ylabel('Frequency')
+        ax.set_title(f"{var}")
+        ax.set_ylabel("Frequency")
         ax.set_xlabel(units)
-#        ax.axvline(np.median(data), color='red', linestyle='--', linewidth=1, label='Median')
-        ax.axvline(np.mean(data), color='red', linestyle='--', linewidth=1, label='Mean')
-        ax.figure.text(0.95, 0.95, f'STN: {STN} ({data_type})', ha='right', fontsize=12, verticalalignment='bottom')
+        #        ax.axvline(np.median(data), color='red', linestyle='--', linewidth=1, label='Median')
+        ax.axvline(
+            np.mean(data), color="red", linestyle="--", linewidth=1, label="Mean"
+        )
+        ax.figure.text(
+            0.95,
+            0.95,
+            f"STN: {STN} ({data_type})",
+            ha="right",
+            fontsize=12,
+            verticalalignment="bottom",
+        )
 
     for data_type in types_to_plot:
         if data_type in data_sets_new:
             dataset = data_sets_new[data_type].copy()
-            if 'SAMPLE_TIME' in dataset:
-                time_var = 'SAMPLE_TIME'
-            elif 'RECORD_TIME' in dataset:
-                time_var = 'RECORD_TIME'
+            if "SAMPLE_TIME" in dataset:
+                time_var = "SAMPLE_TIME"
+            elif "RECORD_TIME" in dataset:
+                time_var = "RECORD_TIME"
             else:
-                raise ValueError("Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME'.")
+                raise ValueError(
+                    "Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME'."
+                )
             dataset = dataset.sel({time_var: slice(deploy_date, recovery_date)})
-            numeric_vars = [var for var in dataset.data_vars if np.issubdtype(dataset[var].dtype, np.number)]
-            print(f'{data_type} has numeric variables {numeric_vars}')
+            numeric_vars = [
+                var
+                for var in dataset.data_vars
+                if np.issubdtype(dataset[var].dtype, np.number)
+            ]
+            print(f"{data_type} has numeric variables {numeric_vars}")
             fig, axs = plt.subplots(3, 4, figsize=(14, 8.5))
             fig.subplots_adjust(hspace=0.4)
             axs = axs.flatten()
             for i, var in enumerate(numeric_vars):
                 d1 = dataset[var]
                 if np.issubdtype(d1.dtype, np.timedelta64):
-                    d1 = d1 / np.timedelta64(1, 's')
+                    d1 = d1 / np.timedelta64(1, "s")
 
-                plot_histogram(axs[i], d1, var, data_type, dataset[var].attrs.get('units', ''), STN)
+                plot_histogram(
+                    axs[i], d1, var, data_type, dataset[var].attrs.get("units", ""), STN
+                )
 
                 if i % 4 != 0:
-                    axs[i].set_ylabel('')
-                
+                    axs[i].set_ylabel("")
+
             for j in range(i + 1, len(axs)):
                 fig.delaxes(axs[j])
-                
+
             if data_path is not None:
-                fig.savefig(os.path.join(data_path, f'{STN}_{data_type}_histograms.png'))
+                fig.savefig(
+                    os.path.join(data_path, f"{STN}_{data_type}_histograms.png")
+                )
                 plt.close(fig)
         else:
             print(f"No data found for type {data_type}")
 
 
-
-def plot_data_type(data_sets_new, data_type, STN, deploy_date, recovery_date, data_path=None):
+def plot_data_type(
+    data_sets_new, data_type, STN, deploy_date, recovery_date, data_path=None
+):
     """
     Plot and save figures for a specified data type.
 
@@ -431,65 +494,85 @@ def plot_data_type(data_sets_new, data_type, STN, deploy_date, recovery_date, da
       include the data type, station identifier, and part number.
     """
 
-    xlbl_orig = 'Time'
+    xlbl_orig = "Time"
     xlbl = xlbl_orig
     if data_type in data_sets_new:
         dataset = data_sets_new[data_type]
-        if 'SAMPLE_TIME' in dataset:
-            time_var = 'SAMPLE_TIME'
-        elif 'RECORD_TIME' in dataset:
-            time_var = 'RECORD_TIME'
+        if "SAMPLE_TIME" in dataset:
+            time_var = "SAMPLE_TIME"
+        elif "RECORD_TIME" in dataset:
+            time_var = "RECORD_TIME"
         else:
-            raise ValueError("Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME'.")
+            raise ValueError(
+                "Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME'."
+            )
         dataset = dataset.sel({time_var: slice(deploy_date, recovery_date)})
-        numeric_vars = [var for var in dataset.data_vars if np.issubdtype(dataset[var].dtype, np.number)]
-        
+        numeric_vars = [
+            var
+            for var in dataset.data_vars
+            if np.issubdtype(dataset[var].dtype, np.number)
+        ]
+
         # Determine the number of figures needed
         num_figures = (len(numeric_vars) + 5) // 6
-        
+
         for fig_num in range(num_figures):
             start_idx = fig_num * 6
             end_idx = min(start_idx + 6, len(numeric_vars))
             vars_to_plot = numeric_vars[start_idx:end_idx]
-            
+
             # Create a figure for each set of variables
             fig, axs = plt.subplots(3, 2, figsize=(14, 8))
-            fig.suptitle(f'{data_type} Variables Over Time (Part {fig_num + 1})', fontsize=16)
+            fig.suptitle(
+                f"{data_type} Variables Over Time (Part {fig_num + 1})", fontsize=16
+            )
             axs = axs.flatten()
-            
+
             for i, var in enumerate(vars_to_plot):
                 if np.issubdtype(dataset[var].dtype, np.timedelta64):
-                    dataset[var] = dataset[var] / np.timedelta64(1, 's')
-                    dataset[var].attrs['units'] = 's'
-                axs[i].plot(dataset[time_var], dataset[var], '.-', label=var)
-                axs[i].set_title(f'{var} in {data_type}')
-                units = dataset[var].attrs.get('units', '')
-                axs[i].set_ylabel(f'{var} ({units})')
+                    dataset[var] = dataset[var] / np.timedelta64(1, "s")
+                    dataset[var].attrs["units"] = "s"
+                axs[i].plot(dataset[time_var], dataset[var], ".-", label=var)
+                axs[i].set_title(f"{var} in {data_type}")
+                units = dataset[var].attrs.get("units", "")
+                axs[i].set_ylabel(f"{var} ({units})")
                 # axs[i].legend()
-                
+
                 # Check the difference between x-ticks
                 x_ticks = axs[i].get_xticks()
                 if len(x_ticks) > 1:
-                    min_year = pd.to_datetime(x_ticks[0],unit='D').year
-                    max_year = pd.to_datetime(x_ticks[-1],unit='D').year
+                    min_year = pd.to_datetime(x_ticks[0], unit="D").year
+                    max_year = pd.to_datetime(x_ticks[-1], unit="D").year
                     if min_year == max_year:
                         # Format without %Y and append the year to xlbl
-                        xlbl = f'{xlbl_orig} ({min_year})'
-                        if (pd.to_datetime(x_ticks[-1]) - pd.to_datetime(x_ticks[0])).total_seconds() < 86400:
+                        xlbl = f"{xlbl_orig} ({min_year})"
+                        if (
+                            pd.to_datetime(x_ticks[-1]) - pd.to_datetime(x_ticks[0])
+                        ).total_seconds() < 86400:
                             # Format as Y/m/d HH if the difference is less than 1 day
-                            axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%d-%b %Hh'))
+                            axs[i].xaxis.set_major_formatter(
+                                plt.matplotlib.dates.DateFormatter("%d-%b %Hh")
+                            )
                         else:
-                            axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%m/%d'))
+                            axs[i].xaxis.set_major_formatter(
+                                plt.matplotlib.dates.DateFormatter("%m/%d")
+                            )
 
-                    elif (pd.to_datetime(x_ticks[1]) - pd.to_datetime(x_ticks[0])).total_seconds() < 86400:
+                    elif (
+                        pd.to_datetime(x_ticks[1]) - pd.to_datetime(x_ticks[0])
+                    ).total_seconds() < 86400:
                         # Format as Y/m/d HH if the difference is less than 1 day
-                        axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%Y/%m/%d %Hh'))
+                        axs[i].xaxis.set_major_formatter(
+                            plt.matplotlib.dates.DateFormatter("%Y/%m/%d %Hh")
+                        )
                     else:
                         xlbl = xlbl_orig
                         # Format as Y/m/d with at least 10 ticks
-                        axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%Y/%m/%d'))
+                        axs[i].xaxis.set_major_formatter(
+                            plt.matplotlib.dates.DateFormatter("%Y/%m/%d")
+                        )
                         axs[i].xaxis.set_major_locator(plt.MaxNLocator(10))
-                axs[i].tick_params(axis='x', rotation=45)
+                axs[i].tick_params(axis="x", rotation=45)
 
                 if i < len(vars_to_plot) - 2:
                     axs[i].set_xticklabels([])
@@ -501,11 +584,22 @@ def plot_data_type(data_sets_new, data_type, STN, deploy_date, recovery_date, da
             axs[-2].set_xlabel(xlbl)
 
             # Add station info to the top right of the figure
-            fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
-            
+            fig.text(
+                0.99,
+                0.99,
+                f"STN: {STN}",
+                ha="right",
+                fontsize=12,
+                verticalalignment="top",
+            )
+
             # Save the figure using data_type and part number in the filename
             if data_path is not None:
-                fig.savefig(os.path.join(data_path, f'{STN}_{data_type}_p{fig_num + 1}_tseries.png'))
+                fig.savefig(
+                    os.path.join(
+                        data_path, f"{STN}_{data_type}_p{fig_num + 1}_tseries.png"
+                    )
+                )
                 plt.close(fig)
             else:
                 plt.show()
@@ -513,6 +607,7 @@ def plot_data_type(data_sets_new, data_type, STN, deploy_date, recovery_date, da
         print(f"No data found for type {data_type}")
 
     return fig, axs
+
 
 def plot_all_variables(ds_pressure, STN, data_path=None):
     """
@@ -538,59 +633,82 @@ def plot_all_variables(ds_pressure, STN, data_path=None):
       include the station identifier and part number.
     """
 
-    xlbl_orig = 'Time'
+    xlbl_orig = "Time"
     xlbl = xlbl_orig
-    time_var = next((var for var in ['TIME', 'SAMPLE_TIME', 'RECORD_TIME'] if var in ds_pressure), None)
+    time_var = next(
+        (var for var in ["TIME", "SAMPLE_TIME", "RECORD_TIME"] if var in ds_pressure),
+        None,
+    )
     if time_var is None:
-        raise ValueError("Dataset must contain one of the following time variables: 'TIME', 'SAMPLE_TIME', or 'RECORD_TIME'.")
+        raise ValueError(
+            "Dataset must contain one of the following time variables: 'TIME', 'SAMPLE_TIME', or 'RECORD_TIME'."
+        )
 
     if time_var not in ds_pressure:
-        raise ValueError("Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME' as the time variable.")
+        raise ValueError(
+            "Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME' as the time variable."
+        )
 
-    numeric_vars = [var for var in ds_pressure.data_vars if np.issubdtype(ds_pressure[var].dtype, np.number)]
+    numeric_vars = [
+        var
+        for var in ds_pressure.data_vars
+        if np.issubdtype(ds_pressure[var].dtype, np.number)
+    ]
 
     # Determine the number of figures needed
     CC = 4
     RR = 3
-    num_figures = (len(numeric_vars) + 5) // (RR*CC)
+    num_figures = (len(numeric_vars) + 5) // (RR * CC)
 
     for fig_num in range(num_figures):
-        start_idx = fig_num * RR*CC
-        end_idx = min(start_idx + RR*CC, len(numeric_vars))
+        start_idx = fig_num * RR * CC
+        end_idx = min(start_idx + RR * CC, len(numeric_vars))
         vars_to_plot = numeric_vars[start_idx:end_idx]
 
         # Create a figure for each set of variables
         fig, axs = plt.subplots(RR, CC, figsize=(14, 8))
-        fig.suptitle(f'Variables Over Time (Part {fig_num + 1})', fontsize=16)
+        fig.suptitle(f"Variables Over Time (Part {fig_num + 1})", fontsize=16)
         axs = axs.flatten()
 
         for i, var in enumerate(vars_to_plot):
             if np.issubdtype(ds_pressure[var].dtype, np.timedelta64):
-                ds_pressure[var] = ds_pressure[var] / np.timedelta64(1, 's')
-                ds_pressure[var].attrs['units'] = 's'
-            axs[i].plot(ds_pressure[time_var], ds_pressure[var], '.-', label=var)
-            axs[i].set_title(f'{var}')
-            units = ds_pressure[var].attrs.get('units', '')
-            axs[i].set_ylabel(f'{var} ({units})')
+                ds_pressure[var] = ds_pressure[var] / np.timedelta64(1, "s")
+                ds_pressure[var].attrs["units"] = "s"
+            axs[i].plot(ds_pressure[time_var], ds_pressure[var], ".-", label=var)
+            axs[i].set_title(f"{var}")
+            units = ds_pressure[var].attrs.get("units", "")
+            axs[i].set_ylabel(f"{var} ({units})")
 
             # Check the difference between x-ticks
             x_ticks = axs[i].get_xticks()
             if len(x_ticks) > 1:
-                min_year = pd.to_datetime(x_ticks[0], unit='D').year
-                max_year = pd.to_datetime(x_ticks[-1], unit='D').year
+                min_year = pd.to_datetime(x_ticks[0], unit="D").year
+                max_year = pd.to_datetime(x_ticks[-1], unit="D").year
                 if min_year == max_year:
-                    xlbl = f'{xlbl_orig} ({min_year})'
-                    if (pd.to_datetime(x_ticks[-1]) - pd.to_datetime(x_ticks[0])).total_seconds() < 86400:
-                        axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%d-%b %Hh'))
+                    xlbl = f"{xlbl_orig} ({min_year})"
+                    if (
+                        pd.to_datetime(x_ticks[-1]) - pd.to_datetime(x_ticks[0])
+                    ).total_seconds() < 86400:
+                        axs[i].xaxis.set_major_formatter(
+                            plt.matplotlib.dates.DateFormatter("%d-%b %Hh")
+                        )
                     else:
-                        axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%m/%d'))
-                elif (pd.to_datetime(x_ticks[1]) - pd.to_datetime(x_ticks[0])).total_seconds() < 86400:
-                    axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%Y/%m/%d %Hh'))
+                        axs[i].xaxis.set_major_formatter(
+                            plt.matplotlib.dates.DateFormatter("%m/%d")
+                        )
+                elif (
+                    pd.to_datetime(x_ticks[1]) - pd.to_datetime(x_ticks[0])
+                ).total_seconds() < 86400:
+                    axs[i].xaxis.set_major_formatter(
+                        plt.matplotlib.dates.DateFormatter("%Y/%m/%d %Hh")
+                    )
                 else:
                     xlbl = xlbl_orig
-                    axs[i].xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter('%Y/%m/%d'))
+                    axs[i].xaxis.set_major_formatter(
+                        plt.matplotlib.dates.DateFormatter("%Y/%m/%d")
+                    )
                     axs[i].xaxis.set_major_locator(plt.MaxNLocator(10))
-            axs[i].tick_params(axis='x', rotation=45)
+            axs[i].tick_params(axis="x", rotation=45)
 
             if i < len(vars_to_plot) - CC:
                 axs[i].set_xticklabels([])
@@ -604,23 +722,28 @@ def plot_all_variables(ds_pressure, STN, data_path=None):
         axs[-4].set_xlabel(xlbl)
 
         # Add station info to the top right of the figure
-        fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+        fig.text(
+            0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+        )
 
         plt.tight_layout()
 
         # Save the figure using part number in the filename
         if data_path is not None:
-            fig.savefig(os.path.join(data_path, f'{STN}_p{fig_num + 1}_tseries.png'))
+            fig.savefig(os.path.join(data_path, f"{STN}_p{fig_num + 1}_tseries.png"))
             plt.close(fig)
         else:
             plt.show()
     return fig, axs
-#-----------------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------------
+
 
 ##------------------------------------------------------------------------------------
 ## Views of the ds or nc file
 ##------------------------------------------------------------------------------------
-def show_contents(data, content_type='variables'):
+def show_contents(data, content_type="variables"):
     """
     Display the contents of an xarray Dataset or a netCDF file.
 
@@ -639,14 +762,14 @@ def show_contents(data, content_type='variables'):
     pandas.io.formats.style.Styler or pandas.DataFrame
         A styled DataFrame with details about the variables or attributes.
     """
-    if content_type in ['variables', 'vars']:
+    if content_type in ["variables", "vars"]:
         if isinstance(data, str):
             return show_variables(data)
         elif isinstance(data, xr.Dataset):
             return show_variables(data)
         else:
             raise TypeError("Input data must be a file path (str) or an xarray Dataset")
-    elif content_type in ['attributes', 'attrs']:
+    elif content_type in ["attributes", "attrs"]:
         if isinstance(data, str):
             return show_attributes(data)
         elif isinstance(data, xr.Dataset):
@@ -654,7 +777,10 @@ def show_contents(data, content_type='variables'):
         else:
             raise TypeError("Attributes can only be shown for netCDF files (str)")
     else:
-        raise ValueError("content_type must be either 'variables' (or 'vars') or 'attributes' (or 'attrs')")
+        raise ValueError(
+            "content_type must be either 'variables' (or 'vars') or 'attributes' (or 'attrs')"
+        )
+
 
 def show_variables(data):
     """
@@ -702,7 +828,7 @@ def show_variables(data):
             dims = var.dims[0] if len(var.dims) == 1 else "string"
             units = var.attrs.get("units", "")
             comment = var.attrs.get("comment", "")
-        
+
         info[i] = {
             "name": key,
             "dims": dims,
@@ -727,6 +853,7 @@ def show_variables(data):
     )
 
     return vars
+
 
 def show_attributes(data):
     """
@@ -768,17 +895,14 @@ def show_attributes(data):
     info = {}
     for i, key in enumerate(attributes):
         dtype = type(get_attr(key)).__name__
-        info[i] = {
-            "Attribute": key,
-            "Value": get_attr(key),
-            "DType": dtype
-        }
+        info[i] = {"Attribute": key, "Value": get_attr(key), "DType": dtype}
 
     attrs = DataFrame(info).T
 
     return attrs
 
-def show_variables_by_dimension(data, dimension_name='trajectory'):
+
+def show_variables_by_dimension(data, dimension_name="trajectory"):
     """
     Extract variable information filtered by a specific dimension from an xarray Dataset or a netCDF file.
 
@@ -824,7 +948,7 @@ def show_variables_by_dimension(data, dimension_name='trajectory'):
             dims = var.dims[0] if len(var.dims) == 1 else "string"
             units = var.attrs.get("units", "")
             comment = var.attrs.get("comment", "")
-        
+
         if dims == dimension_name:
             info[i] = {
                 "name": key,
@@ -850,8 +974,7 @@ def show_variables_by_dimension(data, dimension_name='trajectory'):
     return vars
 
 
-def plot_age_values(ds_AZA, fig_path, time_var='SAMPLE_TIME', fig=None,
-                    ax=None):
+def plot_age_values(ds_AZA, fig_path, time_var="SAMPLE_TIME", fig=None, ax=None):
     """
     Plots AGE values for AZA and AZS datasets.
 
@@ -869,43 +992,61 @@ def plot_age_values(ds_AZA, fig_path, time_var='SAMPLE_TIME', fig=None,
     """
     # Initialize the figure and axes if not provided
     if ax is None:
-        fig, ax = plt.subplots(figsize=(7,4))
+        fig, ax = plt.subplots(figsize=(7, 4))
     else:
         fig = ax.figure
-    STN = ds_AZA.attrs['Station']
-    time_var = 'SAMPLE_TIME'
+    STN = ds_AZA.attrs["Station"]
+    time_var = "SAMPLE_TIME"
     # Extract the AGE values from the AZA and AZS datasets
-    age_values_aza = ds_AZA['AGE'].where(ds_AZA['SEQUENCE_NUM'].isin([2, 3, 4]), drop=True)
-    age_values_azs = ds_AZA['AGE'].where(ds_AZA['SEQUENCE_NUM'].isin([1, 5]), drop=True)
+    age_values_aza = ds_AZA["AGE"].where(
+        ds_AZA["SEQUENCE_NUM"].isin([2, 3, 4]), drop=True
+    )
+    age_values_azs = ds_AZA["AGE"].where(ds_AZA["SEQUENCE_NUM"].isin([1, 5]), drop=True)
 
     # Convert age values from ns to seconds
-    if age_values_aza.dtype == 'timedelta64[ns]':
-        age_values_aza = age_values_aza / np.timedelta64(1, 's')
-        age_values_azs = age_values_azs / np.timedelta64(1, 's')
-        units = 'seconds'
-        age_values_aza.attrs['units'] = units
-        age_values_azs.attrs['units'] = units
+    if age_values_aza.dtype == "timedelta64[ns]":
+        age_values_aza = age_values_aza / np.timedelta64(1, "s")
+        age_values_azs = age_values_azs / np.timedelta64(1, "s")
+        units = "seconds"
+        age_values_aza.attrs["units"] = units
+        age_values_azs.attrs["units"] = units
 
     # Plot the AGE values for AZA and AZS datasets
-    ax.plot(age_values_aza[time_var], age_values_aza, 'o', label='AGE AZA')
-    ax.plot(age_values_azs[time_var], age_values_azs, 's', label='AGE AZS', markerfacecolor='none')
+    ax.plot(age_values_aza[time_var], age_values_aza, "o", label="AGE AZA")
+    ax.plot(
+        age_values_azs[time_var],
+        age_values_azs,
+        "s",
+        label="AGE AZS",
+        markerfacecolor="none",
+    )
 
     # Set labels, title, and grid
-    ax.set_xlabel('Time')
-    ax.set_ylabel(f'AGE ({units})')
-    ax.set_title('AGE values in AZA sequence')
-    ax.legend(loc='best')
-    ax.grid(True, linestyle='--', alpha=0.7)
+    ax.set_xlabel("Time")
+    ax.set_ylabel(f"AGE ({units})")
+    ax.set_title("AGE values in AZA sequence")
+    ax.legend(loc="best")
+    ax.grid(True, linestyle="--", alpha=0.7)
 
     # Fix the axes limits
-    ax.set_xlim([age_values_aza[time_var].min().values, age_values_aza[time_var].max().values])
+    ax.set_xlim(
+        [age_values_aza[time_var].min().values, age_values_aza[time_var].max().values]
+    )
     ax.set_ylim([0, max(age_values_aza.max().values, age_values_azs.max().values) + 50])
 
     # Add station information
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top', transform=ax.transAxes)
+    fig.text(
+        0.99,
+        0.99,
+        f"STN: {STN}",
+        ha="right",
+        fontsize=12,
+        verticalalignment="top",
+        transform=ax.transAxes,
+    )
 
     # Rotate the x-axis tick labels by 45 degrees
-    ax.tick_params(axis='x', rotation=45)
+    ax.tick_params(axis="x", rotation=45)
 
     # Save the plot if a new figure was created
     if ax is None:
@@ -914,65 +1055,74 @@ def plot_age_values(ds_AZA, fig_path, time_var='SAMPLE_TIME', fig=None,
 
     return fig, ax
 
+
 def plot_pressure_sequence(ds, key1, STN):
     # Filter the dataset for SEQUENCE_NUM 1, 2, 3, 4, and 5
-    ds_seq1 = ds.where(ds['SEQUENCE_NUM'].isin([1]), drop=True)
-    ds_seq2 = ds.where(ds['SEQUENCE_NUM'].isin([2]), drop=True)
-    ds_seq3 = ds.where(ds['SEQUENCE_NUM'].isin([3]), drop=True)
-    ds_seq4 = ds.where(ds['SEQUENCE_NUM'].isin([4]), drop=True)
-    ds_seq5 = ds.where(ds['SEQUENCE_NUM'].isin([5]), drop=True)
+    ds_seq1 = ds.where(ds["SEQUENCE_NUM"].isin([1]), drop=True)
+    ds_seq2 = ds.where(ds["SEQUENCE_NUM"].isin([2]), drop=True)
+    ds_seq3 = ds.where(ds["SEQUENCE_NUM"].isin([3]), drop=True)
+    ds_seq4 = ds.where(ds["SEQUENCE_NUM"].isin([4]), drop=True)
+    ds_seq5 = ds.where(ds["SEQUENCE_NUM"].isin([5]), drop=True)
 
     # Plot the ambient pressure and its difference for sequence 1 and 2
     fig, axs = plt.subplots(1, 3, figsize=(10, 3))
 
     # Plot the ambient pressure for sequence 1 and 2
-    axs[0].plot(ds_seq2['SAMPLE_TIME'], ds_seq2[key1], 'b-', label='Seq 2 (AZA)')
-    axs[0].plot(ds_seq1['SAMPLE_TIME'], ds_seq1[key1], 'r--', label='Seq 1 (AZS)')
-    units = ds[key1].attrs['units']
-    standard_name = ds[key1].attrs['standard_name']
-    if 'long_name' in ds[key1].attrs:
-        long_name = ds[key1].attrs['long_name']
+    axs[0].plot(ds_seq2["SAMPLE_TIME"], ds_seq2[key1], "b-", label="Seq 2 (AZA)")
+    axs[0].plot(ds_seq1["SAMPLE_TIME"], ds_seq1[key1], "r--", label="Seq 1 (AZS)")
+    units = ds[key1].attrs["units"]
+    standard_name = ds[key1].attrs["standard_name"]
+    if "long_name" in ds[key1].attrs:
+        long_name = ds[key1].attrs["long_name"]
     else:
         long_name = standard_name
-    long_name = ds[key1].attrs['long_name']
-    axs[0].set_ylabel(f'{standard_name} ({units})')
-    axs[0].set_title(f'{long_name}\nSequence 1 and 2')
-    axs[0].set_xlabel('Time')
+    long_name = ds[key1].attrs["long_name"]
+    axs[0].set_ylabel(f"{standard_name} ({units})")
+    axs[0].set_title(f"{long_name}\nSequence 1 and 2")
+    axs[0].set_xlabel("Time")
     axs[0].legend()
     axs[0].grid(True)
 
     # Plot the ambient pressure for sequence 4 and 5
-    axs[1].plot(ds_seq4['SAMPLE_TIME'], ds_seq4[key1], 'b-', label='Seq 4 (AZA)')
-    axs[1].plot(ds_seq5['SAMPLE_TIME'], ds_seq5[key1], 'r--', label='Seq 5 (AZS)')
-    axs[1].set_ylabel(f'{standard_name} ({units})')
-    axs[1].set_title(f'{long_name}\nSequence 4 and 5')
+    axs[1].plot(ds_seq4["SAMPLE_TIME"], ds_seq4[key1], "b-", label="Seq 4 (AZA)")
+    axs[1].plot(ds_seq5["SAMPLE_TIME"], ds_seq5[key1], "r--", label="Seq 5 (AZS)")
+    axs[1].set_ylabel(f"{standard_name} ({units})")
+    axs[1].set_title(f"{long_name}\nSequence 4 and 5")
     axs[1].legend()
     axs[1].grid(True)
 
     # Plot the difference in ambient pressure
     diff_2_1 = ds_seq2[key1].values - ds_seq1[key1].values
     diff_5_4 = ds_seq5[key1].values - ds_seq4[key1].values
-    axs[2].plot(ds_seq2['SAMPLE_TIME'], diff_2_1, color='black', linestyle='--', label='Seq 2 - Seq 1')
-    axs[2].plot(ds_seq5['SAMPLE_TIME'], diff_5_4, color='darkgray', label='Seq 5 - Seq 4')  
-    axs[2].set_xlabel('Time')
-    axs[2].set_ylabel(f'$\Delta${standard_name} ({units})')
-    axs[2].set_title(f'Difference in {long_name}')
-    axs[2].legend(loc='best')
+    axs[2].plot(
+        ds_seq2["SAMPLE_TIME"],
+        diff_2_1,
+        color="black",
+        linestyle="--",
+        label="Seq 2 - Seq 1",
+    )
+    axs[2].plot(
+        ds_seq5["SAMPLE_TIME"], diff_5_4, color="darkgray", label="Seq 5 - Seq 4"
+    )
+    axs[2].set_xlabel("Time")
+    axs[2].set_ylabel(rf"$\Delta${standard_name} ({units})")
+    axs[2].set_title(f"Difference in {long_name}")
+    axs[2].legend(loc="best")
     axs[2].grid(True)
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+    fig.text(
+        0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+    )
 
     # Set x-ticks every 2 months
     axs[0].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[0].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    axs[0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     axs[1].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    axs[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     axs[2].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[2].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
-    axs[0].tick_params(axis='x', rotation=45)
-    axs[1].tick_params(axis='x', rotation=45)
-    axs[2].tick_params(axis='x', rotation=45)
-
-
+    axs[2].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+    axs[0].tick_params(axis="x", rotation=45)
+    axs[1].tick_params(axis="x", rotation=45)
+    axs[2].tick_params(axis="x", rotation=45)
 
     plt.tight_layout()
     plt.show()
@@ -986,7 +1136,7 @@ def plot_pressure_diff_and_age(ds, key1, key2, seqnum):
     Parameters
     -----------
     ds : xarray.Dataset
-        The dataset containing the data to be plotted. It should include variables such as 
+        The dataset containing the data to be plotted. It should include variables such as
         'SEQUENCE_NUM', 'SAMPLE_TIME', 'AGE', 'AMBIENT_TEMPERATURE', and 'TRANSFER_TEMPERATURE'.
     key1 : str
         The name of the first pressure variable in the dataset.
@@ -1004,84 +1154,102 @@ def plot_pressure_diff_and_age(ds, key1, key2, seqnum):
 
     Notes
     ------
-    - The function calculates the difference between the two pressure variables (`key1` and `key2`) 
+    - The function calculates the difference between the two pressure variables (`key1` and `key2`)
       and plots it against time for each sequence in `seqnum`.
     - The AGE variable is converted to seconds and plotted against time.
     - Ambient and transfer temperatures are plotted on the third subplot.
     - The x-axis is formatted to display time in 2-month intervals.
-    - The temperature subplot's y-axis limits are determined based on the median and standard 
+    - The temperature subplot's y-axis limits are determined based on the median and standard
       deviation of the combined temperature data.
-    - The function assumes that the dataset variables have attributes `standard_name` and `units` 
+    - The function assumes that the dataset variables have attributes `standard_name` and `units`
       for proper labeling.
     - A station identifier (`STN`) is expected to be available in the global scope for annotation.
 
     Raises
     -------
     KeyError:
-        If any of the required variables (`key1`, `key2`, 'AGE', 'AMBIENT_TEMPERATURE', 
+        If any of the required variables (`key1`, `key2`, 'AGE', 'AMBIENT_TEMPERATURE',
         'TRANSFER_TEMPERATURE', or 'SEQUENCE_NUM') are missing from the dataset.
     """
 
     # Plot the difference and AGE of sequence 3
     fig, axs = plt.subplots(3, 1, figsize=(8, 9))
 
-    STN = ds.attrs['Station']
+    STN = ds.attrs["Station"]
     for sn in seqnum:
-        ds_seq3 = ds.where(ds['SEQUENCE_NUM'].isin([sn]), drop=True)
+        ds_seq3 = ds.where(ds["SEQUENCE_NUM"].isin([sn]), drop=True)
 
         # Calculate the difference between the transfer and low pressure
         pressure_diff = ds_seq3[key1] - ds_seq3[key2]
 
         # Plot the pressure difference
-        name1 = ds_seq3[key1].attrs['standard_name']
-        name2 = ds_seq3[key2].attrs['standard_name']
-        units = ds_seq3[key1].attrs['units']
-        axs[0].plot(ds_seq3['SAMPLE_TIME'], pressure_diff, label=f'Sequence {str(sn)}): {name1} - {name2}')
+        name1 = ds_seq3[key1].attrs["standard_name"]
+        name2 = ds_seq3[key2].attrs["standard_name"]
+        units = ds_seq3[key1].attrs["units"]
+        axs[0].plot(
+            ds_seq3["SAMPLE_TIME"],
+            pressure_diff,
+            label=f"Sequence {str(sn)}): {name1} - {name2}",
+        )
 
-        Age1 = ds_seq3['AGE']
+        Age1 = ds_seq3["AGE"]
         # Convert Age1 to units of seconds
         Age1_seconds = Age1.dt.total_seconds()
-        ds_seq3['AGE'].attrs['units'] = 'seconds'
+        ds_seq3["AGE"].attrs["units"] = "seconds"
         # Plot the AGE of sequence 3
-        axs[1].plot(ds_seq3['SAMPLE_TIME'], Age1_seconds, label='AGE')
+        axs[1].plot(ds_seq3["SAMPLE_TIME"], Age1_seconds, label="AGE")
 
     # Plot the temperatures
-    axs[2].plot(ds_seq3['SAMPLE_TIME'], ds_seq3['AMBIENT_TEMPERATURE'], label='Ambient Temperature', color='magenta')
-    axs[2].plot(ds_seq3['SAMPLE_TIME'], ds_seq3['TRANSFER_TEMPERATURE'], label='Transfer Temperature', color='green')
+    axs[2].plot(
+        ds_seq3["SAMPLE_TIME"],
+        ds_seq3["AMBIENT_TEMPERATURE"],
+        label="Ambient Temperature",
+        color="magenta",
+    )
+    axs[2].plot(
+        ds_seq3["SAMPLE_TIME"],
+        ds_seq3["TRANSFER_TEMPERATURE"],
+        label="Transfer Temperature",
+        color="green",
+    )
 
-    axs[0].set_ylabel(f'Pressure Difference ({units})')
-    axs[0].set_title(f'Difference between {name1} and {name2}')
+    axs[0].set_ylabel(f"Pressure Difference ({units})")
+    axs[0].set_title(f"Difference between {name1} and {name2}")
     axs[0].legend()
     axs[0].grid(True)
     # Set x-ticks every 2 months
     axs[0].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[0].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    axs[0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
 
     axs[1].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    axs[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
 
     axs[2].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
-    axs[2].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    axs[2].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
 
-    units = ds_seq3['AGE'].attrs['units']
-    axs[1].set_ylabel(f'AGE ({units})')
-    axs[1].set_title(f'AGE for Sequence ({str(seqnum)}')
+    units = ds_seq3["AGE"].attrs["units"]
+    axs[1].set_ylabel(f"AGE ({units})")
+    axs[1].set_title(f"AGE for Sequence ({str(seqnum)}")
     axs[1].legend()
     axs[1].grid(True)
 
-    axs[2].set_xlabel('Time')
-    axs[2].set_ylabel('Temperature (°C)')
-    axs[2].set_title('Ambient and Low Temperature')
+    axs[2].set_xlabel("Time")
+    axs[2].set_ylabel("Temperature (°C)")
+    axs[2].set_title("Ambient and Low Temperature")
     axs[2].legend()
     axs[2].grid(True)
 
-    combined_temps = np.concatenate([ds['TRANSFER_TEMPERATURE'].values, ds['AMBIENT_TEMPERATURE'].values])
+    combined_temps = np.concatenate(
+        [ds["TRANSFER_TEMPERATURE"].values, ds["AMBIENT_TEMPERATURE"].values]
+    )
     upper_limit = np.median(combined_temps) + 2 * np.std(combined_temps)
     lower_limit = np.floor(np.min(combined_temps))
 
     axs[2].set_ylim(lower_limit, upper_limit)
 
-    fig.text(0.99, 0.99, f'STN: {STN}', ha='right', fontsize=12, verticalalignment='top')
+    fig.text(
+        0.99, 0.99, f"STN: {STN}", ha="right", fontsize=12, verticalalignment="top"
+    )
 
     plt.tight_layout()
     plt.show()

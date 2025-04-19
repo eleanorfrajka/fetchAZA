@@ -6,20 +6,21 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import datetime
+
 year = datetime.datetime.now(tz=datetime.timezone.utc).date().year
 
 # Should not need to add paths if the docs.yml and docs_deploy.yml install the package.
-#import os
-#import sys
-#sys.path.insert(0, os.path.abspath('..'))
-#sys.path.insert(0, os.path.abspath('../..'))
-#print(sys.path)
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('..'))
+# sys.path.insert(0, os.path.abspath('../..'))
+# print(sys.path)
 
 # General information about the project.
-project = 'fetchAZA'
-author = 'Eleanor Frajka-Williams'
+project = "fetchAZA"
+author = "Eleanor Frajka-Williams"
 copyright = f"{year}, {author}"
-release = 'v0.0.0'
+release = "v0.0.2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,19 +34,29 @@ extensions = [
     "myst_parser",
 ]
 
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_image",
+    # add more if you use them
+]
 mathjax3_config = {
-    'chtml' : {
-        'mtextInheritFont' : 'true',
+    "chtml": {
+        "mtextInheritFont": "true",
     },
-    'mathjax_path': 'https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+    "mathjax_path": "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
 }
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
+nitpick_ignore = []
+
+# Show orphan documents
+html_add_permalinks = "¶"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 # add_function_parentheses = True
@@ -67,7 +78,7 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -79,12 +90,15 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # custom CSS files
 # html_context = {
 #    "css_files": ["_static/css/custom.css"],
 # }
+html_css_files = [
+    "css/custom.css",
+]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
