@@ -1,20 +1,24 @@
-import pandas as pd
-import xarray as xr
-import re
-from collections import defaultdict
 from fetchAZA import tools, readers, writers
-import numpy as np
 
-import glob
-import re
 import os
 import datetime
-import yaml
-import pathlib
 import logging
+
 _log = logging.getLogger(__name__)
 
-def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_date='2099-01-01', latitude='0', longitude='0', water_depth='0', keys=['DQZ','PIES','INC','TMP','KLR'],cleanup=True):
+
+def convertAZA(
+    data_path,
+    fn,
+    STN="sample",
+    deploy_date="2000-01-01",
+    recovery_date="2099-01-01",
+    latitude="0",
+    longitude="0",
+    water_depth="0",
+    keys=["DQZ", "PIES", "INC", "TMP", "KLR"],
+    cleanup=True,
+):
     """
     Processes and converts AZA data from CSV to netCDF format.
 
@@ -44,7 +48,7 @@ def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_d
     """
     # Process filename
     file_path = os.path.join(data_path, fn)
-    file_root = fn.split('.')[0]
+    file_root = fn.split(".")[0]
     platform_id = file_root
     today = datetime.datetime.now()
     start_time = today.strftime("%Y%m%dT%H")
@@ -54,53 +58,63 @@ def convertAZA(data_path, fn, STN='sample', deploy_date='2000-01-01', recovery_d
     logf_with_path = os.path.join(data_path, log_file)
     # Create the log file
     logging.basicConfig(
-        filename=logf_with_path, 
-        encoding='utf-8',
+        filename=logf_with_path,
+        encoding="utf-8",
         format="%(asctime)s %(levelname)-8s %(funcName)s %(message)s",
-        filemode="w", # 'w' to overwrite, 'a' to append
+        filemode="w",  # 'w' to overwrite, 'a' to append
         level=logging.INFO,
         datefmt="%Y%m%dT%H%M%S",
         force=True,
     )
-    _log.info('Reading AZA from CSV to netCDF')
-    _log.info('Processing data from: %s', file_path)
+    _log.info("Reading AZA from CSV to netCDF")
+    _log.info("Processing data from: %s", file_path)
 
     # Convert the data
     datasets = readers.read_csv_to_xarray(file_path)
     # Save intermediate files
     writers.save_datasets(datasets, file_path)
     # Process the data
-    ds_pressure, ds_AZA = tools.process_datasets(data_path, file_root, deploy_date, recovery_date)
+    ds_pressure, ds_AZA = tools.process_datasets(
+        data_path, file_root, deploy_date, recovery_date
+    )
     # Save the datasets
     # Add attributes to ds_pressure
-    ds_pressure.attrs.update({
-        'Station': STN,
-        'Latitude': latitude,
-        'Longitude': longitude,
-        'Water_Depth': water_depth,
-        'Start_Time': deploy_date,
-        'End_Time': recovery_date
-    })
+    ds_pressure.attrs.update(
+        {
+            "Station": STN,
+            "Latitude": latitude,
+            "Longitude": longitude,
+            "Water_Depth": water_depth,
+            "Start_Time": deploy_date,
+            "End_Time": recovery_date,
+        }
+    )
 
     # Add attributes to ds_AZA
-    ds_AZA.attrs.update({
-        'Station': STN,
-        'Latitude': latitude,
-        'Longitude': longitude,
-        'Water_Depth': water_depth,
-        'Start_Time': deploy_date,
-        'End_Time': recovery_date
-    })
+    ds_AZA.attrs.update(
+        {
+            "Station": STN,
+            "Latitude": latitude,
+            "Longitude": longitude,
+            "Water_Depth": water_depth,
+            "Start_Time": deploy_date,
+            "End_Time": recovery_date,
+        }
+    )
 
-    output_file = os.path.join(data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_use.nc")
+    output_file = os.path.join(
+        data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_use.nc"
+    )
     writers.save_dataset(ds_pressure, output_file)
 
-    output_file = os.path.join(data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_AZA.nc")
+    output_file = os.path.join(
+        data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_AZA.nc"
+    )
     writers.save_dataset(ds_AZA, output_file)
 
     if cleanup:
         # Delete the intermediate files
-        _log.info('Deleting intermediate files')
+        _log.info("Deleting intermediate files")
         writers.delete_netcdf_datasets(data_path, file_root, keys)
 
     return ds_pressure, ds_AZA

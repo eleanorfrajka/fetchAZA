@@ -1,24 +1,23 @@
 import numpy as np
-import xarray as xr
 from numbers import Number
 import os
-from fetchAZA import utilities
 import logging
 import glob
-import re
-import datetime
+
 _log = logging.getLogger(__name__)
 
 
-def delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP','INC']):
+def delete_netcdf_datasets(
+    data_path, file_root, keys=["KLR", "DQZ", "PIES", "TMP", "INC"]
+):
     """
     Delete netCDF files matching the given file_root and optional keys from the specified data_path.
 
     Parameters
     ----------
-    data_path : str 
+    data_path : str
         The directory path where the netCDF files are located.
-    file_root : str 
+    file_root : str
         The root name of the files to match.
     keys : list of str, optional
         A list of keys to filter the files. Only files containing these keys in their names will be deleted.
@@ -26,7 +25,7 @@ def delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP',
 
     Returns
     -------
-    int 
+    int
         The number of files successfully deleted.
     """
     # Find matching netCDF files
@@ -36,7 +35,8 @@ def delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP',
     # Filter files based on keys if provided
     if keys is not None:
         matching_files = [
-            file for file in matching_files
+            file
+            for file in matching_files
             if any(f"{file_root}_{key}" in os.path.basename(file) for key in keys)
         ]
 
@@ -55,7 +55,8 @@ def delete_netcdf_datasets(data_path, file_root, keys=['KLR','DQZ','PIES','TMP',
 
     return deleted_count
 
-def save_dataset(ds, output_file='../data/test.nc'):
+
+def save_dataset(ds, output_file="../data/test.nc"):
     """
     Attempts to save the dataset to a NetCDF file. If a TypeError occurs due to invalid attribute values,
     it converts the invalid attributes to strings and retries the save operation.
@@ -70,27 +71,32 @@ def save_dataset(ds, output_file='../data/test.nc'):
     bool: True if the dataset was saved successfully, False otherwise.
 
     Note
-    ----    
+    ----
     Based on: https://github.com/pydata/xarray/issues/3743
     """
     valid_types = (str, int, float, np.float32, np.float64, np.int32, np.int64)
     # More general
     valid_types = (str, Number, np.ndarray, np.number, list, tuple)
 
-
     # Check for empty strings
-    encoding = { }
+    encoding = {}
     for var in ds.variables:
-        if ds[var].dtype == 'timedelta64[ns]':
-            _log.warning(f"Variable '{var}' has dtype 'timedelta64[ns]'. Converting to float seconds.")
-            ds[var] = ds[var].astype('timedelta64[s]').astype(float)
-        if ds[var].dtype == 'datetime64[ns]':
-            ds[var].encoding['units'] = 'seconds since 1970-01-01 00:00:00'
-            _log.info(f"Variable '{var}' has dtype 'datetime64[ns]', and length {str(len(ds[var]))}. Encoding as {ds[var].encoding['units']}.")
-            if 'units' in ds[var].attrs:
-                _log.warning(f"Variable '{var}' has attribute 'units'={ds[var].attrs['units']}. Removing attribute")
-                del ds[var].attrs['units']
-        
+        if ds[var].dtype == "timedelta64[ns]":
+            _log.warning(
+                f"Variable '{var}' has dtype 'timedelta64[ns]'. Converting to float seconds."
+            )
+            ds[var] = ds[var].astype("timedelta64[s]").astype(float)
+        if ds[var].dtype == "datetime64[ns]":
+            ds[var].encoding["units"] = "seconds since 1970-01-01 00:00:00"
+            _log.info(
+                f"Variable '{var}' has dtype 'datetime64[ns]', and length {str(len(ds[var]))}. Encoding as {ds[var].encoding['units']}."
+            )
+            if "units" in ds[var].attrs:
+                _log.warning(
+                    f"Variable '{var}' has attribute 'units'={ds[var].attrs['units']}. Removing attribute"
+                )
+                del ds[var].attrs["units"]
+
     try:
         ds.to_netcdf(output_file)
         return True
@@ -99,18 +105,25 @@ def save_dataset(ds, output_file='../data/test.nc'):
         for varname, variable in ds.variables.items():
             for k, v in variable.attrs.items():
                 if not isinstance(v, valid_types) or isinstance(v, bool):
-                    _log.warning(f"variable '{varname}': Converting attribute '{k}' with value '{v}' to string.")
+                    _log.warning(
+                        f"variable '{varname}': Converting attribute '{k}' with value '{v}' to string."
+                    )
                     variable.attrs[k] = str(v)
         try:
-            ds.to_netcdf(output_file) #, format='NETCDF4_CLASSIC'
+            ds.to_netcdf(output_file)  # , format='NETCDF4_CLASSIC'
             return True
         except Exception as e:
             _log.error("Failed to save dataset:", e)
-            datetime_vars = [var for var in ds.variables if ds[var].dtype == 'datetime64[ns]']
+            datetime_vars = [
+                var for var in ds.variables if ds[var].dtype == "datetime64[ns]"
+            ]
             _log.info("Variables with dtype datetime64[ns]:", datetime_vars)
-            float_attrs = [attr for attr in ds.attrs if isinstance(ds.attrs[attr], float)]
+            float_attrs = [
+                attr for attr in ds.attrs if isinstance(ds.attrs[attr], float)
+            ]
             _log.info("Attributes with dtype float64:", float_attrs)
             return False
+
 
 def save_datasets(data_sets_new, input_fn):
     """

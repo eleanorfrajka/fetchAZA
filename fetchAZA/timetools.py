@@ -1,17 +1,17 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-from datetime import datetime
-from collections import Counter
-from fetchAZA import readers, writers, plotters, utilities, tools
 import logging
-import re
+
 _log = logging.getLogger(__name__)
 
 # AZA has so many issues with time, needs its own module
 #
 
-def assign_sample_time(ds, pattern=['AZS','AZA','AZA','AZA','AZS'], adjust_time=None):
+
+def assign_sample_time(
+    ds, pattern=["AZS", "AZA", "AZA", "AZA", "AZS"], adjust_time=None
+):
     """
     Assigns SAMPLE_TIME to the dataset based on SEQUENCE_NUM and AGE.
 
@@ -27,45 +27,57 @@ def assign_sample_time(ds, pattern=['AZS','AZA','AZA','AZA','AZS'], adjust_time=
     """
     snum = len(pattern)
     # Filter the dataset for sequence_num == 5 (or length of pattern)
-    sequence_5 = ds.where(ds['SEQUENCE_NUM'] == snum, drop=True)
+    sequence_5 = ds.where(ds["SEQUENCE_NUM"] == snum, drop=True)
 
     # Compute the sequence_start as Record_time minus the age in seconds
-    sequence_5_start = sequence_5['RECORD_TIME'] 
-    sequence_start = sequence_5['RECORD_TIME'] - np.timedelta64(1, 'ms') * (1000 * sequence_5['AGE'])
+    sequence_5_start = sequence_5["RECORD_TIME"]
+    sequence_start = sequence_5["RECORD_TIME"] - np.timedelta64(1, "ms") * (
+        1000 * sequence_5["AGE"]
+    )
     sequence_start_repeated = np.repeat(sequence_start.values, snum)
 
-    sequence_1 = ds.where(ds['SEQUENCE_NUM'] == 1, drop=True)
-    sequence_1_start = sequence_1['RECORD_TIME'] 
+    sequence_1 = ds.where(ds["SEQUENCE_NUM"] == 1, drop=True)
+    sequence_1_start = sequence_1["RECORD_TIME"]
     # Check if sequence_1_start and sequence_5_start are identical
     if not np.array_equal(sequence_1_start, sequence_5_start):
         mismatch_count = np.sum(sequence_1_start != sequence_5_start)
-        _log.warning(f"sequence_1_start and sequence_5_start are not identical {mismatch_count} times.")
+        _log.warning(
+            f"sequence_1_start and sequence_5_start are not identical {mismatch_count} times."
+        )
 
     # Set dimensions for the new variable
-    dims = list(ds['RECORD_TIME'].dims)
+    dims = list(ds["RECORD_TIME"].dims)
 
     # Create a new variable in ds called SAMPLE_TIME
-    ds['SAMPLE_TIME'] = (dims, sequence_start_repeated)
+    ds["SAMPLE_TIME"] = (dims, sequence_start_repeated)
 
     # Add the AGE in seconds to SAMPLE_TIME
-    ds['SAMPLE_TIME'] += (1000 * ds['AGE']).astype('timedelta64[ms]')
+    ds["SAMPLE_TIME"] += (1000 * ds["AGE"]).astype("timedelta64[ms]")
 
     descript_str1 = f"Time of the sample. For each {str(snum)}-sequence AZA cycle, the start time of the sample is recorded as the Record Time minus the age in seconds for sequence {str(snum)}."
-    _log.info(f"Assigning SAMPLE_TIME based on RECORD_TIME minus AGE in seconds for SEQUENCE_NUM {str(snum)}.")
+    _log.info(
+        f"Assigning SAMPLE_TIME based on RECORD_TIME minus AGE in seconds for SEQUENCE_NUM {str(snum)}."
+    )
 
     # Adjust SAMPLE_TIME for SEQUENCE_NUM 2, 3, or 4 by subtracting 15 seconds
     if adjust_time is not None:
         sequence_nums = list(range(2, snum))
-        ds['SAMPLE_TIME'] = ds['SAMPLE_TIME'].where(~ds['SEQUENCE_NUM'].isin(sequence_nums), ds['SAMPLE_TIME'] - np.timedelta64(adjust_time, 's'))
+        ds["SAMPLE_TIME"] = ds["SAMPLE_TIME"].where(
+            ~ds["SEQUENCE_NUM"].isin(sequence_nums),
+            ds["SAMPLE_TIME"] - np.timedelta64(adjust_time, "s"),
+        )
 
         descript_str2 = f" The sample time is then adjusted forward based on the age in seconds for each measurement in the sequence, and then further adjusted for sequences 2:{str(snum-1)} by subtracting {str(adjust_time)} seconds (mid-point for a {str(2*adjust_time)}-second average)."
-        _log.info(f"Adjusting SAMPLE_TIME for SEQUENCE_NUM 2:{str(snum-1)} by subtracting {str(adjust_time)} seconds.")
+        _log.info(
+            f"Adjusting SAMPLE_TIME for SEQUENCE_NUM 2:{str(snum-1)} by subtracting {str(adjust_time)} seconds."
+        )
     else:
-        descript_str2 = ''
-    
-    ds['SAMPLE_TIME'].attrs['description'] = descript_str1 + descript_str2
+        descript_str2 = ""
+
+    ds["SAMPLE_TIME"].attrs["description"] = descript_str1 + descript_str2
 
     return ds
+
 
 def cut_to_deployment(datasets2, deploy_date, recovery_date):
     """
@@ -89,20 +101,25 @@ def cut_to_deployment(datasets2, deploy_date, recovery_date):
     if deploy_date is not None:
         deploy_datetime = np.datetime64(deploy_date)
     else:
-        deploy_datetime = np.datetime64('1900-01-01')
+        deploy_datetime = np.datetime64("1900-01-01")
     if recovery_date is not None:
-        recovery_datetime = np.datetime64(recovery_date)    
+        recovery_datetime = np.datetime64(recovery_date)
     else:
-        recovery_datetime = np.datetime64('2100-01-01')
-    
+        recovery_datetime = np.datetime64("2100-01-01")
+
     for key in datasets2:
-        indices = np.where((datasets2[key]['RECORD_TIME'] >= deploy_datetime) & 
-                           (datasets2[key]['RECORD_TIME'] <= recovery_datetime))[0]   
-        if len(indices)<len(datasets2[key]['RECORD_TIME']):
-            _log.warning(f"Dataset '{key}' has been truncated to the deployment period. Original length: {len(datasets2[key]['RECORD_TIME'])}, New length: {len(indices)}")
+        indices = np.where(
+            (datasets2[key]["RECORD_TIME"] >= deploy_datetime)
+            & (datasets2[key]["RECORD_TIME"] <= recovery_datetime)
+        )[0]
+        if len(indices) < len(datasets2[key]["RECORD_TIME"]):
+            _log.warning(
+                f"Dataset '{key}' has been truncated to the deployment period. Original length: {len(datasets2[key]['RECORD_TIME'])}, New length: {len(indices)}"
+            )
         datasets2[key] = datasets2[key].isel(index=indices)
 
     return datasets2
+
 
 def convert_seconds_to_float(ds):
     """
@@ -119,12 +136,11 @@ def convert_seconds_to_float(ds):
         The dataset with variables in 'seconds' units converted to float type.
     """
     for var in ds.variables:
-        if ds[var].attrs.get('units') == 'seconds':
+        if ds[var].attrs.get("units") == "seconds":
             if np.issubdtype(ds[var].dtype, np.timedelta64):
-                ds[var].values = ds[var].values.astype('timedelta64[s]').astype('float')
-                _log.info(f"{var}".ljust(20) + f"Recast dtype timedelta64[s] --> float")
+                ds[var].values = ds[var].values.astype("timedelta64[s]").astype("float")
+                _log.info(f"{var}".ljust(20) + "Recast dtype timedelta64[s] --> float")
     return ds
-
 
 
 def increment_duplicate_time(time_values):
@@ -137,7 +153,7 @@ def increment_duplicate_time(time_values):
     Returns:
         numpy.datetime64: A time incremented by a small amount.
     """
-    increment = np.timedelta64(1, 'ns')
+    increment = np.timedelta64(1, "ns")
     duplicate_times = time_values[time_values.duplicated()]
     if len(duplicate_times):
 
@@ -150,7 +166,8 @@ def increment_duplicate_time(time_values):
                     time_values[i] += increment * (i - indices[0])
                     time_values = pd.to_datetime(time_values)
 
-    return time_values, len(duplicate_times) 
+    return time_values, len(duplicate_times)
+
 
 def reindex_on_time(ds):
     """
@@ -162,10 +179,10 @@ def reindex_on_time(ds):
     Returns:
     xarray.Dataset: The processed dataset.
     """
-    if 'SAMPLE_TIME' in ds:
-        time_var = 'SAMPLE_TIME'
-    elif 'RECORD_TIME' in ds:
-        time_var = 'RECORD_TIME'
+    if "SAMPLE_TIME" in ds:
+        time_var = "SAMPLE_TIME"
+    elif "RECORD_TIME" in ds:
+        time_var = "RECORD_TIME"
     else:
         raise ValueError("Dataset must contain either 'RECORD_TIME' or 'SAMPLE_TIME'.")
 
@@ -176,7 +193,7 @@ def reindex_on_time(ds):
         ds[time_var].values[:] = new_time.values
 
     # Assign the time variable as new dimension
-    ds = ds.swap_dims({'index': time_var})
+    ds = ds.swap_dims({"index": time_var})
     ds = ds.set_coords(time_var)
 
     return ds
@@ -188,18 +205,22 @@ def compare_record_times(keys, time_var, datasets):
 
     # Compare record times for all keys
     first_key = keys[0]
-    all_identical = all(record_times[first_key].equals(record_times[key]) for key in keys[1:])
-    
+    all_identical = all(
+        record_times[first_key].equals(record_times[key]) for key in keys[1:]
+    )
+
     if all_identical:
         print("All record times are identical.")
     else:
         print("Record times are not identical.")
         mismatches = []
         for i, key1 in enumerate(keys):
-            for key2 in keys[i+1:]:
+            for key2 in keys[i + 1 :]:
                 if not record_times[key1].equals(record_times[key2]):
-                    mismatches.append(f"Mismatch between {key1} ({len(record_times[key1])}) and {key2} ({len(record_times[key2])}).")
-        
+                    mismatches.append(
+                        f"Mismatch between {key1} ({len(record_times[key1])}) and {key2} ({len(record_times[key2])})."
+                    )
+
         if mismatches:
             print("Record time mismatches found:")
             for mismatch in mismatches:
@@ -221,10 +242,12 @@ def compare_record_times(keys, time_var, datasets):
 
     # Find intersections and differences between all pairs of keys
     for i, key1 in enumerate(keys):
-        for key2 in keys[i+1:]:
+        for key2 in keys[i + 1 :]:
             common = record_time_sets[key1] & record_time_sets[key2]
             distinct = record_time_sets[key1] ^ record_time_sets[key2]
-            print(f"{key1} and {key2}: {len(common)} in common, {len(distinct)} distinct")
+            print(
+                f"{key1} and {key2}: {len(common)} in common, {len(distinct)} distinct"
+            )
             # Print the distinct values between the first two keys
             distinct_values = record_time_sets[key1] ^ record_time_sets[key2]
             print(f"Distinct values between {key1} and {key2}:")
@@ -237,6 +260,7 @@ def compare_record_times(keys, time_var, datasets):
         union_record_times |= record_time_sets[key]
 
     return union_record_times
+
 
 def calculate_sample_rate(data, name=None):
     """
@@ -262,28 +286,32 @@ def calculate_sample_rate(data, name=None):
     """
     if isinstance(data, dict):
         if name is None:
-            raise ValueError("When providing a dictionary of datasets, the 'name' parameter must be specified.")
+            raise ValueError(
+                "When providing a dictionary of datasets, the 'name' parameter must be specified."
+            )
         dataset = data[name]
     elif isinstance(data, xr.Dataset):
         dataset = data
     else:
-        raise ValueError("Input must be either a dictionary of datasets or a single xarray.Dataset.")
+        raise ValueError(
+            "Input must be either a dictionary of datasets or a single xarray.Dataset."
+        )
 
-    if 'RECORD_TIME' in dataset.dims:
-        time_var = 'RECORD_TIME'
-    elif 'TIME' in dataset.dims:
-        time_var = 'TIME'
-    elif 'SAMPLE_TIME' in dataset.dims:
-        time_var = 'SAMPLE_TIME'
+    if "RECORD_TIME" in dataset.dims:
+        time_var = "RECORD_TIME"
+    elif "TIME" in dataset.dims:
+        time_var = "TIME"
+    elif "SAMPLE_TIME" in dataset.dims:
+        time_var = "SAMPLE_TIME"
     else:
         raise ValueError("Dataset does not contain a recognized time variable.")
 
     data_array = dataset[time_var]
     # Calculate time differences in seconds
-    time_diffs = np.diff(data_array.values).astype('timedelta64[s]').astype(int)
-    
+    time_diffs = np.diff(data_array.values).astype("timedelta64[s]").astype(int)
+
     # Calculate mean and median
     mean_sample_rate = np.mean(time_diffs)
     median_sample_rate = np.median(time_diffs)
-    
+
     return mean_sample_rate, median_sample_rate

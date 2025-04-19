@@ -1,8 +1,8 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-  "setuptools>=42",
-  "setuptools-scm[toml]>=3.4",
+  "setuptools>=45",
+  "setuptools-scm[toml]>=8.0",
   "wheel",
 ]
 
@@ -14,10 +14,9 @@ license = { file = "LICENSE" }
 maintainers = [
   { name = "Eleanor Frajka-Williams", email = "eleanorfrajka@gmail.com" },
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -32,10 +31,11 @@ urls.homepage = "https://github.com/eleanorfrajka/fetchAZA"
 urls.repository = "https://github.com/eleanorfrajka/fetchAZA"
 
 [tool.setuptools]
-packages = [
-  "fetchAZA",
-]
+packages = ["fetchAZA"]
 include-package-data = true
+
+[tool.setuptools.package-data]
+fetchAZA = ["metadata/*.yml"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = [
@@ -46,8 +46,9 @@ readme = { file = "README.md", content-type = "text/markdown" }
 [tool.setuptools_scm]
 write_to = "fetchAZA/_version.py"
 write_to_template = "__version__ = '{version}'"
-tag_regex = "^(?P<prefix>v)?(?P<version>[^\\+]+)(?P<suffix>.*)?$"
+version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
+tag_regex = "^v(?P<version>[0-9]+(?:\\.[0-9]+)*[a-z0-9]*)$"
 
 
 [tool.check-manifest]
@@ -59,4 +60,35 @@ ignore = [
   "tests",
   "tests/*",
   "data/",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff]
+# …any other top‑level settings you use (extend, cache-dir, line-length, exclude, etc.)…
+
+[tool.ruff.lint]
+select = [
+  "D",       # pydocstyle
+  "E",       # pycodestyle errors
+  "F",       # pyflakes errors
+  "W",       # pycodestyle warnings
+  "C90",     # mccabe complexity
+  "ANN",     # type annotations
+  "B",       # flake8-bugbear
+  "BLE",     # bleach checks
+  "TRY",     # tryceratops
+  "ARG",     # flake8-arguments
+  "SLF",     # flake8-self
+]
+ignore = [
+  "D107",    # missing docstring in __init__
+  "D203",    # 1 blank line required before class docstring
+  "D213",    # multi-line summary docstring style
+  "D401",    # first line should be in imperative mood
+  "E501",    # line‑length
+  "PLR0913", # too many arguments
+  "C901",    # complexity
 ]
