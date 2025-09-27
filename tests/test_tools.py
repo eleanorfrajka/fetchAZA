@@ -36,3 +36,7 @@ def test_reformat_units_var():
         ds = xr.Dataset({"x": ("t", [1])})
         ds["x"].attrs["units"] = original_unit
         assert tools.reformat_units_var(ds, "x") == expected_format
+
+
+# Additional tests for enhanced functionality could be added here
+# Currently focusing on core unit conversions and formatting
