@@ -24,7 +24,7 @@ pypandoc>=1.17  # optional, confirm usage
 myst-parser>=4.0.1
 
 # Testing
-pytest>=8.0
+pytest>=9.1.1
 pytest-cov>=7.1.0  # optional, if you use coverage
 
 # Code quality
